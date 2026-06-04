@@ -12,6 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce',
+    // No flowType — defaults to implicit flow, correct for browser SPAs
+    // PKCE requires a dedicated server-side callback route
   },
 })
