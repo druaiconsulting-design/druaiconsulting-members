@@ -86,7 +86,7 @@ export default function MemberLayout({ children, currentPath }: MemberLayoutProp
             bottom: 0,
             overflowY: 'auto',
             overflowX: 'hidden',
-            background: '#07192e',
+            background: '#FAFAF8',
             transition: 'left 0.25s ease',
           }}
         >
