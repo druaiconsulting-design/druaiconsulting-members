@@ -59,7 +59,7 @@ function isActive(itemPath: string, currentPath: string): boolean {
 
 function CourseProgressBar({ percent }: { percent: number }) {
   return (
-    <div style={{ marginTop: 4, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ marginTop: 4, height: 4, background: 'rgba(255,255,255,0.12)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{
         height: '100%',
         width: `${percent}%`,
@@ -146,8 +146,8 @@ export default function Sidebar({
           fontFamily: 'Montserrat, sans-serif',
           fontSize: 13,
           fontWeight: active ? 600 : 400,
-          color: active ? '#D4AF37' : locked ? 'rgba(138,164,200,0.35)' : '#8AA4C8',
-          background: active ? 'rgba(212,175,55,0.12)' : 'transparent',
+          color: active ? '#D4AF37' : locked ? 'rgba(237,232,219,0.2)' : '#EDE8DB',
+          background: active ? 'rgba(212,175,55,0.15)' : 'transparent',
           borderLeft: active ? '2px solid #D4AF37' : '2px solid transparent',
           transition: 'all 0.15s',
           cursor: locked ? 'default' : 'pointer',
@@ -262,7 +262,7 @@ export default function Sidebar({
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 10,
               fontWeight: 700,
-              color: 'rgba(138,164,200,0.5)',
+              color: 'rgba(237,232,219,0.5)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}>
@@ -286,8 +286,8 @@ export default function Sidebar({
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 13,
               fontWeight: isActive('/courses', currentPath) ? 600 : 400,
-              color: isActive('/courses', currentPath) ? '#D4AF37' : '#8AA4C8',
-              background: isActive('/courses', currentPath) ? 'rgba(212,175,55,0.12)' : 'transparent',
+              color: isActive('/courses', currentPath) ? '#D4AF37' : '#EDE8DB',
+              background: isActive('/courses', currentPath) ? 'rgba(212,175,55,0.15)' : 'transparent',
               borderLeft: isActive('/courses', currentPath) ? '2px solid #D4AF37' : '2px solid transparent',
               transition: 'all 0.15s',
               textAlign: 'left',
@@ -317,7 +317,7 @@ export default function Sidebar({
                     <CourseProgressBar percent={0} />
                     <div style={{
                       fontSize: 10,
-                      color: 'rgba(212,175,55,0.6)',
+                      color: 'rgba(212,175,55,0.65)',
                       marginTop: 3,
                       fontFamily: 'Inter, sans-serif',
                     }}>
@@ -338,7 +338,7 @@ export default function Sidebar({
               padding: '6px 12px',
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 12,
-              color: 'rgba(138,164,200,0.4)',
+              color: 'rgba(237,232,219,0.3)',
               fontStyle: 'italic',
             }}>
               <span>➕</span>
@@ -355,7 +355,7 @@ export default function Sidebar({
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 10,
               fontWeight: 700,
-              color: isAccelerator ? 'rgba(212,175,55,0.55)' : 'rgba(138,164,200,0.25)',
+              color: isAccelerator ? 'rgba(212,175,55,0.7)' : 'rgba(237,232,219,0.25)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               display: 'flex',
@@ -381,7 +381,7 @@ export default function Sidebar({
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 10,
               fontWeight: 700,
-              color: 'rgba(138,164,200,0.5)',
+              color: 'rgba(237,232,219,0.5)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}>
@@ -403,7 +403,7 @@ export default function Sidebar({
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 10,
               fontWeight: 700,
-              color: 'rgba(138,164,200,0.5)',
+              color: 'rgba(237,232,219,0.5)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}>
@@ -424,7 +424,7 @@ export default function Sidebar({
           borderTop: '1px solid rgba(212,175,55,0.1)',
           fontFamily: 'Cinzel, serif',
           fontSize: 9,
-          color: 'rgba(212,175,55,0.35)',
+          color: 'rgba(237,232,219,0.3)',
           letterSpacing: '0.12em',
           textAlign: 'center',
         }}>
