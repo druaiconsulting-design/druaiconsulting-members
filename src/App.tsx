@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './context/AuthContext'
 import { navigate } from './lib/router'
-import { supabase } from './lib/supabaseClient'
 import Login from './pages/Login'
 import Feed from './pages/Feed'
 import MemberLayout from './components/layout/MemberLayout'
@@ -86,20 +85,6 @@ export default function App() {
     const handlePop = () => setPath(window.location.pathname)
     window.addEventListener('popstate', handlePop)
     return () => window.removeEventListener('popstate', handlePop)
-  }, [])
-
-  // Explicit PKCE code exchange — handles Google OAuth callback
-  // detectSessionInUrl alone is unreliable; this ensures the ?code= is exchanged
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const code = params.get('code')
-    if (code) {
-      window.history.replaceState({}, '', window.location.pathname)
-      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
-        if (error) console.error('OAuth code exchange failed:', error.message)
-        // onAuthStateChange in AuthContext fires automatically on success
-      })
-    }
   }, [])
 
   // Auth guard
