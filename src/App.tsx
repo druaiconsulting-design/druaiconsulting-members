@@ -3,6 +3,8 @@ import { useAuth } from './context/AuthContext'
 import { navigate } from './lib/router'
 import Login from './pages/Login'
 import Feed from './pages/Feed'
+import Courses from './pages/Courses'
+import ModuleLessons from './pages/ModuleLessons'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -41,7 +43,7 @@ function LoadingScreen() {
 
 // ─── Coming Soon placeholder ──────────────────────────────────────────────────
 
-function ComingSoon({ title, day }: { title: string; day?: string }) {
+function ComingSoon({ title }: { title: string }) {
   return (
     <div style={{
       display: 'flex',
@@ -61,15 +63,13 @@ function ComingSoon({ title, day }: { title: string; day?: string }) {
       }}>
         {title}
       </div>
-      {day && (
-        <div style={{
-          fontFamily: 'Montserrat, sans-serif',
-          fontSize: 13,
-          color: 'rgba(138,164,200,0.6)',
-        }}>
-          Scheduled for {day}
-        </div>
-      )}
+      <div style={{
+        fontFamily: 'Montserrat, sans-serif',
+        fontSize: 13,
+        color: 'rgba(138,164,200,0.6)',
+      }}>
+        Coming soon
+      </div>
     </div>
   )
 }
@@ -107,37 +107,45 @@ export default function App() {
     // Home / Feed
     if (path === '/' || path === '/feed') return <Feed />
 
-    // Start Here — Day 3
+    // Start Here — agents populating content
     if (path === '/start-here')
-      return <ComingSoon title="Start Here" day="Day 3" />
+      return <ComingSoon title="Start Here" />
 
-    // Community routes — Day 2
+    // Community routes
     if (path.startsWith('/community'))
-      return <ComingSoon title="Community" day="Day 2" />
+      return <ComingSoon title="Community" />
 
-    // Courses routes — Day 3–4
-    if (path.startsWith('/courses'))
-      return <ComingSoon title="Courses" day="Day 3–4" />
+    // Courses — lesson player (Layer 1 #3 — next build)
+    if (path.startsWith('/courses/lesson/'))
+      return <ComingSoon title="Lesson Player" />
 
-    // Monthly Videos — Day 5
+    // Courses — module lesson list
+    if (path.startsWith('/courses/module/'))
+      return <ModuleLessons />
+
+    // Courses — main catalog
+    if (path === '/courses' || path === '/courses/')
+      return <Courses />
+
+    // Monthly Videos
     if (path === '/videos' || path.startsWith('/videos/'))
-      return <ComingSoon title="Monthly Leadership Lab!" day="Day 5" />
+      return <ComingSoon title="Monthly Leadership Lab!" />
 
-    // Leaderboard — Day 5
+    // Leaderboard
     if (path === '/leaderboard')
-      return <ComingSoon title="Leaderboard" day="Day 5" />
+      return <ComingSoon title="Leaderboard" />
 
-    // Resources — Day 5
+    // Resources
     if (path.startsWith('/resources'))
-      return <ComingSoon title="Resources" day="Day 5" />
+      return <ComingSoon title="Resources" />
 
-    // Support — Day 5
+    // Support
     if (path.startsWith('/support'))
-      return <ComingSoon title="Support Hub" day="Day 5" />
+      return <ComingSoon title="Support Hub" />
 
-    // Profile — upcoming
+    // Profile
     if (path === '/profile')
-      return <ComingSoon title="My Profile" day="Day 6" />
+      return <ComingSoon title="My Profile" />
 
     // 404
     return (
