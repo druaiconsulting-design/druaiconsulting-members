@@ -51,7 +51,7 @@ function timeAgo(date: string): string {
 
 const CATEGORY_COLORS: Record<string, { bg: string; color: string }> = {
   announcement: { bg: 'rgba(212,175,55,0.18)', color: '#D4AF37' },
-  discussion:   { bg: 'rgba(138,164,200,0.18)', color: '#8AA4C8' },
+  discussion:   { bg: 'rgba(10,35,66,0.08)', color: '#2D5A8E' },
   win:          { bg: 'rgba(72,187,120,0.18)',  color: '#68d391' },
   question:     { bg: 'rgba(194,24,91,0.18)',   color: '#e8759b' },
 }
@@ -98,7 +98,7 @@ function MemberBubble({ author }: { author: PostAuthor | null }) {
     <div style={{
       width: 38, height: 38, borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
       background: 'linear-gradient(135deg, #1e3d6e, #0A2342)',
-      border: '2px solid rgba(212,175,55,0.35)',
+      border: '2px solid rgba(212,175,55,0.5)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 700, color: '#D4AF37',
     }}>
@@ -137,8 +137,8 @@ function PostCard({
 
   return (
     <article style={{
-      background: 'rgba(10,35,66,0.55)',
-      border: `1px solid ${post.is_pinned ? 'rgba(212,175,55,0.3)' : 'rgba(255,255,255,0.07)'}`,
+      background: '#ffffff',
+      border: `1px solid ${post.is_pinned ? 'rgba(212,175,55,0.5)' : 'rgba(10,35,66,0.1)'}`,
       borderRadius: 12,
       padding: '18px 20px',
       marginBottom: 12,
@@ -149,7 +149,7 @@ function PostCard({
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10,
           fontFamily: 'Montserrat, sans-serif', fontSize: 11, fontWeight: 600,
-          color: 'rgba(212,175,55,0.7)', letterSpacing: '0.08em',
+          color: '#B8941F', letterSpacing: '0.08em',
         }}>
           <span>📌</span> PINNED
         </div>
@@ -165,7 +165,7 @@ function PostCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{
-              fontFamily: 'Montserrat, sans-serif', fontSize: 14, fontWeight: 600, color: '#EDE8DB',
+              fontFamily: 'Montserrat, sans-serif', fontSize: 14, fontWeight: 600, color: '#0A2342',
             }}>
               {authorName}
             </span>
@@ -179,7 +179,7 @@ function PostCard({
                 AI AGENT
               </span>
             )}
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'rgba(138,164,200,0.5)', marginLeft: 'auto' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#8898A4', marginLeft: 'auto' }}>
               {timeAgo(post.published_at)}
             </span>
           </div>
@@ -201,7 +201,7 @@ function PostCard({
       {post.title && (
         <div style={{
           fontFamily: 'Playfair Display, serif', fontSize: 16, fontWeight: 600,
-          color: '#EDE8DB', marginBottom: 8, lineHeight: 1.4,
+          color: '#0A2342', marginBottom: 8, lineHeight: 1.4,
         }}>
           {post.title}
         </div>
@@ -209,7 +209,7 @@ function PostCard({
 
       {/* Content */}
       <div style={{
-        fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'rgba(237,232,219,0.85)',
+        fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#2D3748',
         lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
       }}>
         {displayContent}
@@ -219,7 +219,7 @@ function PostCard({
             style={{
               marginLeft: 6, background: 'none', border: 'none', padding: 0,
               fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 600,
-              color: '#D4AF37', cursor: 'pointer',
+              color: '#B8941F', cursor: 'pointer',
             }}
           >
             {expanded ? 'Show less' : 'Read more'}
@@ -235,7 +235,7 @@ function PostCard({
       )}
 
       {/* Actions row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(10,35,66,0.08)' }}>
         {/* Heart */}
         <button
           onClick={() => onReact(post.id)}
@@ -244,7 +244,7 @@ function PostCard({
             background: reactions.userReacted ? 'rgba(194,24,91,0.15)' : 'transparent',
             border: `1px solid ${reactions.userReacted ? 'rgba(194,24,91,0.4)' : 'transparent'}`,
             fontFamily: 'Inter, sans-serif', fontSize: 13,
-            color: reactions.userReacted ? '#e8759b' : 'rgba(138,164,200,0.7)',
+            color: reactions.userReacted ? '#C2185B' : '#6B7A8D',
             cursor: 'pointer', transition: 'all 0.15s',
           }}
         >
@@ -258,7 +258,7 @@ function PostCard({
           style={{
             display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 8,
             background: 'transparent', border: '1px solid transparent',
-            fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'rgba(138,164,200,0.7)',
+            fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#6B7A8D',
             cursor: 'pointer', transition: 'all 0.15s',
           }}
         >
@@ -299,8 +299,8 @@ function ComposeBox({ onSubmit }: { onSubmit: (content: string, category: string
 
   return (
     <div style={{
-      background: 'rgba(10,35,66,0.6)',
-      border: '1px solid rgba(212,175,55,0.15)',
+      background: '#ffffff',
+      border: '1px solid rgba(10,35,66,0.12)',
       borderRadius: 12, padding: '14px 16px', marginBottom: 20,
     }}>
       {/* Closed state */}
@@ -316,11 +316,11 @@ function ComposeBox({ onSubmit }: { onSubmit: (content: string, category: string
           }}>
             {av ? <img src={av} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
           </div>
-          <div style={{ flex: 1, fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'rgba(138,164,200,0.45)' }}>
+          <div style={{ flex: 1, fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#9BABB7' }}>
             Share something with the community…
           </div>
           <button style={{
-            padding: '6px 14px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)',
+            padding: '6px 14px', background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.5)',
             borderRadius: 8, fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 600,
             color: '#D4AF37', cursor: 'pointer',
           }}>
@@ -340,7 +340,7 @@ function ComposeBox({ onSubmit }: { onSubmit: (content: string, category: string
             rows={4}
             style={{
               width: '100%', background: 'transparent', border: 'none',
-              fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#EDE8DB',
+              fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#0A2342',
               lineHeight: 1.7, resize: 'none', padding: 0, marginBottom: 14,
             }}
           />
@@ -351,9 +351,9 @@ function ComposeBox({ onSubmit }: { onSubmit: (content: string, category: string
                 <button key={cat} onClick={() => setCategory(cat)} style={{
                   padding: '4px 12px', borderRadius: 20,
                   fontFamily: 'Montserrat, sans-serif', fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                  background: category === cat ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${category === cat ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                  color: category === cat ? '#D4AF37' : 'rgba(138,164,200,0.7)',
+                  background: category === cat ? 'rgba(212,175,55,0.15)' : 'rgba(10,35,66,0.06)',
+                  border: `1px solid ${category === cat ? 'rgba(212,175,55,0.4)' : 'rgba(10,35,66,0.15)'}`,
+                  color: category === cat ? '#B8941F' : '#4A5568',
                   transition: 'all 0.15s',
                 }}>
                   {cat}
@@ -362,8 +362,8 @@ function ComposeBox({ onSubmit }: { onSubmit: (content: string, category: string
             </div>
             <button onClick={() => setOpen(false)} style={{
               padding: '7px 14px', borderRadius: 8,
-              fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: 'rgba(138,164,200,0.6)',
-              cursor: 'pointer', background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
+              fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: '#6B7A8D',
+              cursor: 'pointer', background: 'transparent', border: '1px solid rgba(10,35,66,0.15)',
             }}>
               Cancel
             </button>
@@ -542,11 +542,11 @@ export default function Feed() {
       <div style={{ marginBottom: 24 }}>
         <h1 style={{
           fontFamily: 'Playfair Display, serif', fontSize: 26, fontWeight: 600,
-          color: '#EDE8DB', marginBottom: 4,
+          color: '#0A2342', marginBottom: 4,
         }}>
           Community Feed
         </h1>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'rgba(138,164,200,0.65)' }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#6B7A8D' }}>
           What's happening in the DRU AI Leadership Ecosystem™
         </p>
       </div>
@@ -560,9 +560,9 @@ export default function Feed() {
           <button key={f.value} onClick={() => setFilter(f.value)} style={{
             padding: '5px 14px', borderRadius: 20, cursor: 'pointer',
             fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: filter === f.value ? 600 : 400,
-            color: filter === f.value ? '#0A2342' : 'rgba(138,164,200,0.8)',
-            background: filter === f.value ? '#D4AF37' : 'rgba(255,255,255,0.05)',
-            border: filter === f.value ? 'none' : '1px solid rgba(255,255,255,0.1)',
+            color: filter === f.value ? '#0A2342' : '#4A5568',
+            background: filter === f.value ? '#D4AF37' : 'rgba(10,35,66,0.06)',
+            border: filter === f.value ? 'none' : '1px solid rgba(10,35,66,0.15)',
             transition: 'all 0.15s',
           }}>
             {f.label}
@@ -581,14 +581,14 @@ export default function Feed() {
         </div>
       ) : filteredPosts.length === 0 ? (
         <div style={{
-          background: 'rgba(10,35,66,0.4)', border: '1px dashed rgba(212,175,55,0.2)',
+          background: '#f0ede4', border: '1px dashed rgba(212,175,55,0.4)',
           borderRadius: 12, padding: '48px 32px', textAlign: 'center',
         }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>📭</div>
           <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 18, color: '#D4AF37', marginBottom: 8 }}>
             {filter === 'all' ? 'No posts yet' : `No ${filter}s yet`}
           </div>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'rgba(138,164,200,0.6)' }}>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#6B7A8D' }}>
             Be the first to post in this community.
           </div>
         </div>
@@ -608,4 +608,3 @@ export default function Feed() {
     </div>
   )
 }
-
