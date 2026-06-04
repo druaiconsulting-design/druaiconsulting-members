@@ -13,14 +13,36 @@ import { supabase } from '../lib/supabaseClient'
 export interface Profile {
   id: string
   email: string | null
-  full_name: string | null
   first_name: string | null
   last_name: string | null
-  avatar_url: string | null
-  /** 'navigator' | 'accelerator' — set by GHL webhook on subscription payment */
+  role: string | null
+  picture: string | null          // from Google OAuth
+  photo_url: string | null        // manually uploaded photo
   tier: 'navigator' | 'accelerator' | null
   pathway_stage: string | null
-  created_at: string | null
+  clarity_points: number | null
+  community_level: string | null
+  points_updated_at: string | null
+}
+
+/** Convenience getter for display name */
+export function profileDisplayName(p: Profile | null): string {
+  if (!p) return 'Member'
+  if (p.first_name && p.last_name) return `${p.first_name} ${p.last_name}`
+  if (p.first_name) return p.first_name
+  if (p.email) return p.email.split('@')[0]
+  return 'Member'
+}
+
+/** Returns photo_url first, then picture (Google), then null */
+export function profileAvatar(p: Profile | null): string | null {
+  return p?.photo_url || p?.picture || null
+}
+
+/** Two-letter initials */
+export function profileInitials(p: Profile | null): string {
+  const name = profileDisplayName(p)
+  return name.split(' ').map((n) => n[0] || '').join('').slice(0, 2).toUpperCase()
 }
 
 interface AuthContextType {
@@ -28,12 +50,8 @@ interface AuthContextType {
   user: User | null
   profile: Profile | null
   loading: boolean
-  /** true when profile.tier === 'accelerator' */
   isAccelerator: boolean
-  signInWithEmail: (
-    email: string,
-    password: string
-  ) => Promise<{ error: string | null }>
+  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -51,19 +69,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // ── Fetch profile from Supabase profiles table ───────────────────────────
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single()
-    if (!error && data) {
-      setProfile(data as Profile)
-    }
+    if (!error && data) setProfile(data as Profile)
   }
 
-  // ── Bootstrap session on mount ───────────────────────────────────────────
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -72,23 +86,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        await fetchProfile(session.user.id)
-      } else {
-        setProfile(null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setSession(session)
+        setUser(session?.user ?? null)
+        if (session?.user) await fetchProfile(session.user.id)
+        else setProfile(null)
+        setLoading(false)
       }
-      setLoading(false)
-    })
+    )
 
     return () => subscription.unsubscribe()
   }, [])
 
-  // ── Auth methods ─────────────────────────────────────────────────────────
   const signInWithEmail = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return { error: error?.message ?? null }
@@ -97,9 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
+      options: { redirectTo: `${window.location.origin}/` },
     })
   }
 
@@ -112,22 +120,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) await fetchProfile(user.id)
   }
 
-  const isAccelerator = profile?.tier === 'accelerator'
-
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        profile,
-        loading,
-        isAccelerator,
-        signInWithEmail,
-        signInWithGoogle,
-        signOut,
-        refreshProfile,
-      }}
-    >
+    <AuthContext.Provider value={{
+      session, user, profile, loading,
+      isAccelerator: profile?.tier === 'accelerator',
+      signInWithEmail, signInWithGoogle, signOut, refreshProfile,
+    }}>
       {children}
     </AuthContext.Provider>
   )
