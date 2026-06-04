@@ -105,10 +105,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/` },
     })
+    if (error) console.error('Google OAuth error:', error.message)
+    if (data?.url) window.location.href = data.url
   }
 
   const signOut = async () => {
@@ -138,4 +140,3 @@ export function useAuth(): AuthContextType {
   if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>')
   return ctx
 }
-
