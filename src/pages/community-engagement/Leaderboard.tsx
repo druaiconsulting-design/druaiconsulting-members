@@ -4,7 +4,6 @@ import type { Tier } from '../community/types';
 import LevelBadge from './LevelBadge';
 import MemberAvatar from '../community/MemberAvatar';
 import MemberProfile from './MemberProfile';
-import NavBar from '../../components/NavBar';
 
 // ── Gap signal ────────────────────────────────────────────────────────────────
 const LEVEL_RANK: Record<string, number>   = { Connected: 1, Contributor: 2, Cultivator: 3, Cornerstone: 4, Changemaker: 5 };
@@ -94,7 +93,7 @@ export default function Leaderboard({
           {medal(r) ?? r}
         </div>
 
-        {/* Avatar + Name — clickable */}
+        {/* Avatar + Name */}
         <button
           onClick={() => setSelectedMemberId(row.id)}
           style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
@@ -141,8 +140,7 @@ export default function Leaderboard({
   };
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#FAFAF8', display: 'flex', flexDirection: 'column' }}>
-      <NavBar active="/community" />
+    <div style={{ minHeight: '100%', background: '#FAFAF8', display: 'flex', flexDirection: 'column' }}>
       <main style={{ flex: 1, padding: '40px 24px 80px' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
@@ -242,10 +240,6 @@ export default function Leaderboard({
           onClose={() => setSelectedMemberId(null)}
         />
       )}
-
-      <footer style={{ textAlign: 'center', padding: '1rem', color: 'rgba(10,35,66,0.25)', fontFamily: "'Montserrat', sans-serif", fontSize: '0.65rem', letterSpacing: '0.04em', borderTop: '1px solid #E8E4DF' }}>
-        © 2026 DRU CLEAR™ · All Rights Reserved · DRU AI Consulting
-      </footer>
     </div>
   );
 }
