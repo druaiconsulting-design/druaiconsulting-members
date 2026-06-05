@@ -112,7 +112,7 @@ export default function Login() {
           borderRadius: 2,
           background: 'linear-gradient(90deg, transparent 0%, #D4AF37 30%, #F5D878 50%, #D4AF37 70%, transparent 100%)',
           backgroundSize: '300% 100%',
-          animation: 'goldSweep 2.6s ease-in-out infinite',
+          animation: 'goldSweep 5.5s ease-in-out infinite',
         }} />
 
         {/* Tagline with magenta dots */}
