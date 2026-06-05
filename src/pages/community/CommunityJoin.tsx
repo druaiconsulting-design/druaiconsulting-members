@@ -90,7 +90,7 @@ export default function CommunityJoin() {
           <div style={{ padding: '2.5rem 1.5rem', maxWidth: 720, margin: '0 auto' }}>
             <p style={{
               fontFamily: "'Montserrat', sans-serif",
-              color: '#0A2342', fontSize: '0.68rem', fontWeight: 700,
+              color: '#D4AF37', fontSize: '0.68rem', fontWeight: 700,
               letterSpacing: '0.14em', textTransform: 'uppercase',
               textAlign: 'center', marginBottom: '1.5rem',
             }}>
