@@ -38,10 +38,10 @@ const SECTIONS: Section[] = [
   {
     heading: 'COMMUNITY',
     items: [
-      { icon: '📰', label: 'Feed',                path: '/' },
-      { icon: '📢', label: 'Announcements',        path: '/community/announcements' },
-      { icon: '💬', label: 'Discussions',          path: '/community/discussions' },
-      { icon: '⚡', label: 'Accelerator Circle',   path: '/community/accelerator', acceleratorOnly: true },
+      { icon: '📰', label: 'Feed',               path: '/feed' },
+      { icon: '📢', label: 'Announcements',       path: '/community/announcements' },
+      { icon: '💬', label: 'Discussions',         path: '/community/discussions' },
+      { icon: '⚡', label: 'Accelerator Circle',  path: '/community/accelerator', acceleratorOnly: true },
     ],
   },
 ]
@@ -73,13 +73,7 @@ function CourseProgressBar({ percent }: { percent: number }) {
 
 function LockBadge() {
   return (
-    <span style={{
-      marginLeft: 'auto',
-      fontSize: 11,
-      opacity: 0.5,
-    }}>
-      🔒
-    </span>
+    <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.5 }}>🔒</span>
   )
 }
 
@@ -93,12 +87,16 @@ export default function Sidebar({
 }: SidebarProps) {
   const { isAccelerator } = useAuth()
 
-  const SIDEBAR_WIDTH  = 264
-  const COLLAPSED_W    = 64
-  const w              = collapsed ? COLLAPSED_W : SIDEBAR_WIDTH
-
-  // Mobile: always full-width drawer, desktop: controlled by `collapsed`
+  const SIDEBAR_WIDTH = 264
+  const COLLAPSED_W   = 64
+  const w             = collapsed ? COLLAPSED_W : SIDEBAR_WIDTH
   const isMobile      = window.innerWidth < 768
+
+  // ── FIX: on mobile, always show full text when the drawer is open ──────────
+  // Previously, MemberLayout forced collapsed=true on mobile, which hid all
+  // label text even when the drawer was fully open. showText decouples the
+  // text-visibility decision from the desktop collapsed state.
+  const showText = !collapsed || mobileOpen
 
   const sidebarStyle: React.CSSProperties = isMobile
     ? {
@@ -134,14 +132,14 @@ export default function Sidebar({
           navigate(item.path)
           if (isMobile) onMobileClose()
         }}
-        title={collapsed ? item.label : undefined}
+        title={showText ? undefined : item.label}
         style={{
           width: '100%',
           display: 'flex',
           alignItems: 'center',
-          gap: collapsed ? 0 : 10,
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          padding: collapsed ? '10px 0' : '8px 12px',
+          gap: showText ? 10 : 0,
+          justifyContent: showText ? 'flex-start' : 'center',
+          padding: showText ? '8px 12px' : '10px 0',
           borderRadius: 8,
           fontFamily: 'Montserrat, sans-serif',
           fontSize: 13,
@@ -159,7 +157,7 @@ export default function Sidebar({
       >
         <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
 
-        {!collapsed && (
+        {showText && (
           <>
             <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {item.label}
@@ -198,21 +196,21 @@ export default function Sidebar({
       }}
     >
       {/* ── New Post button ── */}
-      <div style={{ padding: collapsed ? '16px 8px 8px' : '16px 12px 8px' }}>
+      <div style={{ padding: showText ? '16px 12px 8px' : '16px 8px 8px' }}>
         <button
           className="new-post-btn"
           onClick={() => {
             navigate('/')
             if (isMobile) onMobileClose()
           }}
-          title={collapsed ? 'New Post' : undefined}
+          title={showText ? undefined : 'New Post'}
           style={{
             width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: collapsed ? 'center' : 'flex-start',
+            justifyContent: showText ? 'flex-start' : 'center',
             gap: 8,
-            padding: collapsed ? '10px' : '9px 14px',
+            padding: showText ? '9px 14px' : '10px',
             borderRadius: 8,
             background: 'rgba(212,175,55,0.1)',
             border: '1px solid rgba(212,175,55,0.3)',
@@ -225,17 +223,17 @@ export default function Sidebar({
           }}
         >
           <span style={{ fontSize: 16 }}>✏️</span>
-          {!collapsed && <span>New Post</span>}
+          {showText && <span>New Post</span>}
         </button>
       </div>
 
       {/* ── Scrollable nav sections ── */}
-      <nav style={{ flex: 1, padding: collapsed ? '4px 8px' : '4px 8px', overflowY: 'auto' }}>
+      <nav style={{ flex: 1, padding: '4px 8px', overflowY: 'auto' }}>
 
         {/* WELCOME + COMMUNITY sections */}
         {SECTIONS.map((section) => (
           <div key={section.heading} style={{ marginBottom: 8 }}>
-            {!collapsed && (
+            {showText && (
               <div style={{
                 padding: '10px 12px 4px',
                 fontFamily: 'Montserrat, sans-serif',
@@ -248,15 +246,14 @@ export default function Sidebar({
                 {section.heading}
               </div>
             )}
-            {collapsed && <div style={{ height: 8 }} />}
-
+            {!showText && <div style={{ height: 8 }} />}
             {section.items.map((item) => renderItem(item, section.acceleratorOnly))}
           </div>
         ))}
 
         {/* ── COURSES ── */}
         <div style={{ marginBottom: 8 }}>
-          {!collapsed && (
+          {showText && (
             <div style={{
               padding: '10px 12px 4px',
               fontFamily: 'Montserrat, sans-serif',
@@ -270,18 +267,17 @@ export default function Sidebar({
             </div>
           )}
 
-          {/* Course item with progress bar */}
           <button
             className="sidebar-nav-item"
             onClick={() => { navigate('/courses'); if (isMobile) onMobileClose() }}
-            title={collapsed ? 'From Confusion to Confident with AI™' : undefined}
+            title={showText ? undefined : 'From Confusion to Confident with AI™'}
             style={{
               width: '100%',
               display: 'flex',
-              alignItems: collapsed ? 'center' : 'flex-start',
-              justifyContent: collapsed ? 'center' : 'flex-start',
-              gap: collapsed ? 0 : 10,
-              padding: collapsed ? '10px 0' : '8px 12px',
+              alignItems: showText ? 'flex-start' : 'center',
+              justifyContent: showText ? 'flex-start' : 'center',
+              gap: showText ? 10 : 0,
+              padding: showText ? '8px 12px' : '10px 0',
               borderRadius: 8,
               fontFamily: 'Montserrat, sans-serif',
               fontSize: 13,
@@ -294,43 +290,40 @@ export default function Sidebar({
               flexShrink: 0,
               overflow: 'hidden',
               cursor: 'pointer',
-              flexDirection: collapsed ? 'row' : 'column',
+              flexDirection: showText ? 'column' : 'row',
             }}
           >
-            {collapsed ? (
+            {!showText ? (
               <span style={{ fontSize: 16 }}>🎓</span>
             ) : (
-              <>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, width: '100%' }}>
-                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>🎓</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      lineHeight: 1.3,
-                    }}>
-                      From Confusion to Confident with AI™
-                    </div>
-                    <CourseProgressBar percent={0} />
-                    <div style={{
-                      fontSize: 10,
-                      color: 'rgba(212,175,55,0.65)',
-                      marginTop: 3,
-                      fontFamily: 'Inter, sans-serif',
-                    }}>
-                      0% complete
-                    </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, width: '100%' }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>🎓</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1.3,
+                  }}>
+                    From Confusion to Confident with AI™
+                  </div>
+                  <CourseProgressBar percent={0} />
+                  <div style={{
+                    fontSize: 10,
+                    color: 'rgba(212,175,55,0.65)',
+                    marginTop: 3,
+                    fontFamily: 'Inter, sans-serif',
+                  }}>
+                    0% complete
                   </div>
                 </div>
-              </>
+              </div>
             )}
           </button>
 
-          {/* More courses coming soon */}
-          {!collapsed && (
+          {showText && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -349,7 +342,7 @@ export default function Sidebar({
 
         {/* ── ACC MONTHLY VIDEOS (Accelerator only) ── */}
         <div style={{ marginBottom: 8 }}>
-          {!collapsed && (
+          {showText && (
             <div style={{
               padding: '10px 12px 4px',
               fontFamily: 'Montserrat, sans-serif',
@@ -375,7 +368,7 @@ export default function Sidebar({
 
         {/* ── RESOURCES ── */}
         <div style={{ marginBottom: 8 }}>
-          {!collapsed && (
+          {showText && (
             <div style={{
               padding: '10px 12px 4px',
               fontFamily: 'Montserrat, sans-serif',
@@ -390,14 +383,14 @@ export default function Sidebar({
           )}
           {[
             { icon: '📄', label: 'Framework Downloads', path: '/resources' },
-            { icon: '💡', label: 'AI Insights Archive', path: '/resources/insights' },
-            { icon: '🛠️', label: 'Tool Guides',         path: '/resources/tools' },
+            { icon: '💡', label: 'AI Insights Archive',  path: '/resources/insights' },
+            { icon: '🛠️', label: 'Tool Guides',          path: '/resources/tools' },
           ].map((item) => renderItem(item))}
         </div>
 
         {/* ── SUPPORT ── */}
         <div style={{ marginBottom: 16 }}>
-          {!collapsed && (
+          {showText && (
             <div style={{
               padding: '10px 12px 4px',
               fontFamily: 'Montserrat, sans-serif',
@@ -418,7 +411,7 @@ export default function Sidebar({
       </nav>
 
       {/* ── Bottom brand strip ── */}
-      {!collapsed && (
+      {showText && (
         <div style={{
           padding: '12px 16px',
           borderTop: '1px solid rgba(212,175,55,0.1)',
