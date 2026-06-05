@@ -355,3 +355,4 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
     </>
   )
 }
+
