@@ -292,7 +292,7 @@ export default function CommunityJoin() {
                 color: '#D4AF37', fontSize: '1.05rem',
                 fontStyle: 'italic', fontWeight: 700, marginBottom: '0.75rem',
               }}>
-                1 is too small of a number.
+                One is too small of a number.
               </p>
               <p style={{
                 fontFamily: "'Playfair Display', serif",
