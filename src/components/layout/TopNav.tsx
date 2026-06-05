@@ -26,11 +26,11 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
   }
 
   const displayName = profileDisplayName(profile)
-  const avatar     = profileAvatar(profile)
-  const initials   = profileInitials(profile)
+  const avatar      = profileAvatar(profile)
+  const initials    = profileInitials(profile)
 
   const tierBadge = isAccelerator
-    ? { label: 'Accelerator', bg: '#D4AF37', color: '#0A2342', border: 'none' }
+    ? { label: 'Accelerator', bg: '#D4AF37',     color: '#0A2342', border: 'none' }
     : { label: 'Navigator',   bg: 'transparent', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.6)' }
 
   return (
@@ -59,10 +59,14 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
 
       {/* Logo */}
       <button onClick={() => navigate('/')} style={{
-        fontFamily: 'Cinzel, serif', fontSize: 13, fontWeight: 700, color: '#D4AF37',
-        letterSpacing: '0.15em', whiteSpace: 'nowrap', flexShrink: 0, padding: '0 4px',
+        flexShrink: 0, padding: '0 4px', background: 'none', border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center',
       }}>
-        DRU AI CONSULTING™
+        <img
+          src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png"
+          alt="DRU AI CONSULTING™"
+          style={{ height: 44, width: 'auto' }}
+        />
       </button>
 
       {/* Center nav */}
