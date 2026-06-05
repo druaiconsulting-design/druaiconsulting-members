@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { useAuth } from './context/AuthContext'
 import { navigate } from './lib/router'
 import Login from './pages/Login'
-import Feed from './pages/Feed'
+import Portal from './pages/Portal'
+import Daily from './pages/Daily'
+import Community from './pages/community'
 import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
 import MemberLayout from './components/layout/MemberLayout'
@@ -80,14 +82,12 @@ export default function App() {
   const { session, loading } = useAuth()
   const [path, setPath] = useState(window.location.pathname)
 
-  // Listen to popstate (fired by navigate() and browser back/forward)
   useEffect(() => {
     const handlePop = () => setPath(window.location.pathname)
     window.addEventListener('popstate', handlePop)
     return () => window.removeEventListener('popstate', handlePop)
   }, [])
 
-  // Auth guard
   useEffect(() => {
     if (loading) return
     if (!session && path !== '/login') {
@@ -99,23 +99,24 @@ export default function App() {
 
   if (loading) return <LoadingScreen />
 
-  // Public routes (no session required)
   if (!session || path === '/login') return <Login />
 
   // ── Authenticated page resolver ──────────────────────────────────────────
   const renderPage = () => {
-    // Home / Feed
-    if (path === '/' || path === '/feed') return <Feed />
+    // Home / Dashboard
+    if (path === '/' || path === '/home') return <Portal />
 
-    // Start Here — agents populating content
+    // Community feed
+    if (path === '/feed' || path.startsWith('/community')) return <Community />
+
+    // Daily
+    if (path === '/daily' || path === '/daily/') return <Daily />
+
+    // Start Here
     if (path === '/start-here')
       return <ComingSoon title="Start Here" />
 
-    // Community routes
-    if (path.startsWith('/community'))
-      return <ComingSoon title="Community" />
-
-    // Courses — lesson player (Layer 1 #3 — next build)
+    // Courses — lesson player
     if (path.startsWith('/courses/lesson/'))
       return <ComingSoon title="Lesson Player" />
 
@@ -180,7 +181,7 @@ export default function App() {
             marginTop: 8,
           }}
         >
-          Back to Feed
+          Back to Home
         </button>
       </div>
     )
