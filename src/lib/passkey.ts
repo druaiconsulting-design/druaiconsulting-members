@@ -24,7 +24,7 @@ export async function registerPasskey(): Promise<{ success: boolean; error?: str
     const options = await optionsRes.json();
 
     // 2. Prompt biometric (Face ID / fingerprint / Windows Hello)
-    const credential = await startRegistration({ optionsJSON: options });
+    const credential = await startRegistration(options);
 
     // 3. Send credential to server for verification
     const verifyRes = await fetch(`${APP_URL}/api/passkey/register-verify`, {
@@ -63,7 +63,7 @@ export async function loginWithPasskey(): Promise<{ success: boolean; error?: st
     const options = await optionsRes.json();
 
     // 2. Prompt biometric (Face ID / fingerprint / Windows Hello)
-    const credential = await startAuthentication({ optionsJSON: options });
+    const credential = await startAuthentication(options);
 
     // 3. Send to server for verification
     const verifyRes = await fetch(`${APP_URL}/api/passkey/auth-verify`, {
