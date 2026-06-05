@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth, profileDisplayName, profileAvatar, profileInitials } from '../../context/AuthContext'
 import { navigate } from '../../lib/router'
+import { supabase } from '../../lib/supabaseClient'
 import UpgradeModal from './UpgradeModal'
+import SearchModal from './SearchModal'
+import NotificationsPanel from './NotificationsPanel'
 
 interface TopNavProps {
   currentPath: string
@@ -18,8 +21,8 @@ const NAV_LINKS = [
   { label: 'Support',        path: '/support' },
 ]
 
-const NAVIGATOR_URL    = 'https://link.druaiconsulting.com/payment-link/69ead3017dd3512d920794b0'
-const ACCELERATOR_URL  = 'https://link.druaiconsulting.com/payment-link/69ead3d37dd3512d920794b1'
+const NAVIGATOR_URL   = 'https://link.druaiconsulting.com/payment-link/69ead3017dd3512d920794b0'
+const ACCELERATOR_URL = 'https://link.druaiconsulting.com/payment-link/69ead3d37dd3512d920794b1'
 
 type UpgradeState = { isOpen: boolean; url: string; tierName: string; price: string }
 const MODAL_CLOSED: UpgradeState = { isOpen: false, url: '', tierName: '', price: '' }
@@ -29,8 +32,22 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
   const [signOutError,   setSignOutError]   = useState(false)
   const [upgradeModal,   setUpgradeModal]   = useState<UpgradeState>(MODAL_CLOSED)
+  const [searchOpen,     setSearchOpen]     = useState(false)
+  const [notifOpen,      setNotifOpen]      = useState(false)
+  const [unreadCount,    setUnreadCount]    = useState(0)
 
-  // ── Tier ────────────────────────────────────────────────────────
+  // Fetch unread notification count on mount
+  useEffect(() => {
+    if (!profile?.id) return
+    supabase
+      .from('community_notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('recipient_id', profile.id)
+      .eq('is_read', false)
+      .then(({ count }) => setUnreadCount(count ?? 0))
+  }, [profile?.id])
+
+  // ── Tier ────────────────────────────────────────────────────
   const tier = (profile?.tier ?? 'free') as 'accelerator' | 'navigator' | 'free'
 
   const tierBadge = (() => {
@@ -44,7 +61,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
     }
   })()
 
-  // ── Helpers ─────────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────
   const isActive = (path: string) => {
     if (path === '/') return currentPath === '/'
     return currentPath.startsWith(path)
@@ -73,7 +90,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────
+  // ── Render ───────────────────────────────────────────────────
   return (
     <>
       <header style={{
@@ -90,17 +107,16 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           style={{
             width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', color: '#8AA4C8', fontSize: 16, flexShrink: 0,
-            transition: 'all 0.15s',
+            justifyContent: 'center', color: '#8AA4C8', flexShrink: 0, transition: 'all 0.15s',
           }}
         >
           {sidebarCollapsed ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           ) : (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" /><line x1="9" y1="3" x2="9" y2="21" />
+              <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>
             </svg>
           )}
         </button>
@@ -145,29 +161,57 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
 
           {/* Search */}
-          <button className="icon-btn" title="Search" style={{
-            width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', color: '#8AA4C8', transition: 'all 0.15s',
-          }}>
+          <button
+            className="icon-btn"
+            onClick={() => setSearchOpen(true)}
+            title="Search"
+            style={{
+              width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', color: '#8AA4C8', transition: 'all 0.15s',
+            }}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
 
           {/* Notifications */}
-          <button className="icon-btn" title="Notifications" style={{
-            width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', color: '#8AA4C8', position: 'relative', transition: 'all 0.15s',
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-          </button>
+          <div style={{ position: 'relative' }}>
+            <button
+              className="icon-btn"
+              onClick={() => { setNotifOpen(o => !o); setAvatarMenuOpen(false) }}
+              title="Notifications"
+              style={{
+                width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center',
+                justifyContent: 'center', color: '#8AA4C8', position: 'relative', transition: 'all 0.15s',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {/* Unread badge */}
+              {unreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: 5, right: 5,
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: '#C2185B',
+                  border: '1.5px solid #0A2342',
+                }} />
+              )}
+            </button>
+
+            <NotificationsPanel
+              isOpen={notifOpen}
+              onClose={() => setNotifOpen(false)}
+              onUnreadChange={setUnreadCount}
+            />
+          </div>
 
           {/* Avatar + dropdown */}
           <div style={{ position: 'relative' }}>
             <button
-              onClick={() => setAvatarMenuOpen((o) => !o)}
+              onClick={() => { setAvatarMenuOpen(o => !o); setNotifOpen(false) }}
               title={displayName}
               style={{
                 width: 34, height: 34, borderRadius: '50%',
@@ -227,26 +271,22 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                     </button>
                   ))}
 
-                  {/* ── Upgrade CTAs: Free → show Nav + Acc ── */}
+                  {/* ── Free → Nav + Acc ── */}
                   {tier === 'free' && (
                     <>
                       <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', margin: '6px 0 2px' }} />
                       <div style={{ padding: '4px 10px 6px' }}>
                         <div style={{
                           fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
-                          color: '#8AA4C8', letterSpacing: '0.08em', textTransform: 'uppercase',
-                          marginBottom: 8,
+                          color: '#8AA4C8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8,
                         }}>
                           Upgrade Your Access
                         </div>
-
-                        {/* Navigator CTA */}
                         <button
                           onClick={() => openUpgrade('navigator')}
                           style={{
                             width: '100%', padding: '8px 10px', borderRadius: 7, marginBottom: 6,
-                            background: 'transparent',
-                            border: '1px solid rgba(212,175,55,0.5)',
+                            background: 'transparent', border: '1px solid rgba(212,175,55,0.5)',
                             fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 600,
                             color: '#D4AF37', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -256,8 +296,6 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                           <span>Join Navigator</span>
                           <span style={{ fontSize: 11, opacity: 0.75 }}>$97/mo</span>
                         </button>
-
-                        {/* Accelerator CTA */}
                         <button
                           onClick={() => openUpgrade('accelerator')}
                           style={{
@@ -277,7 +315,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                     </>
                   )}
 
-                  {/* ── Upgrade CTA: Navigator → Accelerator ── */}
+                  {/* ── Navigator → Accelerator ── */}
                   {tier === 'navigator' && (
                     <>
                       <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', margin: '6px 0 2px' }} />
@@ -344,7 +382,10 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         </div>
       </header>
 
-      {/* Upgrade modal (portal-embedded checkout) */}
+      {/* Search modal */}
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Upgrade modal */}
       <UpgradeModal
         isOpen={upgradeModal.isOpen}
         onClose={() => setUpgradeModal(MODAL_CLOSED)}
@@ -355,4 +396,3 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
     </>
   )
 }
-
