@@ -104,16 +104,22 @@ export default function Login() {
           Welcome — Transformation<br />Continues Here
         </h1>
 
-        {/* Animated gold sweep underline */}
+        {/* Animated gold reading sweep — full width, left to right */}
         <div style={{
-          height: 2,
-          width: 200,
+          width: '100%', height: 2,
           margin: '0 auto 14px',
           borderRadius: 2,
-          background: 'linear-gradient(90deg, transparent 0%, #D4AF37 30%, #F5D878 50%, #D4AF37 70%, transparent 100%)',
-          backgroundSize: '300% 100%',
-          animation: 'goldSweep 5.5s ease-in-out infinite',
-        }} />
+          background: 'rgba(212,175,55,0.18)',
+          overflow: 'hidden',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute', top: 0, left: 0,
+            height: '100%', width: '35%',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.6) 25%, #D4AF37 50%, #F5D878 55%, #D4AF37 65%, rgba(212,175,55,0.6) 80%, transparent 100%)',
+            animation: 'goldRead 8s ease-in-out infinite',
+          }} />
+        </div>
 
         {/* Tagline with magenta dots */}
         <p style={{
@@ -396,10 +402,12 @@ export default function Login() {
       </div>
 
       <style>{`
-        @keyframes goldSweep {
-          0%   { background-position: 150% 0; }
-          50%  { background-position: -50% 0; }
-          100% { background-position: 150% 0; }
+        @keyframes goldRead {
+          0%   { transform: translateX(-100%); opacity: 0; }
+          6%   { opacity: 1; }
+          68%  { transform: translateX(310%); opacity: 1; }
+          82%  { opacity: 0; }
+          100% { transform: translateX(-100%); opacity: 0; }
         }
         .login-spin {
           animation: loginSpin 0.75s linear infinite;
