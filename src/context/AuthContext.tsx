@@ -1,248 +1,162 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase } from "../lib/supabaseClient";
-import type { User, Session } from "@supabase/supabase-js";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react'
+import { User, Session } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabaseClient'
 
-const ADMIN_EMAIL = "deanna@druaiconsulting.com";
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-export type UserRole = "admin" | "client" | null;
-export type UserTier = "free" | "paid" | "navigator" | "accelerator";
-export type PathwayStage = "discover" | "diagnose" | "deploy";
-
-interface AuthUser {
-  id: string;
-  email: string;
-  role: UserRole;
-  tier: UserTier;
-  pathwayStage: PathwayStage;
-  firstName?: string;
-  fullName?: string;
-  picture?: string;
+export interface Profile {
+  id: string
+  email: string | null
+  first_name: string | null
+  last_name: string | null
+  role: string | null
+  picture: string | null
+  photo_url: string | null
+  tier: 'navigator' | 'accelerator' | null
+  pathway_stage: string | null
+  clarity_points: number | null
+  community_level: string | null
+  points_updated_at: string | null
 }
+
+export type PathwayStage = 'discover' | 'diagnose' | 'deploy'
+
+// ─── Profile utility exports (used by TopNav, Feed) ──────────────────────────
+
+export function profileDisplayName(p: Profile | null): string {
+  if (!p) return 'Member'
+  if (p.first_name && p.last_name) return `${p.first_name} ${p.last_name}`
+  if (p.first_name) return p.first_name
+  if (p.email) return p.email.split('@')[0]
+  return 'Member'
+}
+
+export function profileAvatar(p: Profile | null): string | null {
+  return p?.photo_url || p?.picture || null
+}
+
+export function profileInitials(p: Profile | null): string {
+  const name = profileDisplayName(p)
+  return name.split(' ').map((n) => n[0] || '').join('').slice(0, 2).toUpperCase()
+}
+
+// ─── Context type ─────────────────────────────────────────────────────────────
 
 interface AuthContextType {
-  user: AuthUser | null;
-  session: Session | null;
-  isAdmin: boolean;
-  isClient: boolean;
-  isLoggedIn: boolean;
-  isPaid: boolean;
-  isNavigator: boolean;
-  isAccelerator: boolean;
-  hasStrategicEdge: boolean;
-  pathwayStage: PathwayStage;
-  loading: boolean;
-  loginAdmin: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginClient: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  registerClient: (email: string, password: string, firstName: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
-  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
+  // Core auth
+  session: Session | null
+  user: User | null
+  profile: Profile | null
+  loading: boolean
+  // Tier flags
+  isAccelerator: boolean
+  isNavigator: boolean
+  isPaid: boolean
+  hasStrategicEdge: boolean
+  // Pathway
+  pathwayStage: PathwayStage
+  // Auth methods
+  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>
+  signInWithGoogle: () => Promise<void>
+  signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null)
 
-function getRole(email: string): UserRole {
-  return email.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "admin" : "client";
-}
-
-function capitalize(str: string): string {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// ── Phase 1: Build user instantly from session — no network call ──────────────
-function buildBasicUser(supabaseUser: User): AuthUser {
-  const email = supabaseUser.email || "";
-  const meta = supabaseUser.user_metadata || {};
-  const role = getRole(email);
-
-  const fullName = meta.full_name || meta.name || "";
-  const storedFirst =
-    meta.given_name ||
-    meta.first_name ||
-    (fullName ? fullName.split(" ")[0] : "");
-  const emailPrefix = email.split("@")[0] || "";
-  const firstName = storedFirst || capitalize(emailPrefix) || "";
-  const picture = meta.avatar_url || meta.picture || null;
-
-  const tier: UserTier = role === "admin" ? "accelerator" : "free";
-  const pathwayStage: PathwayStage = role === "admin" ? "deploy" : "discover";
-
-  return {
-    id: supabaseUser.id,
-    email,
-    role,
-    tier,
-    pathwayStage,
-    firstName: firstName || undefined,
-    fullName: fullName || undefined,
-    picture: picture || undefined,
-  };
-}
-
-// ── Phase 2: Fetch real profile from Supabase — runs silently in background ───
-async function fetchProfileData(userId: string): Promise<{ tier: UserTier; pathwayStage: PathwayStage }> {
-  try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("tier, pathway_stage")
-      .eq("id", userId)
-      .single();
-
-    if (error || !data) return { tier: "free", pathwayStage: "discover" };
-
-    const tier: UserTier =
-      data.tier === "accelerator" ? "accelerator" :
-      data.tier === "navigator"   ? "navigator"   :
-      data.tier === "paid"        ? "paid"         :
-      "free";
-
-    const pathwayStage: PathwayStage =
-      data.pathway_stage === "deploy"   ? "deploy"   :
-      data.pathway_stage === "diagnose" ? "diagnose" :
-      "discover";
-
-    return { tier, pathwayStage };
-  } catch {
-    return { tier: "free", pathwayStage: "discover" };
-  }
-}
+// ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null)
+  const [user,    setUser]    = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    if (!error && data) setProfile(data as Profile)
+  }
 
   useEffect(() => {
-    const safetyTimeout = setTimeout(() => {
-      setLoading(false);
-    }, 3000);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+      if (session?.user) fetchProfile(session.user.id)
+      setLoading(false)
+    })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      clearTimeout(safetyTimeout);
-
-      setSession(session);
-
-      if (session?.user) {
-        try {
-          const basicUser = buildBasicUser(session.user);
-          setUser(basicUser);
-          setLoading(false);
-
-          if (basicUser.role !== "admin") {
-            fetchProfileData(session.user.id).then(({ tier, pathwayStage }) => {
-              setUser((prev) => prev ? { ...prev, tier, pathwayStage } : null);
-            });
-          }
-        } catch {
-          setLoading(false);
-        }
-      } else {
-        setUser(null);
-        setLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setSession(session)
+        setUser(session?.user ?? null)
+        if (session?.user) await fetchProfile(session.user.id)
+        else setProfile(null)
+        setLoading(false)
       }
-    });
+    )
 
-    return () => {
-      clearTimeout(safetyTimeout);
-      subscription.unsubscribe();
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return () => subscription.unsubscribe()
+  }, [])
 
-  const loginAdmin = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { success: false, error: error.message };
-    if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      await supabase.auth.signOut();
-      return { success: false, error: "This login is for admin access only." };
-    }
-    return { success: true };
-  };
+  const signInWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return { error: error?.message ?? null }
+  }
 
-  const loginClient = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { success: false, error: "Incorrect email or password." };
-    return { success: true };
-  };
+  const signInWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/` },
+    })
+  }
 
-  const registerClient = async (email: string, password: string, firstName: string) => {
-    if (password.length < 8) return { success: false, error: "Password must be at least 8 characters." };
-    if (!/[0-9]/.test(password)) return { success: false, error: "Password must include at least one number." };
-    if (!/[^a-zA-Z0-9]/.test(password)) return { success: false, error: "Password must include at least one special character." };
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    setProfile(null)
+  }
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { first_name: firstName, tier: "free" },
-      },
-    });
+  const refreshProfile = async () => {
+    if (user) await fetchProfile(user.id)
+  }
 
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  };
+  // ── Derived tier flags ────────────────────────────────────────────────────
+  const isAccelerator    = profile?.tier === 'accelerator'
+  const isNavigator      = profile?.tier === 'navigator'
+  const isPaid           = isNavigator || isAccelerator
+  const hasStrategicEdge = isNavigator || isAccelerator
 
-  const loginWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  };
-
-  const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    window.location.href = "/login";
-  };
-
-  const tier = user?.tier;
-  const isPaid           = tier === "paid" || tier === "navigator" || tier === "accelerator";
-  const isNavigator      = tier === "navigator";
-  const isAccelerator    = tier === "accelerator";
-  const hasStrategicEdge = isNavigator || isAccelerator;
+  // ── Derived pathway stage ─────────────────────────────────────────────────
+  const pathwayStage: PathwayStage =
+    profile?.pathway_stage === 'deploy'   ? 'deploy'   :
+    profile?.pathway_stage === 'diagnose' ? 'diagnose' :
+    'discover'
 
   return (
     <AuthContext.Provider value={{
-      user,
-      session,
-      isAdmin: user?.role === "admin",
-      isClient: user?.role === "client",
-      isLoggedIn: !!user,
-      isPaid,
-      isNavigator,
-      isAccelerator,
-      hasStrategicEdge,
-      pathwayStage: user?.pathwayStage ?? "discover",
-      loading,
-      loginAdmin,
-      loginClient,
-      registerClient,
-      loginWithGoogle,
-      resetPassword,
-      logout,
+      session, user, profile, loading,
+      isAccelerator, isNavigator, isPaid, hasStrategicEdge,
+      pathwayStage,
+      signInWithEmail, signInWithGoogle, signOut, refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>
-  );
+  )
 }
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
-}
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
+export function useAuth(): AuthContextType {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>')
+  return ctx
+}
