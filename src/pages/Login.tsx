@@ -117,7 +117,7 @@ export default function Login() {
             position: 'absolute', top: 0, left: 0,
             height: '100%', width: '35%',
             background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.6) 25%, #D4AF37 50%, #F5D878 55%, #D4AF37 65%, rgba(212,175,55,0.6) 80%, transparent 100%)',
-            animation: 'goldRead 4s ease-in-out infinite',
+            animation: 'goldRead 0.5s ease-in-out infinite',
           }} />
         </div>
 
