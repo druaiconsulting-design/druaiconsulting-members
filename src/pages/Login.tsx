@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabaseClient'
 import { navigate } from '../lib/router'
 
 type LoadingState = 'google' | 'email' | 'passkey' | 'reset' | null
