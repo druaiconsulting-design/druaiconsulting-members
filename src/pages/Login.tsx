@@ -1,372 +1,424 @@
-import { useState, FormEvent } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useState } from 'react'
+import { supabase } from '../lib/supabase'
+import { navigate } from '../lib/router'
 
-// ─── Google "G" icon SVG ──────────────────────────────────────────────────────
-
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-      <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-    </svg>
-  )
-}
-
-// ─── Input component ──────────────────────────────────────────────────────────
-
-function Field({
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  autoComplete,
-}: {
-  label: string
-  type: string
-  value: string
-  onChange: (v: string) => void
-  placeholder?: string
-  autoComplete?: string
-}) {
-  const [focused, setFocused] = useState(false)
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label style={{
-        fontFamily: 'Montserrat, sans-serif',
-        fontSize: 11,
-        fontWeight: 600,
-        color: 'rgba(212,175,55,0.8)',
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
-      }}>
-        {label}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          background: 'rgba(255,255,255,0.05)',
-          border: `1px solid ${focused ? 'rgba(212,175,55,0.6)' : 'rgba(255,255,255,0.12)'}`,
-          borderRadius: 8,
-          padding: '11px 14px',
-          color: '#EDE8DB',
-          fontFamily: 'Inter, sans-serif',
-          fontSize: 14,
-          transition: 'border-color 0.15s',
-          width: '100%',
-        }}
-      />
-    </div>
-  )
-}
-
-// ─── Main component ───────────────────────────────────────────────────────────
+type LoadingState = 'google' | 'email' | 'passkey' | 'reset' | null
 
 export default function Login() {
-  const { signInWithEmail, signInWithGoogle } = useAuth()
+  const [email,      setEmail]      = useState('')
+  const [password,   setPassword]   = useState('')
+  const [showPass,   setShowPass]   = useState(false)
+  const [loading,    setLoading]    = useState<LoadingState>(null)
+  const [error,      setError]      = useState<string | null>(null)
+  const [resetSent,  setResetSent]  = useState(false)
 
-  const [email,    setEmail]    = useState('')
-  const [password, setPassword] = useState('')
-  const [loading,  setLoading]  = useState(false)
-  const [error,    setError]    = useState<string | null>(null)
-  const [googleLoading, setGoogleLoading] = useState(false)
+  // ── Auth handlers ────────────────────────────────────────────
+  const handleGoogle = async () => {
+    setLoading('google')
+    setError(null)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/` },
+    })
+    if (error) { setError(error.message); setLoading(null) }
+  }
 
-  const handleEmailSignIn = async (e: FormEvent) => {
-    e.preventDefault()
-    if (!email || !password) {
+  const handleEmail = async () => {
+    if (!email.trim() || !password) {
       setError('Please enter your email and password.')
       return
     }
+    setLoading('email')
     setError(null)
-    setLoading(true)
-    const { error: err } = await signInWithEmail(email, password)
-    setLoading(false)
-    if (err) setError(err)
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    if (error) { setError(error.message); setLoading(null) }
+    else navigate('/')
   }
 
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true)
-    await signInWithGoogle()
-    // Supabase redirects away — spinner stays until redirect
+  const handlePasskey = async () => {
+    setLoading('passkey')
+    setError(null)
+    try {
+      const { error } = await (supabase.auth as any).signInWithPasskey()
+      if (error) { setError(error.message); setLoading(null) }
+    } catch {
+      setError('Passkey sign-in is not available on this device.')
+      setLoading(null)
+    }
   }
 
+  const handlePasswordReset = async () => {
+    if (!email.trim()) {
+      setError('Enter your email address above first, then click Password Reset.')
+      return
+    }
+    setLoading('reset')
+    setError(null)
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim())
+    if (error) {
+      setError(error.message)
+      setLoading(null)
+    } else {
+      setResetSent(true)
+      setLoading(null)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && loading === null) handleEmail()
+  }
+
+  const clearError = () => { if (error) setError(null) }
+
+  // ── Render ───────────────────────────────────────────────────
   return (
     <div style={{
       minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(160deg, #051528 0%, #0A2342 45%, #07192e 100%)',
-      padding: '24px 16px',
-      position: 'relative',
-      overflow: 'hidden',
+      background: 'radial-gradient(ellipse at 30% 20%, rgba(30,61,110,0.6) 0%, #0A2342 60%)',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      padding: '40px 16px',
     }}>
 
-      {/* Background decorative pattern */}
-      <div aria-hidden style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundImage: `
-          radial-gradient(circle at 20% 20%, rgba(212,175,55,0.04) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(212,175,55,0.03) 0%, transparent 50%)
-        `,
-        pointerEvents: 'none',
-      }} />
-      <div aria-hidden style={{
-        position: 'absolute',
-        top: -120,
-        right: -120,
-        width: 400,
-        height: 400,
-        borderRadius: '50%',
-        border: '1px solid rgba(212,175,55,0.06)',
-        pointerEvents: 'none',
-      }} />
-      <div aria-hidden style={{
-        position: 'absolute',
-        bottom: -80,
-        left: -80,
-        width: 280,
-        height: 280,
-        borderRadius: '50%',
-        border: '1px solid rgba(212,175,55,0.05)',
-        pointerEvents: 'none',
-      }} />
+      {/* Logo */}
+      <div style={{ marginBottom: 28, textAlign: 'center' }}>
+        <img
+          src="/dru-clear-logo.png"
+          alt="DRU CLEAR™"
+          style={{ height: 120, width: 'auto' }}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
+      </div>
 
-      {/* ── Card ── */}
-      <div
-        className="dru-page-enter"
-        style={{
-          width: '100%',
-          maxWidth: 420,
-          background: 'rgba(10,35,66,0.85)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(212,175,55,0.18)',
-          borderRadius: 16,
-          padding: '40px 36px',
-          position: 'relative',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
-        }}
-      >
-        {/* Gold top accent line */}
+      {/* Heading block */}
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <h1 style={{
+          fontFamily: 'Playfair Display, Georgia, serif',
+          fontSize: 'clamp(24px, 4.5vw, 34px)',
+          fontWeight: 700,
+          color: '#EDE8DB',
+          lineHeight: 1.25,
+          margin: '0 0 14px',
+          letterSpacing: '-0.01em',
+        }}>
+          Welcome — Transformation<br />Continues Here
+        </h1>
+
+        {/* Animated gold sweep underline */}
         <div style={{
-          position: 'absolute',
-          top: 0,
-          left: '10%',
-          right: '10%',
           height: 2,
-          background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
-          borderRadius: '0 0 2px 2px',
+          width: 200,
+          margin: '0 auto 14px',
+          borderRadius: 2,
+          background: 'linear-gradient(90deg, transparent 0%, #D4AF37 30%, #F5D878 50%, #D4AF37 70%, transparent 100%)',
+          backgroundSize: '300% 100%',
+          animation: 'goldSweep 2.6s ease-in-out infinite',
         }} />
 
-        {/* ── Brand header ── */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{
-            fontFamily: 'Cinzel, serif',
-            fontSize: 14,
-            fontWeight: 700,
-            color: '#D4AF37',
-            letterSpacing: '0.2em',
-            marginBottom: 10,
-          }}>
-            DRU AI CONSULTING™
-          </div>
+        {/* Tagline with magenta dots */}
+        <p style={{
+          fontFamily: 'Montserrat, sans-serif',
+          fontSize: 11, margin: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 8, flexWrap: 'wrap',
+        }}>
+          {['Innovation', 'Effectiveness', 'Integration', 'Performance'].map((word, i, arr) => (
+            <span key={word} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: '#8AA4C8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {word}
+              </span>
+              {i < arr.length - 1 && (
+                <span style={{ color: '#C2185B', fontSize: 16, lineHeight: 1, fontWeight: 700 }}>·</span>
+              )}
+            </span>
+          ))}
+        </p>
+      </div>
 
-          <div style={{
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 22,
-            fontWeight: 600,
-            color: '#EDE8DB',
-            marginBottom: 8,
-            lineHeight: 1.2,
-          }}>
-            Member Portal
-          </div>
+      {/* Form container */}
+      <div style={{ width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-          <div style={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontSize: 11,
-            color: 'rgba(138,164,200,0.7)',
-            letterSpacing: '0.08em',
-          }}>
-            AI Mastery · Leadership Clarity · Measurable Results
-          </div>
-        </div>
+        {/* Instruction */}
+        <p style={{
+          fontFamily: 'Playfair Display, Georgia, serif',
+          fontSize: 13, fontStyle: 'italic',
+          color: '#D4AF37', textAlign: 'center',
+          margin: '0 0 2px',
+        }}>
+          Use the same email address you used to take the assessment.
+        </p>
 
-        {/* ── Google Sign-In ── */}
+        {/* Google */}
         <button
-          onClick={handleGoogleSignIn}
-          disabled={googleLoading}
+          onClick={handleGoogle}
+          disabled={loading !== null}
           style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            padding: '11px 16px',
-            background: googleLoading ? 'rgba(255,255,255,0.04)' : '#fff',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: 8,
-            color: '#1a1a1a',
-            fontFamily: 'Montserrat, sans-serif',
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: googleLoading ? 'not-allowed' : 'pointer',
+            width: '100%', padding: '13px 16px',
+            background: '#ffffff', border: '1px solid #e2e2e2', borderRadius: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            fontFamily: 'Montserrat, sans-serif', fontSize: 14, fontWeight: 600, color: '#1a1a1a',
+            cursor: loading !== null ? 'not-allowed' : 'pointer',
+            opacity: loading !== null && loading !== 'google' ? 0.55 : 1,
             transition: 'all 0.15s',
-            marginBottom: 20,
-            opacity: googleLoading ? 0.6 : 1,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
           }}
         >
-          {googleLoading ? (
-            <div style={{
-              width: 18,
-              height: 18,
-              border: '2px solid rgba(0,0,0,0.15)',
-              borderTopColor: '#4285F4',
-              borderRadius: '50%',
-              animation: 'dru-spin 0.7s linear infinite',
+          {loading === 'google' ? (
+            <span className="login-spin" style={{
+              display: 'inline-block', width: 18, height: 18, borderRadius: '50%',
+              border: '2px solid #e0e0e0', borderTopColor: '#4285F4',
             }} />
           ) : (
-            <GoogleIcon />
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
           )}
-          <span>{googleLoading ? 'Redirecting…' : 'Continue with Google'}</span>
+          Continue with Google
         </button>
 
-        {/* ── Divider ── */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          marginBottom: 20,
-        }}>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
-          <span style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 11,
-            color: 'rgba(138,164,200,0.5)',
-            letterSpacing: '0.05em',
-          }}>
+        {/* Passkey */}
+        <button
+          onClick={handlePasskey}
+          disabled={loading !== null}
+          style={{
+            width: '100%', padding: '13px 16px',
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            fontFamily: 'Montserrat, sans-serif', fontSize: 14, fontWeight: 600, color: '#EDE8DB',
+            cursor: loading !== null ? 'not-allowed' : 'pointer',
+            opacity: loading !== null && loading !== 'passkey' ? 0.55 : 1,
+            transition: 'all 0.15s',
+          }}
+        >
+          {loading === 'passkey' ? (
+            <span className="login-spin" style={{
+              display: 'inline-block', width: 18, height: 18, borderRadius: '50%',
+              border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#D4AF37',
+            }} />
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="#D4AF37" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"
+              aria-hidden="true">
+              <path d="M12 10a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/>
+              <path d="M10.584 16H7l1-4h.01M3.5 12a8.5 8.5 0 1 0 17 0 8.5 8.5 0 0 0-17 0z"/>
+            </svg>
+          )}
+          Sign in with Passkey
+        </button>
+
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '2px 0' }}>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.09)' }} />
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#8AA4C8', whiteSpace: 'nowrap' }}>
             or sign in with email
           </span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.09)' }} />
         </div>
 
-        {/* ── Email/password form ── */}
-        <form onSubmit={handleEmailSignIn} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <Field
-            label="Email"
+        {/* Email */}
+        <div>
+          <label style={{
+            display: 'block', marginBottom: 6,
+            fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
+            color: '#D4AF37', letterSpacing: '0.1em', textTransform: 'uppercase',
+          }}>
+            Email
+          </label>
+          <input
             type="email"
             value={email}
-            onChange={setEmail}
+            onChange={(e) => { setEmail(e.target.value); clearError() }}
+            onKeyDown={handleKeyDown}
             placeholder="you@example.com"
+            disabled={loading !== null}
             autoComplete="email"
-          />
-          <Field
-            label="Password"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="••••••••"
-            autoComplete="current-password"
-          />
-
-          {/* Error message */}
-          {error && (
-            <div style={{
-              background: 'rgba(194,24,91,0.15)',
-              border: '1px solid rgba(194,24,91,0.4)',
-              borderRadius: 8,
-              padding: '10px 14px',
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 13,
-              color: '#e8759b',
-            }}>
-              {error}
-            </div>
-          )}
-
-          {/* Sign In button */}
-          <button
-            type="submit"
-            disabled={loading}
             style={{
-              width: '100%',
-              padding: '12px',
-              background: loading
-                ? 'rgba(212,175,55,0.4)'
-                : 'linear-gradient(135deg, #D4AF37 0%, #c9a62e 100%)',
-              border: 'none',
+              width: '100%', padding: '12px 14px',
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.11)',
               borderRadius: 8,
-              color: '#0A2342',
-              fontFamily: 'Montserrat, sans-serif',
-              fontSize: 14,
-              fontWeight: 700,
-              letterSpacing: '0.05em',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.15s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
+              fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#EDE8DB',
+              outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s',
             }}
-          >
-            {loading ? (
-              <>
-                <div style={{
-                  width: 16,
-                  height: 16,
-                  border: '2px solid rgba(10,35,66,0.3)',
-                  borderTopColor: '#0A2342',
-                  borderRadius: '50%',
-                  animation: 'dru-spin 0.7s linear infinite',
-                }} />
-                <span>Signing in…</span>
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </button>
-        </form>
+          />
+        </div>
 
-        {/* ── Not yet a member CTA ── */}
-        <div style={{
-          marginTop: 28,
-          paddingTop: 20,
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-          textAlign: 'center',
-        }}>
-          <p style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 12,
-            color: 'rgba(138,164,200,0.7)',
-            lineHeight: 1.6,
+        {/* Password */}
+        <div>
+          <label style={{
+            display: 'block', marginBottom: 6,
+            fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
+            color: '#D4AF37', letterSpacing: '0.1em', textTransform: 'uppercase',
           }}>
-            Not yet a member?{' '}
-            <a
-              href="https://assessment.druaiconsulting.com"
-              target="_blank"
-              rel="noopener noreferrer"
+            Password
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPass ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); clearError() }}
+              onKeyDown={handleKeyDown}
+              placeholder="••••••••"
+              disabled={loading !== null}
+              autoComplete="current-password"
               style={{
-                color: '#D4AF37',
-                fontWeight: 600,
-                textDecoration: 'underline',
-                textDecorationColor: 'rgba(212,175,55,0.4)',
-                textUnderlineOffset: 3,
+                width: '100%', padding: '12px 44px 12px 14px',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.11)',
+                borderRadius: 8,
+                fontFamily: 'Inter, sans-serif', fontSize: 14, color: '#EDE8DB',
+                outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s',
+              }}
+            />
+            <button
+              onClick={() => setShowPass((s) => !s)}
+              title={showPass ? 'Hide password' : 'Show password'}
+              style={{
+                position: 'absolute', right: 12,
+                top: '50%', transform: 'translateY(-50%)',
+                color: '#8AA4C8', padding: 4, lineHeight: 0,
               }}
             >
-              Take the DRU CLEAR™ Assessment
-            </a>
-          </p>
+              {showPass ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Error */}
+        {error && (
+          <div style={{
+            padding: '10px 14px', borderRadius: 8,
+            background: 'rgba(194,24,91,0.1)', border: '1px solid rgba(194,24,91,0.28)',
+            fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#e57399', lineHeight: 1.4,
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Sign In */}
+        <button
+          onClick={handleEmail}
+          disabled={loading !== null}
+          style={{
+            width: '100%', padding: '13px 16px',
+            background: 'linear-gradient(135deg, #D4AF37 0%, #B8960C 100%)',
+            border: 'none', borderRadius: 10,
+            fontFamily: 'Montserrat, sans-serif', fontSize: 14, fontWeight: 700,
+            color: '#0A2342', letterSpacing: '0.06em',
+            cursor: loading !== null ? 'not-allowed' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            opacity: loading !== null && loading !== 'email' ? 0.55 : 1,
+            marginTop: 4,
+            boxShadow: '0 2px 12px rgba(212,175,55,0.25)',
+            transition: 'all 0.15s',
+          }}
+        >
+          {loading === 'email' ? (
+            <span className="login-spin" style={{
+              display: 'inline-block', width: 18, height: 18, borderRadius: '50%',
+              border: '2px solid rgba(10,35,66,0.25)', borderTopColor: '#0A2342',
+            }} />
+          ) : 'Sign In'}
+        </button>
+
+        {/* Password Reset */}
+        <div style={{ textAlign: 'center', paddingTop: 4 }}>
+          {resetSent ? (
+            <span style={{
+              fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#D4AF37',
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Check your inbox — a reset link is on its way.
+            </span>
+          ) : (
+            <button
+              onClick={handlePasswordReset}
+              disabled={loading !== null}
+              style={{
+                fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#8AA4C8',
+                textDecoration: 'underline', textDecorationColor: 'rgba(138,164,200,0.4)',
+                cursor: loading !== null ? 'not-allowed' : 'pointer',
+                opacity: loading !== null && loading !== 'reset' ? 0.4 : 1,
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                transition: 'all 0.15s',
+              }}
+            >
+              {loading === 'reset' ? (
+                <>
+                  <span className="login-spin" style={{
+                    display: 'inline-block', width: 12, height: 12, borderRadius: '50%',
+                    border: '1.5px solid rgba(138,164,200,0.3)', borderTopColor: '#8AA4C8',
+                  }} />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                    aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  Password Reset
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
       </div>
+
+      {/* Copyright */}
+      <div style={{
+        marginTop: 32,
+        fontFamily: 'Inter, sans-serif', fontSize: 11,
+        color: 'rgba(138,164,200,0.4)', textAlign: 'center',
+      }}>
+        © 2026 DRU CLEAR™ · All Rights Reserved · DRU AI Consulting
+      </div>
+
+      <style>{`
+        @keyframes goldSweep {
+          0%   { background-position: 150% 0; }
+          50%  { background-position: -50% 0; }
+          100% { background-position: 150% 0; }
+        }
+        .login-spin {
+          animation: loginSpin 0.75s linear infinite;
+        }
+        @keyframes loginSpin {
+          to { transform: rotate(360deg); }
+        }
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder,
+        input[type="text"]::placeholder {
+          color: rgba(138,164,200,0.45);
+        }
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+          border-color: rgba(212,175,55,0.45) !important;
+          background: rgba(255,255,255,0.09) !important;
+        }
+      `}</style>
     </div>
   )
 }
