@@ -90,7 +90,7 @@ export default function CommunityJoin() {
           <div style={{ padding: '2.5rem 1.5rem', maxWidth: 720, margin: '0 auto' }}>
             <p style={{
               fontFamily: "'Montserrat', sans-serif",
-              color: '#D4AF37', fontSize: '0.68rem', fontWeight: 700,
+              color: '#0A2342', fontSize: '0.68rem', fontWeight: 700,
               letterSpacing: '0.14em', textTransform: 'uppercase',
               textAlign: 'center', marginBottom: '1.5rem',
             }}>
@@ -289,7 +289,7 @@ export default function CommunityJoin() {
             }}>
               <p style={{
                 fontFamily: "'Playfair Display', serif",
-                color: '#0A2342', fontSize: '1.05rem',
+                color: '#D4AF37', fontSize: '1.05rem',
                 fontStyle: 'italic', opacity: 0.55, marginBottom: '0.75rem',
               }}>
                 1 is too small of a number.
