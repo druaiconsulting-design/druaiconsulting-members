@@ -7,7 +7,7 @@ import Daily from './pages/Daily'
 import Community from './pages/community'
 import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
-import Leaderboard from './pages/Leaderboard'
+import Leaderboard from './pages/community-engagement/Leaderboard'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
