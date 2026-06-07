@@ -7,6 +7,7 @@ import Daily from './pages/Daily'
 import Community from './pages/community'
 import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
+import Leaderboard from './pages/Leaderboard'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -134,7 +135,7 @@ export default function App() {
 
     // Leaderboard
     if (path === '/leaderboard')
-      return <ComingSoon title="Leaderboard" />
+      return <Leaderboard />
 
     // Resources
     if (path.startsWith('/resources'))
