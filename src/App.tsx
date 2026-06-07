@@ -8,6 +8,8 @@ import Community from './pages/community'
 import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
 import Leaderboard from './pages/community-engagement/Leaderboard'
+import Announcements from './pages/community/Announcements'
+import AcceleratorCircle from './pages/community/AcceleratorCircle'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -106,6 +108,13 @@ export default function App() {
   const renderPage = () => {
     // Home / Dashboard
     if (path === '/' || path === '/home') return <Portal />
+
+    // Community sub-pages — must come BEFORE the /community catch-all
+    if (path === '/community/announcements')
+      return <Announcements />
+
+    if (path === '/community/accelerator')
+      return <AcceleratorCircle />
 
     // Community feed
     if (path === '/feed' || path.startsWith('/community')) return <Community />
