@@ -79,6 +79,7 @@ export default function MemberLayout({ children, currentPath }: MemberLayoutProp
 
         {/* ── Main content area ── */}
         <main
+          id="dru-main-scroll"
           style={{
             position: 'absolute',
             top: 0,
