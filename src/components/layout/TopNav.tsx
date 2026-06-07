@@ -304,29 +304,33 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         }
         .dru-members-nav-link:hover { color: #D4AF37; }
 
-        /* ── Mobile pill tab style (transparent bar — dark text on light page bg) ── */
+        /* ── Mobile pill tab style — Circle-style active pill ── */
         .dru-pill-tab {
-          padding: 6px 14px;
-          border-radius: 20px;
+          padding: 7px 16px;
+          border-radius: 999px;
           font-family: 'Montserrat', sans-serif;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 500;
           color: #3A5070;
           background: transparent;
-          border: 1px solid transparent;
+          border: 1.5px solid rgba(10,35,66,0.2);
           cursor: pointer;
-          transition: all 0.15s;
+          transition: all 0.18s;
           white-space: nowrap;
           flex-shrink: 0;
           scroll-snap-align: start;
         }
         .dru-pill-tab.active {
           font-weight: 700;
-          color: #0A2342;
-          background: rgba(212,175,55,0.18);
-          border-color: rgba(212,175,55,0.5);
+          color: #FAFAF8;
+          background: #0A2342;
+          border-color: #0A2342;
         }
-        .dru-pill-tab:hover { color: #0A2342; }
+        .dru-pill-tab:hover:not(.active) {
+          background: rgba(10,35,66,0.07);
+          border-color: rgba(10,35,66,0.35);
+          color: #0A2342;
+        }
 
         /* ── Bottom tab bar ── */
         .dru-bottom-bar {
