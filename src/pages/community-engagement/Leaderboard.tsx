@@ -1,245 +1,399 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../community/types';
-import type { Tier } from '../community/types';
-import LevelBadge from './LevelBadge';
-import MemberAvatar from '../community/MemberAvatar';
-import MemberProfile from './MemberProfile';
+import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { navigate } from '../lib/router'
+import { supabase } from '../lib/supabaseClient'
+import LevelBadge from './community-engagement/LevelBadge'
+import MemberAvatar from './community/MemberAvatar'
+import MemberProfile from './community-engagement/MemberProfile'
 
-// ── Gap signal ────────────────────────────────────────────────────────────────
-const LEVEL_RANK: Record<string, number>   = { Connected: 1, Contributor: 2, Cultivator: 3, Cornerstone: 4, Changemaker: 5 };
-const PATHWAY_RANK: Record<string, number> = { Discover: 1, Diagnose: 2, Design: 3, Deploy: 4, Dominate: 5 };
-
-interface GapSignal { label: string; bg: string; color: string; }
-function getGapSignal(level: string, stage: string): GapSignal | null {
-  const l = LEVEL_RANK[level] ?? 0;
-  const p = PATHWAY_RANK[stage] ?? 0;
-  if (!l || !p) return null;
-  if (l > p)   return { label: 'Hot Lead',       bg: '#FBEAF0', color: '#72243E' };
-  if (l === p) return { label: 'Aligned',        bg: '#EAF3DE', color: '#27500A' };
-  return         { label: 'Retention Risk', bg: '#FAEEDA', color: '#633806' };
-}
+// ── Level thresholds — must match compute_community_level() in Supabase ───────
+const LEVELS = [
+  { name: 'Connected',   min: 0    },
+  { name: 'Contributor', min: 50   },
+  { name: 'Cultivator',  min: 150  },
+  { name: 'Cornerstone', min: 400  },
+  { name: 'Changemaker', min: 1000 },
+] as const
 
 interface LeaderboardRow {
-  id:              string;
-  full_name:       string;
-  photo_url:       string | null;
-  community_level: string;
-  pathway_stage:   string;
-  clarity_points:  number;
-  tier:            string;
-  all_time_rank:   number;
-  weekly_points:   number;
-  weekly_rank:     number;
+  id:              string
+  full_name:       string
+  photo_url:       string | null
+  community_level: string
+  pathway_stage:   string
+  clarity_points:  number
+  tier:            string
+  all_time_rank:   number
+  weekly_points:   number
+  weekly_rank:     number
+}
+
+// =============================================================================
+// HOW DO POINTS WORK — modal
+// =============================================================================
+function HowPointsWorkModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(10,35,66,0.5)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ background: '#FFFFFF', borderRadius: '16px', width: '100%', maxWidth: '480px', maxHeight: '88vh', overflowY: 'auto', padding: '32px', position: 'relative', boxShadow: '0 24px 64px rgba(10,35,66,0.2)' }}
+      >
+        {/* Close */}
+        <button
+          onClick={onClose}
+          style={{ position: 'absolute', top: '20px', right: '20px', background: '#F1EFE8', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', color: 'rgba(10,35,66,0.45)', lineHeight: 1 }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#E8E4DF'; (e.currentTarget as HTMLButtonElement).style.color = '#0A2342'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F1EFE8'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.45)'; }}
+        >×</button>
+
+        {/* Title */}
+        <div style={{ fontFamily: "'Cinzel', serif", fontSize: '20px', fontWeight: '700', color: '#0A2342', marginBottom: '24px', paddingRight: '40px' }}>
+          How do points work?
+        </div>
+
+        {/* Earn points section */}
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', textTransform: 'uppercase' as const, marginBottom: '12px' }}>
+            Earn Clarity Points™
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {[
+              { action: 'Create a post',          pts: '+5 pts', desc: 'Share a win, question, resource, or challenge with the community.' },
+              { action: 'Write a comment',         pts: '+2 pts', desc: 'Engage and respond to posts in the feed.' },
+              { action: 'Receive a heart',         pts: '+1 pt',  desc: 'Every heart your post or comment receives earns you a point.' },
+            ].map(item => (
+              <div key={item.action} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', background: '#FAFAF8', border: '1px solid #E8E4DF', borderRadius: '8px', padding: '12px 14px' }}>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: '#B8941F', background: '#FFFBEE', padding: '2px 8px', borderRadius: '4px', flexShrink: 0, marginTop: '1px' }}>{item.pts}</span>
+                <div>
+                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: '#0A2342', marginBottom: '2px' }}>{item.action}</div>
+                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.5)', lineHeight: '1.5' }}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent)', marginBottom: '24px' }} />
+
+        {/* Levels section */}
+        <div>
+          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', textTransform: 'uppercase' as const, marginBottom: '8px' }}>
+            Community Levels
+          </div>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.55)', lineHeight: '1.6', marginBottom: '14px' }}>
+            As you earn Clarity Points™ you advance through community levels. Your level badge is displayed on every post and on the leaderboard.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {LEVELS.map((level, i) => {
+              const colors: Record<string, { bg: string; color: string }> = {
+                Connected:   { bg: '#F1EFE8', color: '#5F5E5A' },
+                Contributor: { bg: '#E6F1FB', color: '#185FA5' },
+                Cultivator:  { bg: '#EAF3DE', color: '#27500A' },
+                Cornerstone: { bg: '#FAEEDA', color: '#633806' },
+                Changemaker: { bg: '#0A2342', color: '#D4AF37' },
+              }
+              const s = colors[level.name]
+              return (
+                <div key={level.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', padding: '10px 12px', border: '1px solid #E8E4DF', borderRadius: '8px', background: '#FAFAF8' }}>
+                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '4px', background: s.bg, color: s.color }}>{level.name}</span>
+                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.4)', fontWeight: '600' }}>
+                    {level.min === 0 ? '0 pts' : `${level.min.toLocaleString()} pts`}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // =============================================================================
 // LEADERBOARD
 // =============================================================================
-export default function Leaderboard({
-  userId,
-  isAdmin,
-  tier,
-  onBack,
-}: {
-  userId:  string;
-  isAdmin: boolean;
-  tier:    Tier;
-  onBack:  () => void;
-}) {
-  const [view,             setView]             = useState<'weekly' | 'alltime'>('weekly');
-  const [rows,             setRows]             = useState<LeaderboardRow[]>([]);
-  const [myRow,            setMyRow]            = useState<LeaderboardRow | null>(null);
-  const [loading,          setLoading]          = useState(true);
-  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+export default function Leaderboard() {
+  const { profile } = useAuth()
+  const userId = profile?.id ?? ''
+
+  const [view,             setView]             = useState<'weekly' | 'alltime'>('weekly')
+  const [rows,             setRows]             = useState<LeaderboardRow[]>([])
+  const [myData,           setMyData]           = useState<LeaderboardRow | null>(null)
+  const [myRowBelowTop10,  setMyRowBelowTop10]  = useState<LeaderboardRow | null>(null)
+  const [loading,          setLoading]          = useState(true)
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
+  const [showHowPoints,    setShowHowPoints]    = useState(false)
 
   useEffect(() => {
+    if (!userId) return
     const load = async () => {
-      setLoading(true);
-      const { data } = await supabase.from('community_leaderboard').select('*');
-      if (!data) { setLoading(false); return; }
-      const all = data as LeaderboardRow[];
+      setLoading(true)
+      const { data } = await supabase.from('community_leaderboard').select('*')
+      if (!data) { setLoading(false); return }
+      const all = data as LeaderboardRow[]
       const sorted = view === 'weekly'
         ? [...all].sort((a, b) => a.weekly_rank - b.weekly_rank)
-        : [...all].sort((a, b) => a.all_time_rank - b.all_time_rank);
-      setRows(sorted.slice(0, 10));
-      const me = all.find(r => r.id === userId);
+        : [...all].sort((a, b) => a.all_time_rank - b.all_time_rank)
+      setRows(sorted.slice(0, 10))
+      const me = all.find(r => r.id === userId)
+      setMyData(me ?? null)
       if (me) {
-        const r = view === 'weekly' ? me.weekly_rank : me.all_time_rank;
-        setMyRow(r > 10 ? me : null);
-      } else { setMyRow(null); }
-      setLoading(false);
-    };
-    load();
-  }, [view, userId]);
+        const rank = view === 'weekly' ? me.weekly_rank : me.all_time_rank
+        setMyRowBelowTop10(rank > 10 ? me : null)
+      } else {
+        setMyRowBelowTop10(null)
+      }
+      setLoading(false)
+    }
+    load()
+  }, [view, userId])
 
-  const getRowRank = (r: LeaderboardRow) => view === 'weekly' ? r.weekly_rank  : r.all_time_rank;
-  const getRowPts  = (r: LeaderboardRow) => view === 'weekly' ? r.weekly_points : r.clarity_points;
-  const medal      = (n: number) => n === 1 ? '🥇' : n === 2 ? '🥈' : n === 3 ? '🥉' : null;
-  const colTemplate = isAdmin ? '40px 1fr 110px 120px' : '40px 1fr 120px';
+  // ── Personal stats helpers ────────────────────────────────────────────────
+  const communityLevel  = myData?.community_level ?? 'Connected'
+  const clarityPts      = myData?.clarity_points  ?? 0
+  const safeIdx         = Math.max(0, LEVELS.findIndex(l => l.name === communityLevel))
+  const currentLevel    = LEVELS[safeIdx]
+  const nextLevel       = LEVELS[safeIdx + 1] ?? null
+  const pointsToNext    = nextLevel ? Math.max(0, nextLevel.min - clarityPts) : 0
+  const progressPct     = nextLevel
+    ? Math.min(100, ((clarityPts - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)
+    : 100
+
+  // ── Row helpers ───────────────────────────────────────────────────────────
+  const getRowRank = (r: LeaderboardRow) => view === 'weekly' ? r.weekly_rank  : r.all_time_rank
+  const getRowPts  = (r: LeaderboardRow) => view === 'weekly' ? r.weekly_points : r.clarity_points
+  const medal      = (n: number) => n === 1 ? '🥇' : n === 2 ? '🥈' : n === 3 ? '🥉' : null
 
   const renderRow = (row: LeaderboardRow, isMe: boolean) => {
-    const r   = getRowRank(row);
-    const p   = getRowPts(row);
-    const gap = isAdmin ? getGapSignal(row.community_level, row.pathway_stage) : null;
+    const rank = getRowRank(row)
+    const pts  = getRowPts(row)
     return (
       <div
         key={row.id}
-        style={{ display: 'grid', gridTemplateColumns: colTemplate, alignItems: 'center', gap: '12px', padding: '14px 20px', background: isMe ? '#FFFBEE' : '#FFFFFF', borderBottom: '1px solid #F0EDE8', borderLeft: isMe ? '3px solid #D4AF37' : '3px solid transparent', transition: 'background 0.15s ease' }}
-        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFF8E1' : '#FAFAF8'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFFBEE' : '#FFFFFF'; }}
+        style={{ display: 'grid', gridTemplateColumns: '40px 1fr 120px', alignItems: 'center', gap: '12px', padding: '14px 20px', background: isMe ? '#FFFBEE' : '#FFFFFF', borderBottom: '1px solid #F0EDE8', borderLeft: isMe ? '3px solid #D4AF37' : '3px solid transparent', transition: 'background 0.15s ease' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFF8E1' : '#FAFAF8' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFFBEE' : '#FFFFFF' }}
       >
-        {/* Rank */}
-        <div style={{ textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontWeight: '700', fontSize: r <= 3 ? '18px' : '13px', color: 'rgba(10,35,66,0.3)' }}>
-          {medal(r) ?? r}
+        <div style={{ textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontWeight: '700', fontSize: rank <= 3 ? '18px' : '13px', color: 'rgba(10,35,66,0.3)' }}>
+          {medal(rank) ?? rank}
         </div>
-
-        {/* Avatar + Name */}
         <button
           onClick={() => setSelectedMemberId(row.id)}
           style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
         >
-          <MemberAvatar firstName={row.full_name} photoUrl={row.photo_url ?? undefined} size={34} />
+          <MemberAvatar firstName={row.full_name.split(' ')[0] || row.full_name} photoUrl={row.photo_url ?? undefined} size={34} />
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: '600', color: '#0A2342', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '140px', transition: 'color 0.15s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLSpanElement).style.color = '#B8941F'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLSpanElement).style.color = '#0A2342'; }}
-              >
+              <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: '600', color: '#0A2342', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>
                 {row.full_name}{isMe ? ' (you)' : ''}
               </span>
               <LevelBadge level={row.community_level} />
             </div>
-            {isAdmin && (
-              <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)', marginTop: '2px' }}>
-                {row.pathway_stage ?? '—'}
-              </div>
-            )}
           </div>
         </button>
-
-        {/* Points */}
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: '700', color: '#0A2342' }}>{p?.toLocaleString() ?? '—'}</div>
+          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: '700', color: '#0A2342' }}>{pts?.toLocaleString() ?? '—'}</div>
           <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)' }}>
             {view === 'weekly' ? 'this week' : 'Clarity Points™'}
           </div>
         </div>
-
-        {/* Gap signal — admin only */}
-        {isAdmin && (
-          <div>
-            {gap && (
-              <span style={{ display: 'inline-block', fontSize: '10px', fontWeight: '700', fontFamily: "'Montserrat', sans-serif", padding: '3px 8px', borderRadius: '4px', background: gap.bg, color: gap.color, letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
-                {gap.label}
-              </span>
-            )}
-          </div>
-        )}
       </div>
-    );
-  };
+    )
+  }
 
   return (
-    <div style={{ minHeight: '100%', background: '#FAFAF8', display: 'flex', flexDirection: 'column' }}>
-      <main style={{ flex: 1, padding: '40px 24px 80px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+    <div style={{ minHeight: '60vh', padding: '40px 24px 80px' }}>
+      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
-          <button
-            onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); onBack(); }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.45)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.5px', marginBottom: '20px', padding: 0, transition: 'color 0.15s ease' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.45)'; }}
-          >← Community Feed</button>
+        {/* Back */}
+        <button
+          onClick={() => navigate('/feed')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.45)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.5px', marginBottom: '20px', padding: 0, transition: 'color 0.15s ease' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.45)' }}
+        >← Community Feed</button>
 
-          <div style={{ marginBottom: '28px', animation: 'ccFadeIn 0.5s ease both' }}>
-            <div style={{ color: '#B8941F', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '3px', fontWeight: '600', marginBottom: '8px' }}>DRU AI LEADERSHIP ECOSYSTEM™</div>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <h1 style={{ fontFamily: "'Cinzel', serif", color: '#0A2342', fontSize: 'clamp(22px, 4vw, 30px)', fontWeight: '700', letterSpacing: '0.5px', lineHeight: '1.2' }}>Clarity Points™ Leaderboard</h1>
-                <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', marginTop: '8px' }}>Earn points by posting, commenting, and engaging with the community.</p>
+        {/* Header */}
+        <div style={{ marginBottom: '28px' }}>
+          <div style={{ color: '#B8941F', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '3px', fontWeight: '600', marginBottom: '8px' }}>
+            DRU AI LEADERSHIP ECOSYSTEM™
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h1 style={{ fontFamily: "'Cinzel', serif", color: '#0A2342', fontSize: 'clamp(22px, 4vw, 30px)', fontWeight: '700', letterSpacing: '0.5px', lineHeight: '1.2', margin: 0 }}>
+                Clarity Points™ Leaderboard
+              </h1>
+              <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', marginTop: '8px', marginBottom: 0 }}>
+                Earn points by posting, commenting, and engaging with the community.
+              </p>
+            </div>
+            <div style={{ display: 'flex', background: '#F1EFE8', borderRadius: '8px', padding: '3px', gap: '2px', alignSelf: 'flex-start', flexShrink: 0 }}>
+              {(['weekly', 'alltime'] as const).map(v => (
+                <button key={v} onClick={() => setView(v)} style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', letterSpacing: '0.3px', background: view === v ? '#FFFFFF' : 'transparent', color: view === v ? '#0A2342' : 'rgba(10,35,66,0.4)', boxShadow: view === v ? '0 1px 3px rgba(10,35,66,0.1)' : 'none', transition: 'all 0.15s ease' }}>
+                  {v === 'weekly' ? 'This Week' : 'All-Time'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent)', marginBottom: '28px' }} />
+
+        {/* ── Personal stats card ─────────────────────────────────────────── */}
+        {myData && (
+          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '14px', padding: '24px', marginBottom: '20px', boxShadow: '0 1px 4px rgba(10,35,66,0.06)' }}>
+
+            {/* Top row */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <MemberAvatar firstName={myData.full_name.split(' ')[0] || myData.full_name} photoUrl={myData.photo_url ?? undefined} size={52} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '15px', fontWeight: '700', color: '#0A2342', marginBottom: '3px' }}>
+                  {myData.full_name}
+                </div>
+                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.5)' }}>
+                  {clarityPts.toLocaleString()} Clarity Points™
+                </div>
               </div>
-              <div style={{ display: 'flex', background: '#F1EFE8', borderRadius: '8px', padding: '3px', gap: '2px', alignSelf: 'flex-start', flexShrink: 0 }}>
-                {(['weekly', 'alltime'] as const).map(v => (
-                  <button key={v} onClick={() => setView(v)}
-                    style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', letterSpacing: '0.3px', background: view === v ? '#FFFFFF' : 'transparent', color: view === v ? '#0A2342' : 'rgba(10,35,66,0.4)', boxShadow: view === v ? '0 1px 3px rgba(10,35,66,0.1)' : 'none', transition: 'all 0.15s ease' }}>
-                    {v === 'weekly' ? 'This Week' : 'All-Time'}
-                  </button>
-                ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                <span style={{ fontSize: '22px' }}>🏆</span>
+                <div>
+                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: '700', color: '#0A2342' }}>
+                    {communityLevel}
+                  </div>
+                  {nextLevel ? (
+                    <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.45)' }}>
+                      {pointsToNext} pts to {nextLevel.name}
+                    </div>
+                  ) : (
+                    <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: '#B8941F', fontWeight: '700' }}>
+                      Max Level ✦
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            {nextLevel && (
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ height: '6px', background: '#F1EFE8', borderRadius: '999px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${progressPct}%`, background: 'linear-gradient(90deg, #D4AF37, #B8941F)', borderRadius: '999px', transition: 'width 0.6s ease' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', fontFamily: "'Montserrat', sans-serif", fontSize: '9px', color: 'rgba(10,35,66,0.35)', fontWeight: '600' }}>
+                  <span>{currentLevel.name} · {currentLevel.min} pts</span>
+                  <span>{nextLevel.name} · {nextLevel.min} pts</span>
+                </div>
+              </div>
+            )}
+
+            {/* Level progression track */}
+            <div style={{ overflowX: 'auto', paddingBottom: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 'max-content' }}>
+                {LEVELS.map((level, i) => {
+                  const isUnlocked = safeIdx >= i
+                  const isCurrent  = level.name === communityLevel
+                  return (
+                    <div key={level.name} style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: isCurrent ? '#0A2342' : isUnlocked ? '#D4AF37' : '#F1EFE8', border: `2px solid ${isCurrent ? '#0A2342' : isUnlocked ? '#D4AF37' : '#E0DDD7'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {!isUnlocked
+                            ? <span style={{ color: 'rgba(10,35,66,0.2)', fontSize: '12px' }}>🔒</span>
+                            : isCurrent
+                              ? <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#D4AF37', display: 'block' }} />
+                              : <span style={{ color: '#fff', fontSize: '11px', fontWeight: '700' }}>✓</span>
+                          }
+                        </div>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: isCurrent ? '700' : '500', color: isCurrent ? '#0A2342' : isUnlocked ? '#B8941F' : 'rgba(10,35,66,0.3)', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                          {level.name}
+                        </span>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '8px', color: 'rgba(10,35,66,0.3)', whiteSpace: 'nowrap' }}>
+                          {level.min === 0 ? '0 pts' : `${level.min} pts`}
+                        </span>
+                      </div>
+                      {i < LEVELS.length - 1 && (
+                        <div style={{ width: '32px', height: '2px', background: isUnlocked && !isCurrent ? '#D4AF37' : isUnlocked ? 'rgba(212,175,55,0.4)' : '#E0DDD7', margin: '13px 0 0', flexShrink: 0 }} />
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
+        )}
 
-          <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent)', marginBottom: '28px' }} />
+        {/* ── Leaderboard table ────────────────────────────────────────────── */}
+        <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(10,35,66,0.06)', marginBottom: '16px' }}>
 
-          {isAdmin && (
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', padding: '12px 16px', background: '#FAFAF8', border: '1px solid #E8E4DF', borderRadius: '8px' }}>
-              {[
-                { label: 'Hot Lead',       bg: '#FBEAF0', color: '#72243E', tip: 'Engagement ahead of pathway — ready to buy' },
-                { label: 'Aligned',        bg: '#EAF3DE', color: '#27500A', tip: 'Getting full value at their stage'            },
-                { label: 'Retention Risk', bg: '#FAEEDA', color: '#633806', tip: 'Pathway ahead of engagement — re-engage'      },
-              ].map(s => (
-                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ display: 'inline-block', fontSize: '10px', fontWeight: '700', fontFamily: "'Montserrat', sans-serif", padding: '2px 8px', borderRadius: '4px', background: s.bg, color: s.color }}>{s.label}</span>
-                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.4)' }}>{s.tip}</span>
+          {/* Table header + How do points work */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: '#FAFAF8', borderBottom: '1px solid #E8E4DF' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 120px', gap: '12px', flex: 1 }}>
+              {['#', 'MEMBER', 'POINTS'].map((h, i) => (
+                <div key={h} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '600', color: 'rgba(10,35,66,0.35)', letterSpacing: '0.5px', textAlign: i === 2 ? 'right' : 'left' }}>
+                  {h}
                 </div>
               ))}
             </div>
-          )}
+            <button
+              onClick={() => setShowHowPoints(true)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.3px', whiteSpace: 'nowrap', padding: '0 0 0 16px', transition: 'color 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.4)' }}
+            >
+              How do points work?
+            </button>
+          </div>
 
-          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(10,35,66,0.06)', marginBottom: '20px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: colTemplate, gap: '12px', padding: '10px 20px', background: '#FAFAF8', borderBottom: '1px solid #E8E4DF' }}>
-              {['#', 'MEMBER', 'POINTS', ...(isAdmin ? ['SIGNAL'] : [])].map((h, i) => (
-                <div key={h} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '600', color: 'rgba(10,35,66,0.35)', letterSpacing: '0.5px', textAlign: i === 2 ? 'right' : 'left' }}>{h}</div>
-              ))}
-            </div>
-
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => (
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} style={{ height: '64px', background: '#FFF', borderBottom: '1px solid #F0EDE8', animation: 'ccShimmer 1.5s ease infinite', animationDelay: `${i * 100}ms` }} />
               ))
-            ) : rows.length === 0 ? (
-              <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(10,35,66,0.35)' }}>
-                No members ranked yet — start posting to earn Clarity Points™
+            : rows.length === 0
+              ? <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(10,35,66,0.35)' }}>No members ranked yet — start posting to earn Clarity Points™</div>
+              : rows.map(row => renderRow(row, row.id === userId))
+          }
+
+          {!loading && myRowBelowTop10 && (
+            <>
+              <div style={{ padding: '6px 20px', background: '#F5F3EF', borderTop: '1px dashed #E8E4DF' }}>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px' }}>YOUR RANK</span>
               </div>
-            ) : (
-              rows.map(row => renderRow(row, row.id === userId))
-            )}
-
-            {!loading && myRow && (
-              <>
-                <div style={{ padding: '6px 20px', background: '#F5F3EF', borderTop: '1px dashed #E8E4DF' }}>
-                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px' }}>YOUR RANK</span>
-                </div>
-                {renderRow(myRow, true)}
-              </>
-            )}
-          </div>
-
-          <div style={{ padding: '14px 20px', background: '#FAFAF8', border: '1px solid #E8E4DF', borderRadius: '10px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', flexShrink: 0 }}>EARN POINTS:</span>
-            {[
-              { action: 'Post created',    pts: '+5 pts' },
-              { action: 'Comment written', pts: '+2 pts' },
-              { action: 'Heart received',  pts: '+1 pt'  },
-            ].map(item => (
-              <div key={item.action} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.55)' }}>{item.action}</span>
-                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', color: '#B8941F', background: '#FFFBEE', padding: '1px 6px', borderRadius: '4px' }}>{item.pts}</span>
-              </div>
-            ))}
-          </div>
-
+              {renderRow(myRowBelowTop10, true)}
+            </>
+          )}
         </div>
-      </main>
 
+        {/* Points legend */}
+        <div style={{ padding: '14px 20px', background: '#FAFAF8', border: '1px solid #E8E4DF', borderRadius: '10px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', flexShrink: 0 }}>EARN POINTS:</span>
+          {[
+            { action: 'Post created',    pts: '+5 pts' },
+            { action: 'Comment written', pts: '+2 pts' },
+            { action: 'Heart received',  pts: '+1 pt'  },
+          ].map(item => (
+            <div key={item.action} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.55)' }}>{item.action}</span>
+              <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', color: '#B8941F', background: '#FFFBEE', padding: '1px 6px', borderRadius: '4px' }}>{item.pts}</span>
+            </div>
+          ))}
+        </div>
+
+      </div>
+
+      {/* Member profile modal */}
       {selectedMemberId && (
         <MemberProfile
           profileUserId={selectedMemberId}
           viewerUserId={userId}
-          isAdmin={isAdmin}
+          isAdmin={false}
           onClose={() => setSelectedMemberId(null)}
         />
       )}
+
+      {/* How do points work modal */}
+      {showHowPoints && <HowPointsWorkModal onClose={() => setShowHowPoints(false)} />}
     </div>
-  );
+  )
 }
