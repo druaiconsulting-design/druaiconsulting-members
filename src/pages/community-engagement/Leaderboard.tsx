@@ -173,7 +173,7 @@ export default function Leaderboard() {
     return (
       <div
         key={row.id}
-        style={{ display: 'grid', gridTemplateColumns: '40px 1fr 120px', alignItems: 'center', gap: '12px', padding: '14px 20px', background: isMe ? '#FFFBEE' : '#FFFFFF', borderBottom: '1px solid #F0EDE8', borderLeft: isMe ? '3px solid #D4AF37' : '3px solid transparent', transition: 'background 0.15s ease' }}
+        style={{ display: 'grid', gridTemplateColumns: '40px 1fr 120px', alignItems: 'center', gap: '12px', padding: '16px 20px', background: isMe ? '#FFFBEE' : '#FFFFFF', borderBottom: '1px solid #F0EDE8', borderLeft: isMe ? '3px solid #D4AF37' : '3px solid transparent', transition: 'background 0.15s ease' }}
         onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFF8E1' : '#FAFAF8' }}
         onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFFBEE' : '#FFFFFF' }}
       >
@@ -184,7 +184,7 @@ export default function Leaderboard() {
           onClick={() => setSelectedMemberId(row.id)}
           style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
         >
-          <MemberAvatar firstName={row.full_name.split(' ')[0] || row.full_name} photoUrl={row.photo_url ?? undefined} size={34} />
+          <MemberAvatar firstName={row.full_name.split(' ')[0] || row.full_name} photoUrl={row.photo_url ?? undefined} size={44} />
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
               <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: '600', color: '#0A2342', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>
@@ -244,15 +244,15 @@ export default function Leaderboard() {
 
         {/* ── Personal stats card ─────────────────────────────────────────── */}
         {myData && (
-          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '16px', marginBottom: '24px', boxShadow: '0 2px 12px rgba(10,35,66,0.08)', overflow: 'hidden' }}>
+          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '16px', marginBottom: '24px', boxShadow: '0 2px 12px rgba(10,35,66,0.08)' }}>
 
-            {/* Gold accent strip */}
-            <div style={{ height: '4px', background: 'linear-gradient(90deg, #D4AF37, #B8941F, #D4AF37)' }} />
+            {/* Gold accent strip — rounded top to match card without overflow:hidden */}
+            <div style={{ height: '4px', background: 'linear-gradient(90deg, #D4AF37, #B8941F, #D4AF37)', borderRadius: '16px 16px 0 0' }} />
 
             <div style={{ padding: '28px 32px 32px' }}>
 
-              {/* Top row: avatar + name + trophy */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginBottom: '24px', flexWrap: 'wrap' }}>
+              {/* Top row: avatar + name/level hero */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
 
                 {/* Avatar with gold ring + rank badge */}
                 <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -266,19 +266,25 @@ export default function Leaderboard() {
                   )}
                 </div>
 
-                {/* Name + level badge + points */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: '20px', fontWeight: '700', color: '#0A2342', lineHeight: '1.2', marginBottom: '6px' }}>
+                {/* Name + Level name as HERO */}
+                <div style={{ flex: 1, minWidth: 0, paddingTop: '8px' }}>
+                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: '500', color: 'rgba(10,35,66,0.5)', marginBottom: '4px' }}>
                     {myData.full_name}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                    <LevelBadge level={communityLevel} />
-                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.45)', fontWeight: '500' }}>
-                      {clarityPts.toLocaleString()} Clarity Points™
-                    </span>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: '26px', fontWeight: '700', color: '#B8941F', lineHeight: '1.1', marginBottom: '6px' }}>
+                    {communityLevel}
                   </div>
+                  {nextLevel ? (
+                    <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.5)', fontWeight: '500' }}>
+                      {pointsToNext} points to level up
+                    </div>
+                  ) : (
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: '12px', color: '#B8941F', fontWeight: '700', letterSpacing: '0.5px' }}>
+                      MAX LEVEL ✦
+                    </div>
+                  )}
                   {/* Rank chips */}
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#F7F5EE', border: '1px solid #E8E4DF', borderRadius: '6px', padding: '4px 10px' }}>
                       <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)', fontWeight: '600', letterSpacing: '0.3px' }}>THIS WEEK</span>
                       <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '800', color: '#0A2342' }}>#{myData.weekly_rank || '—'}</span>
@@ -288,25 +294,6 @@ export default function Leaderboard() {
                       <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '800', color: '#0A2342' }}>#{myData.all_time_rank || '—'}</span>
                     </div>
                   </div>
-                </div>
-
-                {/* Trophy + next level */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0 }}>
-                  <div style={{ fontSize: '32px', lineHeight: 1 }}>🏆</div>
-                  {nextLevel ? (
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.45)', lineHeight: '1.4' }}>
-                        <strong style={{ color: '#B8941F' }}>{pointsToNext} pts</strong> to unlock
-                      </div>
-                      <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: '#0A2342' }}>
-                        {nextLevel.name}
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: '11px', color: '#B8941F', fontWeight: '700', textAlign: 'right', letterSpacing: '0.5px' }}>
-                      MAX LEVEL ✦
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -368,29 +355,21 @@ export default function Leaderboard() {
         )}
 
         {/* ── Leaderboard table ────────────────────────────────────────────── */}
+        <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            onClick={() => setShowHowPoints(true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.3px', padding: 0, transition: 'color 0.15s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.4)' }}
+          >How do points work? →</button>
+        </div>
+
         <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(10,35,66,0.06)', marginBottom: '16px' }}>
 
-          {/* Table header + How do points work */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: '#FAFAF8', borderBottom: '1px solid #E8E4DF' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 120px', gap: '12px', flex: 1 }}>
-              {['#', 'MEMBER', 'POINTS'].map((h, i) => (
-                <div key={h} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '600', color: 'rgba(10,35,66,0.35)', letterSpacing: '0.5px', textAlign: i === 2 ? 'right' : 'left' }}>
-                  {h}
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={() => setShowHowPoints(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '600', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.3px', whiteSpace: 'nowrap', padding: '0 0 0 16px', transition: 'color 0.15s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.4)' }}
-            >
-              How do points work?
-            </button>
-          </div>
-
+          {/* Table — no header row, cleaner like Circle */}
           {loading
             ? Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} style={{ height: '72px', background: '#FFF', borderBottom: '1px solid #F0EDE8', animation: 'ccShimmer 1.5s ease infinite', animationDelay: `${i * 100}ms` }} />
                 <div key={i} style={{ height: '64px', background: '#FFF', borderBottom: '1px solid #F0EDE8', animation: 'ccShimmer 1.5s ease infinite', animationDelay: `${i * 100}ms` }} />
               ))
             : rows.length === 0
