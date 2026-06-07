@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, ACCELERATOR_PAYMENT_LINK } from './types';
 import type { CommunityPost, Tier } from './types';
-import { navigate } from '../lib/router';
+import { navigate } from '../../lib/router';
 import ComposeBox from './ComposeBox';
 import PostCard from './PostCard';
 import MemberProfile from '../community-engagement/MemberProfile';
