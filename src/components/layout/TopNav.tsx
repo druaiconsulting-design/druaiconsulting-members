@@ -420,12 +420,12 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             className="dru-members-logo-full"
             style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
           />
-          {/* Shield — mobile: natural aspect ratio (tall shield), height fills bar */}
+          {/* Shield — mobile: square-cropped PNG, fixed 52x52 */}
           <img
             src="/dru-shield-transparent.png"
             alt="DRU CLEAR™"
             className="dru-members-logo-shield"
-            style={{ height: 50, width: 'auto', objectFit: 'contain', flexShrink: 0, display: 'block' }}
+            style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, display: 'block' }}
           />
         </button>
 
