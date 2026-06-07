@@ -88,6 +88,8 @@ export default function MemberLayout({ children, currentPath }: MemberLayoutProp
             overflowX: 'hidden',
             background: '#FAFAF8',
             transition: 'left 0.25s ease',
+            // On mobile, pad bottom so content doesn't hide behind the bottom tab bar
+            paddingBottom: isMobile ? 60 : 0,
           }}
         >
           <div className="dru-page-enter" key={currentPath} style={{ minHeight: '100%' }}>
