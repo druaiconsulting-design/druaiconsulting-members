@@ -48,6 +48,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
   const [unreadCount,    setUnreadCount]    = useState(0)
   const [isMobile,       setIsMobile]       = useState(window.innerWidth < 768)
   const [bottomBarVisible, setBottomBarVisible] = useState(true)
+  const [topBarVisible,   setTopBarVisible]   = useState(true)
   const lastScrollY = useRef(0)
 
   // Detect mobile breakpoint
@@ -58,7 +59,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Hide/show bottom bar on scroll
+  // Hide/show top + bottom bars on scroll (mobile only)
   useEffect(() => {
     if (!isMobile) return
     const handleScroll = () => {
@@ -67,8 +68,10 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
       const y = main.scrollTop
       if (y > lastScrollY.current + 8) {
         setBottomBarVisible(false)
+        setTopBarVisible(false)
       } else if (y < lastScrollY.current - 8) {
         setBottomBarVisible(true)
+        setTopBarVisible(true)
       }
       lastScrollY.current = y
     }
@@ -137,7 +140,12 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
       <div onClick={() => setAvatarMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
       <div style={{
         position: 'fixed',
-        top: isMobile ? 64 : 'var(--members-topnav-h, 100px)',
+        // On mobile: anchor above the bottom bar (bottom: BOTTOM_BAR_H + 8)
+        // On desktop: anchor below the top nav
+        ...(isMobile
+          ? { bottom: BOTTOM_BAR_H + 8, top: 'auto' }
+          : { top: 'var(--members-topnav-h, 100px)', bottom: 'auto' }
+        ),
         right: 14,
         background: '#0f2d52', border: '1px solid rgba(212,175,55,0.2)',
         borderRadius: 10, padding: '6px', minWidth: 210, zIndex: 1100,
@@ -375,6 +383,9 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         borderBottom: '1px solid rgba(212,175,55,0.18)',
         display: 'flex', alignItems: 'center', padding: '0 12px', gap: '8px',
         zIndex: 100,
+        // Hide top bar on scroll down (mobile only)
+        transform: (isMobile && !topBarVisible) ? 'translateY(-100%)' : 'translateY(0)',
+        transition: 'transform 0.25s ease',
       }}>
 
         {/* Sidebar toggle */}
@@ -409,17 +420,13 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             className="dru-members-logo-full"
             style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
           />
-          {/* Shield — mobile: fixed 46×46 square container, never stretches */}
-          <div
+          {/* Shield — mobile: natural aspect ratio (tall shield), height fills bar */}
+          <img
+            src="/dru-shield-transparent.png"
+            alt="DRU CLEAR™"
             className="dru-members-logo-shield"
-            style={{ width: 46, height: 46, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <img
-              src="/dru-shield-transparent.png"
-              alt="DRU CLEAR™"
-              style={{ width: 46, height: 46, objectFit: 'contain', display: 'block' }}
-            />
-          </div>
+            style={{ height: 50, width: 'auto', objectFit: 'contain', flexShrink: 0, display: 'block' }}
+          />
         </button>
 
         {/* ── DESKTOP: scrollable nav links centered (hidden on mobile via JS isMobile) ── */}
@@ -630,8 +637,10 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           <span>Profile</span>
         </button>
 
-        {avatarMenuOpen && <ProfileDropdown />}
       </nav>
+
+      {/* Profile dropdown — rendered outside all nav elements so it's never clipped */}
+      {isMobile && avatarMenuOpen && <ProfileDropdown />}
 
       {/* Notifications panel (mobile — anchored above bottom bar) */}
       {isMobile && (
