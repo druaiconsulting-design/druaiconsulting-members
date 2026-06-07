@@ -244,82 +244,125 @@ export default function Leaderboard() {
 
         {/* ── Personal stats card ─────────────────────────────────────────── */}
         {myData && (
-          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '14px', padding: '24px', marginBottom: '20px', boxShadow: '0 1px 4px rgba(10,35,66,0.06)' }}>
+          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '16px', marginBottom: '24px', boxShadow: '0 2px 12px rgba(10,35,66,0.08)', overflow: 'hidden' }}>
 
-            {/* Top row */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <MemberAvatar firstName={myData.full_name.split(' ')[0] || myData.full_name} photoUrl={myData.photo_url ?? undefined} size={52} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '15px', fontWeight: '700', color: '#0A2342', marginBottom: '3px' }}>
-                  {myData.full_name}
-                </div>
-                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.5)' }}>
-                  {clarityPts.toLocaleString()} Clarity Points™
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                <span style={{ fontSize: '22px' }}>🏆</span>
-                <div>
-                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: '700', color: '#0A2342' }}>
-                    {communityLevel}
+            {/* Gold accent strip */}
+            <div style={{ height: '4px', background: 'linear-gradient(90deg, #D4AF37, #B8941F, #D4AF37)' }} />
+
+            <div style={{ padding: '28px 32px 32px' }}>
+
+              {/* Top row: avatar + name + trophy */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginBottom: '24px', flexWrap: 'wrap' }}>
+
+                {/* Avatar with gold ring + rank badge */}
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <div style={{ width: '76px', height: '76px', borderRadius: '50%', border: '3px solid #D4AF37', padding: '2px', background: '#fff', boxShadow: '0 0 0 1px rgba(212,175,55,0.2)' }}>
+                    <MemberAvatar firstName={myData.full_name.split(' ')[0] || myData.full_name} photoUrl={myData.photo_url ?? undefined} size={70} />
                   </div>
+                  {myData.weekly_rank > 0 && (
+                    <div style={{ position: 'absolute', bottom: 0, right: 0, width: '24px', height: '24px', borderRadius: '50%', background: '#0A2342', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px rgba(10,35,66,0.25)' }}>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: '800', color: '#D4AF37' }}>#{myData.weekly_rank}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Name + level badge + points */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: '20px', fontWeight: '700', color: '#0A2342', lineHeight: '1.2', marginBottom: '6px' }}>
+                    {myData.full_name}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                    <LevelBadge level={communityLevel} />
+                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.45)', fontWeight: '500' }}>
+                      {clarityPts.toLocaleString()} Clarity Points™
+                    </span>
+                  </div>
+                  {/* Rank chips */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#F7F5EE', border: '1px solid #E8E4DF', borderRadius: '6px', padding: '4px 10px' }}>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)', fontWeight: '600', letterSpacing: '0.3px' }}>THIS WEEK</span>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '800', color: '#0A2342' }}>#{myData.weekly_rank || '—'}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#F7F5EE', border: '1px solid #E8E4DF', borderRadius: '6px', padding: '4px 10px' }}>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)', fontWeight: '600', letterSpacing: '0.3px' }}>ALL-TIME</span>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '800', color: '#0A2342' }}>#{myData.all_time_rank || '—'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trophy + next level */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0 }}>
+                  <div style={{ fontSize: '32px', lineHeight: 1 }}>🏆</div>
                   {nextLevel ? (
-                    <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.45)' }}>
-                      {pointsToNext} pts to {nextLevel.name}
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.45)', lineHeight: '1.4' }}>
+                        <strong style={{ color: '#B8941F' }}>{pointsToNext} pts</strong> to unlock
+                      </div>
+                      <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: '#0A2342' }}>
+                        {nextLevel.name}
+                      </div>
                     </div>
                   ) : (
-                    <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: '#B8941F', fontWeight: '700' }}>
-                      Max Level ✦
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: '11px', color: '#B8941F', fontWeight: '700', textAlign: 'right', letterSpacing: '0.5px' }}>
+                      MAX LEVEL ✦
                     </div>
                   )}
                 </div>
               </div>
-            </div>
 
-            {/* Progress bar */}
-            {nextLevel && (
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ height: '6px', background: '#F1EFE8', borderRadius: '999px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${progressPct}%`, background: 'linear-gradient(90deg, #D4AF37, #B8941F)', borderRadius: '999px', transition: 'width 0.6s ease' }} />
+              {/* Progress bar */}
+              {nextLevel && (
+                <div style={{ marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.3px' }}>YOUR PROGRESS</span>
+                    <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '700', color: '#B8941F' }}>{Math.round(progressPct)}%</span>
+                  </div>
+                  <div style={{ height: '10px', background: '#F1EFE8', borderRadius: '999px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${progressPct}%`, background: 'linear-gradient(90deg, #D4AF37, #B8941F)', borderRadius: '999px', transition: 'width 0.8s ease' }} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.35)', fontWeight: '600' }}>
+                    <span>{currentLevel.name} · {currentLevel.min} pts</span>
+                    <span>{nextLevel.name} · {nextLevel.min} pts</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', fontFamily: "'Montserrat', sans-serif", fontSize: '9px', color: 'rgba(10,35,66,0.35)', fontWeight: '600' }}>
-                  <span>{currentLevel.name} · {currentLevel.min} pts</span>
-                  <span>{nextLevel.name} · {nextLevel.min} pts</span>
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Level progression track */}
-            <div style={{ overflowX: 'auto', paddingBottom: '4px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 'max-content' }}>
-                {LEVELS.map((level, i) => {
-                  const isUnlocked = safeIdx >= i
-                  const isCurrent  = level.name === communityLevel
-                  return (
-                    <div key={level.name} style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0 }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: isCurrent ? '#0A2342' : isUnlocked ? '#D4AF37' : '#F1EFE8', border: `2px solid ${isCurrent ? '#0A2342' : isUnlocked ? '#D4AF37' : '#E0DDD7'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {!isUnlocked
-                            ? <span style={{ color: 'rgba(10,35,66,0.2)', fontSize: '12px' }}>🔒</span>
-                            : isCurrent
-                              ? <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#D4AF37', display: 'block' }} />
-                              : <span style={{ color: '#fff', fontSize: '11px', fontWeight: '700' }}>✓</span>
-                          }
+              {/* Level progression track */}
+              <div>
+                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', marginBottom: '14px' }}>COMMUNITY LEVELS</div>
+                <div style={{ overflowX: 'auto', paddingBottom: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 'max-content', gap: 0 }}>
+                    {LEVELS.map((level, i) => {
+                      const isUnlocked = safeIdx >= i
+                      const isCurrent  = level.name === communityLevel
+                      return (
+                        <div key={level.name} style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0 }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: isCurrent ? '#0A2342' : isUnlocked ? '#D4AF37' : '#F1EFE8', border: `2px solid ${isCurrent ? '#0A2342' : isUnlocked ? '#D4AF37' : '#E0DDD7'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isCurrent ? '0 0 0 3px rgba(212,175,55,0.2)' : 'none' }}>
+                              {!isUnlocked
+                                ? <span style={{ color: 'rgba(10,35,66,0.2)', fontSize: '13px' }}>🔒</span>
+                                : isCurrent
+                                  ? <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#D4AF37', display: 'block' }} />
+                                  : <span style={{ color: '#fff', fontSize: '13px', fontWeight: '700' }}>✓</span>
+                              }
+                            </div>
+                            <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: isCurrent ? '800' : '500', color: isCurrent ? '#0A2342' : isUnlocked ? '#B8941F' : 'rgba(10,35,66,0.3)', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                              {level.name}
+                            </span>
+                            <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '8px', color: isCurrent ? 'rgba(10,35,66,0.5)' : 'rgba(10,35,66,0.25)', whiteSpace: 'nowrap', fontWeight: isCurrent ? '700' : '400' }}>
+                              {level.min === 0 ? '0 pts' : `${level.min} pts`}
+                            </span>
+                          </div>
+                          {i < LEVELS.length - 1 && (
+                            <div style={{ width: '36px', height: '2px', background: isUnlocked && !isCurrent ? '#D4AF37' : isUnlocked ? 'rgba(212,175,55,0.35)' : '#E0DDD7', margin: '17px 0 0', flexShrink: 0 }} />
+                          )}
                         </div>
-                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: isCurrent ? '700' : '500', color: isCurrent ? '#0A2342' : isUnlocked ? '#B8941F' : 'rgba(10,35,66,0.3)', whiteSpace: 'nowrap', textAlign: 'center' }}>
-                          {level.name}
-                        </span>
-                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '8px', color: 'rgba(10,35,66,0.3)', whiteSpace: 'nowrap' }}>
-                          {level.min === 0 ? '0 pts' : `${level.min} pts`}
-                        </span>
-                      </div>
-                      {i < LEVELS.length - 1 && (
-                        <div style={{ width: '32px', height: '2px', background: isUnlocked && !isCurrent ? '#D4AF37' : isUnlocked ? 'rgba(212,175,55,0.4)' : '#E0DDD7', margin: '13px 0 0', flexShrink: 0 }} />
-                      )}
-                    </div>
-                  )
-                })}
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
         )}
