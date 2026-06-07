@@ -188,38 +188,6 @@ export default function Sidebar({
         flexDirection: 'column',
       }}
     >
-      {/* ── New Post button ── */}
-      <div style={{ padding: showText ? '16px 12px 8px' : '16px 8px 8px' }}>
-        <button
-          className="new-post-btn"
-          onClick={() => {
-            navigate('/feed')
-            if (isMobile) onMobileClose()
-          }}
-          title={showText ? undefined : 'New Post'}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: showText ? 'flex-start' : 'center',
-            gap: 8,
-            padding: showText ? '9px 14px' : '10px',
-            borderRadius: 8,
-            background: 'rgba(212,175,55,0.1)',
-            border: '1px solid rgba(212,175,55,0.3)',
-            color: '#D4AF37',
-            fontFamily: 'Montserrat, sans-serif',
-            fontSize: 13,
-            fontWeight: 600,
-            transition: 'all 0.15s',
-            cursor: 'pointer',
-          }}
-        >
-          <span style={{ fontSize: 16 }}>✏️</span>
-          {showText && <span>New Post</span>}
-        </button>
-      </div>
-
       {/* ── Scrollable nav sections ── */}
       <nav style={{ flex: 1, padding: '4px 8px', overflowY: 'auto' }}>
 
@@ -375,10 +343,7 @@ export default function Sidebar({
             </div>
           )}
           {[
-            { icon: '📄', label: 'Framework Downloads',        path: '/resources'                            },
-            { icon: '💡', label: 'AI Insights Archive',         path: '/resources/insights'                  },
-            { icon: '🛠️', label: 'Tool Guides',                 path: '/resources/tools'                     },
-            { icon: '📋', label: 'Accelerator Weekly PDF',      path: '/resources/accelerator-pdf', acceleratorOnly: true },
+            { icon: '📋', label: 'Accelerator Weekly PDF', path: '/resources/accelerator-pdf', acceleratorOnly: true },
           ].map((item) => renderItem(item))}
         </div>
 
