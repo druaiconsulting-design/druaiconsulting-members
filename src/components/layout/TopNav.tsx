@@ -135,7 +135,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         background: '#0A2342',
         borderBottom: '1px solid rgba(212,175,55,0.18)',
         display: 'flex', alignItems: 'center', padding: '0 12px', gap: '8px', zIndex: 100,
-        overflow: 'hidden',
+        // overflow:hidden removed — was clipping dropdown panels
       }}>
 
         {/* Sidebar toggle — matches AdminTopNav panel icon exactly */}
@@ -298,9 +298,9 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 <div onClick={() => setAvatarMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
 
                 <div style={{
-                  position: 'absolute', top: 50, right: 0,
+                  position: 'fixed', top: 'var(--members-topnav-h, 100px)', right: 14,
                   background: '#0f2d52', border: '1px solid rgba(212,175,55,0.2)',
-                  borderRadius: 10, padding: '6px', minWidth: 210, zIndex: 150,
+                  borderRadius: 10, padding: '6px', minWidth: 210, zIndex: 1100,
                   boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
                 }}>
 

@@ -128,7 +128,7 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
 
       {/* Panel */}
       <div style={{
-        position: 'absolute', top: 42, right: 0,
+        position: 'fixed', top: 'var(--members-topnav-h, 100px)', right: 14,
         width: 360,
         background: '#ffffff',
         border: '1px solid rgba(0,0,0,0.1)',
