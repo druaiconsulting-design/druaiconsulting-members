@@ -74,7 +74,7 @@ export default function Announcements() {
 
           {/* Description */}
           <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 14, color: 'rgba(10,35,66,0.55)', lineHeight: 1.75, maxWidth: 440, margin: '0 auto 32px' }}>
-            This space is being prepared for something meaningful. Milestone celebrations, important updates, and exclusive news from the ecosystem will live here.
+            This space is being prepared for something meaningful. Milestone celebrations, important updates, and exclusive news will live here.
           </p>
 
           {/* Divider */}
