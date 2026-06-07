@@ -364,7 +364,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             --members-topnav-h: 64px;
             --members-bottom-bar-h: ${BOTTOM_BAR_H}px;
           }
-          .dru-members-header        { height: 64px !important; background: #0A2342 !important; }
+          .dru-members-header        { height: 64px !important; background: transparent !important; border-bottom: none !important; }
           .dru-members-logo-full     { display: none !important; }
           .dru-members-logo-shield   { display: block !important; }
           .dru-members-tier-badge    { display: none; }
