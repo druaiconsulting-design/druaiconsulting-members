@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { navigate } from '../lib/router'
-import { supabase } from '../lib/supabaseClient'
-import LevelBadge from './community-engagement/LevelBadge'
-import MemberAvatar from './community/MemberAvatar'
-import MemberProfile from './community-engagement/MemberProfile'
+import { useAuth } from '../../context/AuthContext'
+import { navigate } from '../../lib/router'
+import { supabase } from '../../lib/supabaseClient'
+import LevelBadge from './LevelBadge'
+import MemberAvatar from '../community/MemberAvatar'
+import MemberProfile from './MemberProfile'
 
 // ── Level thresholds — must match compute_community_level() in Supabase ───────
 const LEVELS = [
