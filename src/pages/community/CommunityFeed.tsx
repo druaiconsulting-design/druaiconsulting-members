@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, tierLabel, tierDotColor, ACCELERATOR_PAYMENT_LINK } from './types';
+import { supabase, ACCELERATOR_PAYMENT_LINK } from './types';
 import type { CommunityPost, Tier } from './types';
+import { navigate } from '../lib/router';
 import ComposeBox from './ComposeBox';
 import PostCard from './PostCard';
-import { NotificationBell, SettingsPanel } from './NotificationBell';
 import MemberProfile from '../community-engagement/MemberProfile';
 
 const APP_URL = 'https://app.druaiconsulting.com';
@@ -16,7 +16,7 @@ export default function CommunityFeed({
   onShowLeaderboard,
 }: {
   tier:               Tier;
-  onShowLeaderboard?: () => void;
+  onShowLeaderboard?: () => void; // kept for backwards compat — navigate used directly
 }) {
   const [posts, setPosts]         = useState<CommunityPost[]>([]);
   const [loading, setLoading]     = useState(true);
@@ -27,7 +27,6 @@ export default function CommunityFeed({
   const [userName, setUserName]   = useState('');
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | undefined>();
   const [isAdmin, setIsAdmin]     = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [photoMap, setPhotoMap]   = useState<Record<string, string>>({});
   const [levelMap, setLevelMap]   = useState<Record<string, string>>({});
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
@@ -191,24 +190,19 @@ export default function CommunityFeed({
                 <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', marginTop: '8px' }}>Share your thoughts, ask questions, connect and collaborate with like-minded leaders.</p>
                 <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', marginTop: '5px', fontWeight: '600' }}>Soliciting and self-promotion are prohibited; violation will result in removal from the membership.</p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start', flexWrap: 'wrap' }}>
-                <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '8px', padding: '8px 16px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.5)', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 1px 3px rgba(10,35,66,0.06)' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: tierDotColor(tier), flexShrink: 0 }} />{tierLabel(tier)}
-                </div>
-                {onShowLeaderboard && (
-                  <button
-                    onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); onShowLeaderboard(); }}
-                    style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '8px', padding: '8px 14px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.5)', cursor: 'pointer', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 3px rgba(10,35,66,0.06)', transition: 'all 0.15s ease' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(10,35,66,0.25)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.5)'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8E4DF'; }}>
-                    <span>🏆</span><span>Leaderboard</span>
-                  </button>
-                )}
-                {userId && (
-                  <NotificationBell userId={userId} userFirstName={userName} userPhotoUrl={userPhotoUrl} onOpenSettings={() => setSettingsOpen(true)} />
-                )}
+
+              {/* ── Header actions: Leaderboard only ── */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start' }}>
+                <button
+                  onClick={() => navigate('/leaderboard')}
+                  style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '8px', padding: '8px 14px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.5)', cursor: 'pointer', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 3px rgba(10,35,66,0.06)', transition: 'all 0.15s ease' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#0A2342'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(10,35,66,0.25)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.5)'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8E4DF'; }}>
+                  <span>🏆</span><span>Leaderboard</span>
+                </button>
               </div>
             </div>
+
             {liveCount > 0 && (
               <button
                 onClick={() => { setLiveCount(0); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
@@ -288,10 +282,6 @@ export default function CommunityFeed({
           onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; }}>
           ↑ Upgrade
         </a>
-      )}
-
-      {settingsOpen && userId && (
-        <SettingsPanel userId={userId} userFirstName={userName} userPhotoUrl={userPhotoUrl} onClose={() => setSettingsOpen(false)} onPhotoUpdate={url => setUserPhotoUrl(url)} />
       )}
 
       {selectedMemberId && (
