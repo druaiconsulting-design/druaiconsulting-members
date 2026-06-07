@@ -424,24 +424,27 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             className="dru-members-logo-full"
             style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
           />
-          {/* Shield — mobile: isolated from flex so container cannot stretch it */}
+          {/* Shield — mobile: CSS clip-path shield shape, blends on any background */}
           <div
             className="dru-members-logo-shield"
             style={{
               flexShrink: 0,
               alignSelf: 'center',
-              width: 52,
+              width: 44,
               height: 52,
               lineHeight: 0,
+              // Shield polygon clip — pointed bottom, rounded feel at top corners
+              clipPath: 'polygon(15% 0%, 85% 0%, 100% 15%, 100% 60%, 50% 100%, 0% 60%, 0% 15%)',
+              overflow: 'hidden',
             }}
           >
             <img
               src="/dru-shield-transparent.png"
               alt="DRU CLEAR™"
               style={{
-                width: 52,
-                height: 52,
-                objectFit: 'contain',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
                 display: 'block',
               }}
             />
