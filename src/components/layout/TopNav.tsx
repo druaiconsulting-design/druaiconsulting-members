@@ -304,14 +304,14 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         }
         .dru-members-nav-link:hover { color: #D4AF37; }
 
-        /* ── Mobile pill tab style ── */
+        /* ── Mobile pill tab style (transparent bar — dark text on light page bg) ── */
         .dru-pill-tab {
           padding: 6px 14px;
           border-radius: 20px;
           font-family: 'Montserrat', sans-serif;
           font-size: 12px;
           font-weight: 500;
-          color: rgba(237,232,219,0.7);
+          color: #3A5070;
           background: transparent;
           border: 1px solid transparent;
           cursor: pointer;
@@ -322,11 +322,11 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         }
         .dru-pill-tab.active {
           font-weight: 700;
-          color: #D4AF37;
-          background: rgba(212,175,55,0.12);
-          border-color: rgba(212,175,55,0.35);
+          color: #0A2342;
+          background: rgba(212,175,55,0.18);
+          border-color: rgba(212,175,55,0.5);
         }
-        .dru-pill-tab:hover { color: #D4AF37; }
+        .dru-pill-tab:hover { color: #0A2342; }
 
         /* ── Bottom tab bar ── */
         .dru-bottom-bar {
@@ -378,12 +378,15 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           TOP NAV BAR
       ══════════════════════════════════════════════════════════ */}
       <header className="dru-members-header" style={{
-        position: 'fixed', top: 0, left: 0, right: 0, height: 100,
-        background: '#0A2342',
-        borderBottom: '1px solid rgba(212,175,55,0.18)',
+        position: 'fixed', top: 0, left: 0, right: 0,
+        height: isMobile ? 64 : 100,
+        // MOBILE: transparent — floats on page background like Circle app
+        // DESKTOP: full navy bar
+        background: isMobile ? 'transparent' : '#0A2342',
+        borderBottom: isMobile ? 'none' : '1px solid rgba(212,175,55,0.18)',
         display: 'flex', alignItems: 'center', padding: '0 12px', gap: '8px',
         zIndex: 100,
-        // Hide top bar on scroll down (mobile only)
+        // Hide on scroll down (mobile only)
         transform: (isMobile && !topBarVisible) ? 'translateY(-100%)' : 'translateY(0)',
         transition: 'transform 0.25s ease',
       }}>
@@ -395,13 +398,14 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           style={{
             width: 40, height: 40, borderRadius: 8,
             background: 'transparent', border: 'none',
-            color: '#EDE8DB',
+            // Mobile: dark icon on light page bg; Desktop: light icon on navy bg
+            color: isMobile ? '#0A2342' : '#EDE8DB',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', transition: 'color 0.15s',
             flexShrink: 0,
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#D4AF37' }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#EDE8DB' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = isMobile ? '#0A2342' : '#EDE8DB' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>
@@ -420,13 +424,28 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             className="dru-members-logo-full"
             style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
           />
-          {/* Shield — mobile: square-cropped PNG, fixed 52x52 */}
-          <img
-            src="/dru-shield-transparent.png"
-            alt="DRU CLEAR™"
+          {/* Shield — mobile: isolated from flex so container cannot stretch it */}
+          <div
             className="dru-members-logo-shield"
-            style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, display: 'block' }}
-          />
+            style={{
+              flexShrink: 0,
+              alignSelf: 'center',
+              width: 52,
+              height: 52,
+              lineHeight: 0,
+            }}
+          >
+            <img
+              src="/dru-shield-transparent.png"
+              alt="DRU CLEAR™"
+              style={{
+                width: 52,
+                height: 52,
+                objectFit: 'contain',
+                display: 'block',
+              }}
+            />
+          </div>
         </button>
 
         {/* ── DESKTOP: scrollable nav links centered (hidden on mobile via JS isMobile) ── */}

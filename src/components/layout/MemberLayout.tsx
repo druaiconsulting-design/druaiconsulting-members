@@ -48,7 +48,8 @@ export default function MemberLayout({ children, currentPath }: MemberLayoutProp
       <div
         style={{
           position: 'fixed',
-          top: 'var(--members-topnav-h, 100px)' as any,
+          // On mobile: start from top:0 since there is no fixed nav bar
+          top: isMobile ? 0 : ('var(--members-topnav-h, 100px)' as any),
           left: 0,
           right: 0,
           bottom: 0,
@@ -88,7 +89,8 @@ export default function MemberLayout({ children, currentPath }: MemberLayoutProp
             overflowX: 'hidden',
             background: '#FAFAF8',
             transition: 'left 0.25s ease',
-            // On mobile, pad bottom so content doesn't hide behind the bottom tab bar
+            // On mobile: pad top for floating pill bar (72px) + bottom for bottom tab bar (60px)
+            paddingTop: isMobile ? 72 : 0,
             paddingBottom: isMobile ? 60 : 0,
           }}
         >
