@@ -409,16 +409,21 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             className="dru-members-logo-full"
             style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
           />
-          {/* Shield — mobile: fixed 46×46 square, never stretches */}
-          <img
-            src="/dru-shield-transparent.png"
-            alt="DRU CLEAR™"
+          {/* Shield — mobile: fixed 46×46 square container, never stretches */}
+          <div
             className="dru-members-logo-shield"
-            style={{ width: 46, height: 46, objectFit: 'contain', flexShrink: 0, display: 'block' }}
-          />
+            style={{ width: 46, height: 46, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <img
+              src="/dru-shield-transparent.png"
+              alt="DRU CLEAR™"
+              style={{ width: 46, height: 46, objectFit: 'contain', display: 'block' }}
+            />
+          </div>
         </button>
 
-        {/* ── DESKTOP: scrollable nav links centered ── */}
+        {/* ── DESKTOP: scrollable nav links centered (hidden on mobile via JS isMobile) ── */}
+        {!isMobile && (
         <nav
           className="dru-members-nav-scroll"
           style={{
@@ -441,14 +446,17 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 {link.label}
               </button>
             )
-          })}
+          }          )}
         </nav>
+        )}
 
         {/* ── MOBILE: scrollable pill tabs (Home is in bottom bar) ── */}
+        {isMobile && (
         <nav
-          className="dru-members-nav-scroll dru-mobile-pills"
+          className="dru-members-nav-scroll"
           style={{
             flex: 1,
+            display: 'flex',
             alignItems: 'center',
             overflowX: 'auto', overflowY: 'hidden',
             height: '100%', gap: 6,
@@ -468,8 +476,9 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 {link.label}
               </button>
             )
-          })}
+          }          )}
         </nav>
+        )}
 
         {/* ── DESKTOP RIGHT: search, notifications, avatar, tier badge ── */}
         <div className="dru-desktop-right" style={{ alignItems: 'center', gap: 6, flexShrink: 0 }}>
