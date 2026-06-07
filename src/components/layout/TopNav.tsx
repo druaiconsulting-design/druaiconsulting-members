@@ -188,12 +188,12 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           }}>
             DRU AI CONSULTING™
           </span>
-          {/* Shield icon — mobile only */}
+          {/* Mobile logo — transparent PNG, sized to fit 64px bar */}
           <img
-            src="/apple-touch-icon.png"
+            src="/new-dru-clear-transparent-logo.png"
             alt="DRU CLEAR™"
             className="dru-members-logo-shield"
-            style={{ height: 44, width: 44, borderRadius: 8, objectFit: 'contain' }}
+            style={{ height: 56, width: 'auto', maxWidth: 160, objectFit: 'contain' }}
           />
         </button>
 

@@ -101,19 +101,19 @@ export default function Sidebar({
   const sidebarStyle: React.CSSProperties = isMobile
     ? {
         position: 'fixed',
-        top: 60,
+        top: 'var(--members-topnav-h, 64px)' as any,
         left: mobileOpen ? 0 : -SIDEBAR_WIDTH,
         width: SIDEBAR_WIDTH,
-        height: 'calc(100vh - 60px)',
+        height: 'calc(100vh - var(--members-topnav-h, 64px))' as any,
         transition: 'left 0.25s ease',
         zIndex: 50,
       }
     : {
         position: 'fixed',
-        top: 60,
+        top: 'var(--members-topnav-h, 100px)' as any,
         left: 0,
         width: w,
-        height: 'calc(100vh - 60px)',
+        height: 'calc(100vh - var(--members-topnav-h, 100px))' as any,
         transition: 'width 0.25s ease',
         zIndex: 40,
       }
