@@ -94,6 +94,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
   return (
     <>
       <style>{`
+        :root { --members-topnav-h: 100px; }
         .dru-members-nav-scroll::-webkit-scrollbar { display: none; }
         .dru-members-nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .dru-members-nav-link {
@@ -117,14 +118,19 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           background: rgba(212,175,55,0.1);
         }
         .dru-members-nav-link:hover { color: #D4AF37; }
-        @media (max-width: 640px) {
-          .dru-members-logo { height: 60px !important; }
+        .dru-members-logo-full { display: block; }
+        .dru-members-logo-shield { display: none; }
+        @media (max-width: 768px) {
+          :root { --members-topnav-h: 64px; }
+          .dru-members-header { height: 64px !important; }
+          .dru-members-logo-full { display: none !important; }
+          .dru-members-logo-shield { display: block !important; }
           .dru-members-nav-link { font-size: 11px; padding: 5px 8px; }
           .dru-members-tier-badge { display: none; }
         }
       `}</style>
 
-      <header style={{
+      <header className="dru-members-header" style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 100,
         background: '#0A2342',
         borderBottom: '1px solid rgba(212,175,55,0.18)',
@@ -161,11 +167,12 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             padding: '0 4px', display: 'flex', alignItems: 'center', flexShrink: 0,
           }}
         >
+          {/* Full logo — desktop only */}
           <img
             src="/new-dru-clear-transparent-logo.png"
             alt="DRU CLEAR™"
-            className="dru-members-logo"
-            style={{             height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
+            className="dru-members-logo-full"
+            style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
             onError={(e) => {
               const img = e.currentTarget as HTMLImageElement
               img.style.display = 'none'
@@ -181,6 +188,13 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           }}>
             DRU AI CONSULTING™
           </span>
+          {/* Shield icon — mobile only */}
+          <img
+            src="/apple-touch-icon.png"
+            alt="DRU CLEAR™"
+            className="dru-members-logo-shield"
+            style={{ height: 44, width: 44, borderRadius: 8, objectFit: 'contain' }}
+          />
         </button>
 
         {/* Center nav — scrollable, centered */}

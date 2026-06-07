@@ -48,7 +48,7 @@ export default function MemberLayout({ children, currentPath }: MemberLayoutProp
       <div
         style={{
           position: 'fixed',
-          top: TOPNAV_H,
+          top: 'var(--members-topnav-h, 100px)' as any,
           left: 0,
           right: 0,
           bottom: 0,
