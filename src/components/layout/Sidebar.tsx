@@ -25,7 +25,7 @@ interface Section {
   acceleratorOnly?: boolean
 }
 
-// ─── Nav structure (mirrors spec exactly) ────────────────────────────────────
+// ─── Nav structure ────────────────────────────────────────────────────────────
 
 const SECTIONS: Section[] = [
   {
@@ -38,10 +38,8 @@ const SECTIONS: Section[] = [
   {
     heading: 'COMMUNITY',
     items: [
-      { icon: '📰', label: 'Feed',               path: '/feed' },
-      { icon: '📢', label: 'Announcements',       path: '/community/announcements' },
-      { icon: '💬', label: 'Discussions',         path: '/community/discussions' },
-      { icon: '⚡', label: 'Accelerator Circle',  path: '/community/accelerator', acceleratorOnly: true },
+      { icon: '📢', label: 'Announcements',      path: '/community/announcements' },
+      { icon: '⚡', label: 'Accelerator Circle', path: '/community/accelerator', acceleratorOnly: true },
     ],
   },
 ]
@@ -50,7 +48,7 @@ const SECTIONS: Section[] = [
 
 function isActive(itemPath: string, currentPath: string): boolean {
   if (itemPath === '/') {
-    return currentPath === '/' || currentPath === '/feed'
+    return currentPath === '/' || currentPath === '/home'
   }
   return currentPath === itemPath || currentPath.startsWith(itemPath + '/')
 }
@@ -91,12 +89,7 @@ export default function Sidebar({
   const COLLAPSED_W   = 64
   const w             = collapsed ? COLLAPSED_W : SIDEBAR_WIDTH
   const isMobile      = window.innerWidth < 768
-
-  // ── FIX: on mobile, always show full text when the drawer is open ──────────
-  // Previously, MemberLayout forced collapsed=true on mobile, which hid all
-  // label text even when the drawer was fully open. showText decouples the
-  // text-visibility decision from the desktop collapsed state.
-  const showText = !collapsed || mobileOpen
+  const showText      = !collapsed || mobileOpen
 
   const sidebarStyle: React.CSSProperties = isMobile
     ? {
@@ -121,14 +114,14 @@ export default function Sidebar({
   // ── Nav item renderer ────────────────────────────────────────────────────
   const renderItem = (item: NavItem, sectionAcceleratorOnly?: boolean) => {
     const locked = (item.acceleratorOnly || sectionAcceleratorOnly) && !isAccelerator
-    const active = !locked && isActive(item.path, currentPath)
+    const active = isActive(item.path, currentPath)
 
     return (
       <button
         key={item.path + item.label}
         className={locked ? undefined : 'sidebar-nav-item'}
         onClick={() => {
-          if (locked) return
+          // Always navigate — locked pages show their own upgrade gate
           navigate(item.path)
           if (isMobile) onMobileClose()
         }}
@@ -144,11 +137,11 @@ export default function Sidebar({
           fontFamily: 'Montserrat, sans-serif',
           fontSize: 13,
           fontWeight: active ? 600 : 400,
-          color: active ? '#D4AF37' : locked ? 'rgba(237,232,219,0.2)' : '#EDE8DB',
+          color: active ? '#D4AF37' : locked ? 'rgba(237,232,219,0.35)' : '#EDE8DB',
           background: active ? 'rgba(212,175,55,0.15)' : 'transparent',
           borderLeft: active ? '2px solid #D4AF37' : '2px solid transparent',
           transition: 'all 0.15s',
-          cursor: locked ? 'default' : 'pointer',
+          cursor: 'pointer',
           textAlign: 'left',
           flexShrink: 0,
           overflow: 'hidden',
@@ -200,7 +193,7 @@ export default function Sidebar({
         <button
           className="new-post-btn"
           onClick={() => {
-            navigate('/')
+            navigate('/feed')
             if (isMobile) onMobileClose()
           }}
           title={showText ? undefined : 'New Post'}
@@ -382,9 +375,10 @@ export default function Sidebar({
             </div>
           )}
           {[
-            { icon: '📄', label: 'Framework Downloads', path: '/resources' },
-            { icon: '💡', label: 'AI Insights Archive',  path: '/resources/insights' },
-            { icon: '🛠️', label: 'Tool Guides',          path: '/resources/tools' },
+            { icon: '📄', label: 'Framework Downloads',        path: '/resources'                            },
+            { icon: '💡', label: 'AI Insights Archive',         path: '/resources/insights'                  },
+            { icon: '🛠️', label: 'Tool Guides',                 path: '/resources/tools'                     },
+            { icon: '📋', label: 'Accelerator Weekly PDF',      path: '/resources/accelerator-pdf', acceleratorOnly: true },
           ].map((item) => renderItem(item))}
         </div>
 
