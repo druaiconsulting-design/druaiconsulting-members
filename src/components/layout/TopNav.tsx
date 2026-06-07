@@ -61,11 +61,13 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
 
   // Hide/show top + bottom bars on scroll (mobile only)
   useEffect(() => {
-    if (!isMobile) return
+    if (!isMobile) {
+      setTopBarVisible(true)
+      setBottomBarVisible(true)
+      return
+    }
     const handleScroll = () => {
-      const main = document.querySelector('main') as HTMLElement | null
-      if (!main) return
-      const y = main.scrollTop
+      const y = window.scrollY
       if (y > lastScrollY.current + 8) {
         setBottomBarVisible(false)
         setTopBarVisible(false)
@@ -75,9 +77,8 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
       }
       lastScrollY.current = y
     }
-    const main = document.querySelector('main')
-    main?.addEventListener('scroll', handleScroll, { passive: true })
-    return () => main?.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [isMobile])
 
   // Fetch unread notification count
