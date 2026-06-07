@@ -256,11 +256,11 @@ export default function Leaderboard() {
 
                 {/* Avatar with gold ring + rank badge */}
                 <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div style={{ width: '76px', height: '76px', borderRadius: '50%', border: '3px solid #D4AF37', padding: '2px', background: '#fff', boxShadow: '0 0 0 1px rgba(212,175,55,0.2)' }}>
-                    <MemberAvatar firstName={myData.full_name.split(' ')[0] || myData.full_name} photoUrl={myData.photo_url ?? undefined} size={70} />
+                  <div style={{ width: '108px', height: '108px', borderRadius: '50%', border: '4px solid #D4AF37', padding: '3px', background: '#fff', boxShadow: '0 0 0 3px rgba(212,175,55,0.15)' }}>
+                    <MemberAvatar firstName={myData.full_name.split(' ')[0] || myData.full_name} photoUrl={myData.photo_url ?? undefined} size={100} />
                   </div>
                   {myData.weekly_rank > 0 && (
-                    <div style={{ position: 'absolute', bottom: 0, right: 0, width: '24px', height: '24px', borderRadius: '50%', background: '#0A2342', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px rgba(10,35,66,0.25)' }}>
+                    <div style={{ position: 'absolute', bottom: 2, right: 2, width: '30px', height: '30px', borderRadius: '50%', background: '#0A2342', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(10,35,66,0.3)' }}>
                       <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: '800', color: '#D4AF37' }}>#{myData.weekly_rank}</span>
                     </div>
                   )}
