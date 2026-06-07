@@ -3,17 +3,15 @@ import { supabase } from './types';
 import type { Tier } from './types';
 import CommunityFeed from './CommunityFeed';
 import CommunityJoin from './CommunityJoin';
-import Leaderboard from '../community-engagement/Leaderboard';
 
 // =============================================================================
-// COMMUNITY — smart detection, renders Feed / Leaderboard / Join
+// COMMUNITY — smart detection, renders Feed or Join
+// Leaderboard is now its own page at /leaderboard (App.tsx router)
 // =============================================================================
 export default function Community() {
   const [tier,        setTier]        = useState<Tier | null>(null);
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [checking,    setChecking]    = useState(true);
-  const [activeTab,   setActiveTab]   = useState<'feed' | 'leaderboard'>('feed');
-  const [userId,      setUserId]      = useState('');
 
   useEffect(() => {
     const check = async () => {
@@ -22,7 +20,6 @@ export default function Community() {
         if (!user) { setTier('free'); setChecking(false); return; }
         const admin = user.email?.toLowerCase() === import.meta.env.VITE_ADMIN_EMAIL?.toLowerCase();
         setIsAdminUser(admin);
-        setUserId(user.id);
         const { data } = await supabase.from('profiles').select('tier').eq('id', user.id).maybeSingle();
         setTier(admin ? 'accelerator' : ((data?.tier as Tier) ?? 'free'));
       } catch { setTier('free'); } finally { setChecking(false); }
@@ -59,23 +56,10 @@ export default function Community() {
     <>
       <style>{globalStyles}</style>
       {isMember ? (
-        activeTab === 'feed' ? (
-          <CommunityFeed
-            tier={tier!}
-            onShowLeaderboard={() => setActiveTab('leaderboard')}
-          />
-        ) : (
-          <Leaderboard
-            userId={userId}
-            isAdmin={isAdminUser}
-            tier={tier!}
-            onBack={() => setActiveTab('feed')}
-          />
-        )
+        <CommunityFeed tier={tier!} />
       ) : (
         <CommunityJoin />
       )}
     </>
   );
 }
-
