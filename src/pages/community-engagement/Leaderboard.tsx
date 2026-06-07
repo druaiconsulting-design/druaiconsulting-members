@@ -370,7 +370,6 @@ export default function Leaderboard() {
           {loading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} style={{ height: '72px', background: '#FFF', borderBottom: '1px solid #F0EDE8', animation: 'ccShimmer 1.5s ease infinite', animationDelay: `${i * 100}ms` }} />
-                <div key={i} style={{ height: '64px', background: '#FFF', borderBottom: '1px solid #F0EDE8', animation: 'ccShimmer 1.5s ease infinite', animationDelay: `${i * 100}ms` }} />
               ))
             : rows.length === 0
               ? <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(10,35,66,0.35)' }}>No members ranked yet — start posting to earn Clarity Points™</div>
