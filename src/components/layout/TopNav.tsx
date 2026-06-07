@@ -93,11 +93,43 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
   // ── Render ───────────────────────────────────────────────────
   return (
     <>
+      <style>{`
+        .dru-members-nav-scroll::-webkit-scrollbar { display: none; }
+        .dru-members-nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .dru-members-nav-link {
+          padding: 5px 13px;
+          border-radius: 6px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 13px;
+          font-weight: 400;
+          color: #8AA4C8;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: all 0.15s;
+          white-space: nowrap;
+          flex-shrink: 0;
+          scroll-snap-align: start;
+        }
+        .dru-members-nav-link.active {
+          font-weight: 600;
+          color: #D4AF37;
+          background: rgba(212,175,55,0.1);
+        }
+        .dru-members-nav-link:hover { color: #D4AF37; }
+        @media (max-width: 640px) {
+          .dru-members-logo { height: 40px !important; }
+          .dru-members-nav-link { font-size: 11px; padding: 5px 8px; }
+          .dru-members-tier-badge { display: none; }
+        }
+      `}</style>
+
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 60,
         background: '#0A2342',
         borderBottom: '1px solid rgba(212,175,55,0.18)',
-        display: 'flex', alignItems: 'center', padding: '0 16px', gap: '12px', zIndex: 100,
+        display: 'flex', alignItems: 'center', padding: '0 12px', gap: '8px', zIndex: 100,
+        overflow: 'hidden',
       }}>
 
         {/* Sidebar toggle */}
@@ -121,35 +153,56 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           )}
         </button>
 
-        {/* Logo */}
+        {/* Logo — replaces "DRU AI CONSULTING™" text */}
         <button
           onClick={() => navigate('/')}
           style={{
-            fontFamily: 'Cinzel, serif', fontSize: 13, fontWeight: 700, color: '#D4AF37',
-            letterSpacing: '0.15em', whiteSpace: 'nowrap', flexShrink: 0, padding: '0 4px',
+            background: 'none', border: 'none', cursor: 'pointer',
+            padding: '0 4px', display: 'flex', alignItems: 'center', flexShrink: 0,
           }}
         >
-          DRU AI CONSULTING™
+          <img
+            src="/new-dru-clear-transparent-logo.png"
+            alt="DRU CLEAR™"
+            className="dru-members-logo"
+            style={{ height: 50, width: 'auto', objectFit: 'contain', display: 'block' }}
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement
+              img.style.display = 'none'
+              const fallback = img.nextElementSibling as HTMLElement
+              if (fallback) fallback.style.display = 'inline'
+            }}
+          />
+          {/* Fallback text if image fails */}
+          <span style={{
+            display: 'none',
+            fontFamily: 'Cinzel, serif', fontSize: 13, fontWeight: 700,
+            color: '#D4AF37', letterSpacing: '0.15em', whiteSpace: 'nowrap',
+          }}>
+            DRU AI CONSULTING™
+          </span>
         </button>
 
-        {/* Center nav */}
-        <nav style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+        {/* Center nav — scrollable, centered */}
+        <nav
+          className="dru-members-nav-scroll"
+          style={{
+            flex: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflowX: 'auto', overflowY: 'hidden',
+            height: '100%', gap: 2,
+            WebkitOverflowScrolling: 'touch',
+            scrollSnapType: 'x proximity',
+          }}
+        >
           {NAV_LINKS.map((link) => {
             if (link.acceleratorOnly && tier !== 'accelerator') return null
             const active = isActive(link.path)
             return (
               <button
                 key={link.path}
-                className="topnav-link"
+                className={`topnav-link dru-members-nav-link${active ? ' active' : ''}`}
                 onClick={() => navigate(link.path)}
-                style={{
-                  padding: '5px 13px', borderRadius: 6,
-                  fontFamily: 'Montserrat, sans-serif', fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  color: active ? '#D4AF37' : '#8AA4C8',
-                  background: active ? 'rgba(212,175,55,0.1)' : 'transparent',
-                  transition: 'all 0.15s', whiteSpace: 'nowrap',
-                }}
               >
                 {link.label}
               </button>
@@ -190,7 +243,6 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
-              {/* Unread badge */}
               {unreadCount > 0 && (
                 <span style={{
                   position: 'absolute', top: 5, right: 5,
@@ -208,18 +260,19 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             />
           </div>
 
-          {/* Avatar + dropdown */}
+          {/* Avatar + dropdown — profile pic enlarged to 42px */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => { setAvatarMenuOpen(o => !o); setNotifOpen(false) }}
               title={displayName}
               style={{
-                width: 34, height: 34, borderRadius: '50%',
+                width: 42, height: 42, borderRadius: '50%',
                 background: avatar ? 'transparent' : 'linear-gradient(135deg, #1e3d6e 0%, #0A2342 100%)',
-                border: '2px solid rgba(212,175,55,0.45)',
+                border: '2px solid rgba(212,175,55,0.55)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 700,
-                color: '#D4AF37', overflow: 'hidden', flexShrink: 0,
+                fontFamily: 'Montserrat, sans-serif', fontSize: 14, fontWeight: 700,
+                color: '#D4AF37', overflow: 'hidden', flexShrink: 0, cursor: 'pointer',
+                transition: 'border-color 0.15s',
               }}
             >
               {avatar
@@ -232,22 +285,38 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 <div onClick={() => setAvatarMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
 
                 <div style={{
-                  position: 'absolute', top: 42, right: 0,
+                  position: 'absolute', top: 50, right: 0,
                   background: '#0f2d52', border: '1px solid rgba(212,175,55,0.2)',
                   borderRadius: 10, padding: '6px', minWidth: 210, zIndex: 150,
                   boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
                 }}>
 
-                  {/* Profile info */}
+                  {/* Profile info with larger avatar preview */}
                   <div style={{
-                    padding: '8px 10px 10px',
+                    padding: '10px 10px 12px',
                     borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: 4,
+                    display: 'flex', alignItems: 'center', gap: 10,
                   }}>
-                    <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 600, color: '#EDE8DB' }}>
-                      {displayName}
+                    {/* Larger avatar in dropdown */}
+                    <div style={{
+                      width: 48, height: 48, borderRadius: '50%',
+                      background: avatar ? 'transparent' : 'linear-gradient(135deg, #1e3d6e 0%, #0A2342 100%)',
+                      border: '2px solid rgba(212,175,55,0.55)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: 'Montserrat, sans-serif', fontSize: 16, fontWeight: 700,
+                      color: '#D4AF37', overflow: 'hidden', flexShrink: 0,
+                    }}>
+                      {avatar
+                        ? <img src={avatar} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : initials || '?'}
                     </div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#8AA4C8', marginTop: 2 }}>
-                      {profile?.email || ''}
+                    <div>
+                      <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 600, color: '#EDE8DB' }}>
+                        {displayName}
+                      </div>
+                      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#8AA4C8', marginTop: 2 }}>
+                        {profile?.email || ''}
+                      </div>
                     </div>
                   </div>
 
@@ -370,12 +439,15 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           </div>
 
           {/* Tier badge */}
-          <div style={{
-            padding: '4px 11px', borderRadius: 20,
-            background: tierBadge.bg, color: tierBadge.color, border: tierBadge.border,
-            fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
-            letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0,
-          }}>
+          <div
+            className="dru-members-tier-badge"
+            style={{
+              padding: '4px 11px', borderRadius: 20,
+              background: tierBadge.bg, color: tierBadge.color, border: tierBadge.border,
+              fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0,
+            }}
+          >
             {tierBadge.label}
           </div>
 
