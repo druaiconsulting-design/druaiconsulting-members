@@ -118,14 +118,14 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         }
         .dru-members-nav-link:hover { color: #D4AF37; }
         @media (max-width: 640px) {
-          .dru-members-logo { height: 40px !important; }
+          .dru-members-logo { height: 60px !important; }
           .dru-members-nav-link { font-size: 11px; padding: 5px 8px; }
           .dru-members-tier-badge { display: none; }
         }
       `}</style>
 
       <header style={{
-        position: 'fixed', top: 0, left: 0, right: 0, height: 60,
+        position: 'fixed', top: 0, left: 0, right: 0, height: 100,
         background: '#0A2342',
         borderBottom: '1px solid rgba(212,175,55,0.18)',
         display: 'flex', alignItems: 'center', padding: '0 12px', gap: '8px', zIndex: 100,
@@ -165,7 +165,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             src="/new-dru-clear-transparent-logo.png"
             alt="DRU CLEAR™"
             className="dru-members-logo"
-            style={{ height: 50, width: 'auto', objectFit: 'contain', display: 'block' }}
+            style={{             height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
             onError={(e) => {
               const img = e.currentTarget as HTMLImageElement
               img.style.display = 'none'

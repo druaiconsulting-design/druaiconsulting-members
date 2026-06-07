@@ -7,7 +7,7 @@ interface MemberLayoutProps {
   currentPath: string
 }
 
-const TOPNAV_H  = 60
+const TOPNAV_H  = 100
 const SIDEBAR_W = 264
 const COLLAPSED = 64
 
