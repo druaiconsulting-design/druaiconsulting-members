@@ -414,7 +414,12 @@ function NotificationsTab({ userId }: { userId: string }) {
   const turnOffAll = async () => {
     if (!prefs || saving) return
     setSaving(true)
-    const allOff = Object.fromEntries(Object.keys(prefs).map(k => [k, false])) as NotificationPreferences
+    const allOff: NotificationPreferences = {
+      mention_push: false,        mention_inapp: false,        mention_email: false,
+      reply_push: false,          reply_inapp: false,          reply_email: false,
+      new_agent_post_push: false, new_agent_post_inapp: false, new_agent_post_email: false,
+      new_post_push: false,       new_post_inapp: false,       new_post_email: false,
+    }
     setPrefs(allOff)
     await supabase.from('notification_preferences').update(allOff).eq('user_id', userId)
     setSaving(false)
