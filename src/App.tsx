@@ -8,6 +8,7 @@ import Community from './pages/community'
 import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
 import LessonPlayer from './pages/LessonPlayer'
+import MonthlyVideos from './pages/MonthlyVideos'
 import Leaderboard from './pages/community-engagement/Leaderboard'
 import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
@@ -141,7 +142,7 @@ export default function App() {
 
     // Monthly Videos
     if (path === '/videos' || path.startsWith('/videos/'))
-      return <ComingSoon title="Monthly Leadership Lab!" />
+      return <MonthlyVideos />
 
     // Leaderboard
     if (path === '/leaderboard')
