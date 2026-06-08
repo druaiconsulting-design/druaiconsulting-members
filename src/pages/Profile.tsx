@@ -575,15 +575,22 @@ function PrivacyTab({ profile, onUpdate }: { profile: ProfileData; onUpdate: (up
 export default function Profile() {
   const { session } = useAuth()
 
-  // Read initial tab from URL query param
+  // Read initial tab from URL hash or query param
+  const hash = window.location.hash.slice(1) as SettingsTab
   const searchParams = new URLSearchParams(window.location.search)
-  const initialTab = (searchParams.get('tab') as SettingsTab) ?? 'profile'
+  const initialTab = (['profile', 'notifications', 'privacy'].includes(hash) ? hash : null)
+    ?? (searchParams.get('tab') as SettingsTab)
+    ?? 'profile'
 
   const [tab, setTab]           = useState<SettingsTab>(initialTab)
   const [loading, setLoading]   = useState(true)
   const [profile, setProfile]   = useState<ProfileData | null>(null)
 
   useEffect(() => {
+    // Clean up hash from URL without triggering re-navigation
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
     if (!session?.user) return
     loadProfile()
   }, [session])
