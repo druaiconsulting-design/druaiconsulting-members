@@ -7,6 +7,7 @@ import Daily from './pages/Daily'
 import Community from './pages/community'
 import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
+import LessonPlayer from './pages/LessonPlayer'
 import Leaderboard from './pages/community-engagement/Leaderboard'
 import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
@@ -128,7 +129,7 @@ export default function App() {
 
     // Courses — lesson player
     if (path.startsWith('/courses/lesson/'))
-      return <ComingSoon title="Lesson Player" />
+      return <LessonPlayer />
 
     // Courses — module lesson list
     if (path.startsWith('/courses/module/'))
