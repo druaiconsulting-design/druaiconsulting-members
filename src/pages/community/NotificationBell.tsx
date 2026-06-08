@@ -159,7 +159,7 @@ export function NotificationBell({
               {/* ⊞ Full page */}
               <button
                 title="View all"
-                onClick={() => { setPanelOpen(false); navigate('/community'); }}
+                onClick={() => { setPanelOpen(false); navigate('/feed'); }}
                 style={iconBtnStyle}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -172,7 +172,7 @@ export function NotificationBell({
               {/* ⚙ Notification settings */}
               <button
                 title="Notification settings"
-                onClick={() => { setPanelOpen(false); navigate('/profile?tab=notifications'); }}
+                onClick={() => { setPanelOpen(false); navigate('/profile#notifications'); }}
                 style={iconBtnStyle}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
