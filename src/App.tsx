@@ -10,6 +10,7 @@ import ModuleLessons from './pages/ModuleLessons'
 import LessonPlayer from './pages/LessonPlayer'
 import MonthlyVideos from './pages/MonthlyVideos'
 import Profile from './pages/Profile'
+import Notifications from './pages/Notifications'
 import Leaderboard from './pages/community-engagement/Leaderboard'
 import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
@@ -149,7 +150,11 @@ export default function App() {
     if (path === '/leaderboard')
       return <Leaderboard />
 
-    // Profile
+    // Notifications — full page
+    if (path === '/notifications')
+      return <Notifications />
+
+    // Profile / Account Settings
     if (path === '/profile')
       return <Profile />
 
