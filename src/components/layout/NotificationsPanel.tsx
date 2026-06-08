@@ -51,8 +51,9 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
     setLoading(true)
     const { data } = await supabase
       .from('community_notifications')
-      .select('*')
+      .select('id, sender_id, post_id, type, message, is_read, created_at')
       .eq('recipient_id', profile!.id)
+      .eq('is_archived', false)
       .order('created_at', { ascending: false })
       .limit(30)
 
@@ -125,10 +126,8 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
 
       <div style={{
         position: 'fixed', top: 'var(--members-topnav-h, 100px)', right: 14,
-        width: 360,
-        background: '#ffffff',
-        border: '1px solid rgba(0,0,0,0.1)',
-        borderRadius: 12,
+        width: 360, background: '#ffffff',
+        border: '1px solid rgba(0,0,0,0.1)', borderRadius: 12,
         boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
         zIndex: 150, overflow: 'hidden',
       }}>
@@ -138,29 +137,14 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '14px 16px 0',
         }}>
-          <span style={{
-            fontFamily: 'Montserrat, sans-serif', fontWeight: 700,
-            fontSize: 15, color: '#0A2342',
-          }}>
+          <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: 15, color: '#0A2342' }}>
             Notifications
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             {[
-              {
-                icon: <IconMarkAll />,
-                title: 'Mark all as read',
-                action: markAllRead,
-              },
-              {
-                icon: <IconExpand />,
-                title: 'Open full page',
-                action: () => { navigate('/feed'); onClose() },
-              },
-              {
-                icon: <IconSettings />,
-                title: 'Notification settings',
-                action: () => { navigate('/profile#notifications'); onClose() },
-              },
+              { icon: <IconMarkAll />, title: 'Mark all as read',       action: markAllRead },
+              { icon: <IconExpand />,  title: 'Open full page',         action: () => { navigate('/notifications'); onClose() } },
+              { icon: <IconSettings />,title: 'Notification settings',  action: () => { navigate('/profile#notifications'); onClose() } },
             ].map((btn, i) => (
               <button
                 key={i}
@@ -169,7 +153,7 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                 style={{
                   padding: 6, color: '#8AA4C8', borderRadius: 6,
                   background: 'none', border: 'none', cursor: 'pointer',
-                  lineHeight: 0, transition: 'all 0.15s',
+                  lineHeight: 0,
                 }}
               >
                 {btn.icon}
@@ -194,7 +178,7 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                 color: tab === t ? '#0A2342' : '#8AA4C8',
                 borderBottom: tab === t ? '2px solid #0A2342' : '2px solid transparent',
                 background: 'none', border: 'none', cursor: 'pointer',
-                textTransform: 'capitalize', transition: 'all 0.15s',
+                textTransform: 'capitalize',
               }}
             >
               {t}
@@ -212,14 +196,12 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                 animation: 'notifSpin 0.7s linear infinite',
               }} />
             </div>
-
           ) : displayed.length === 0 ? (
             <div style={{ padding: '2.5rem 1rem', textAlign: 'center' }}>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#8AA4C8' }}>
                 {tab === 'unread' ? "You're all caught up!" : 'No notifications yet.'}
               </p>
             </div>
-
           ) : displayed.map(notif => {
             const sender   = notif.sender_id ? senders[notif.sender_id] : null
             const fullName = sender ? [sender.first_name, sender.last_name].filter(Boolean).join(' ') : null
@@ -236,7 +218,6 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                   padding: '12px 16px', cursor: 'pointer',
                   background: notif.is_read ? 'transparent' : 'rgba(212,175,55,0.03)',
                   borderBottom: '1px solid rgba(0,0,0,0.05)',
-                  position: 'relative', transition: 'background 0.15s',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F9F8F5')}
                 onMouseLeave={e => (e.currentTarget.style.background = notif.is_read ? 'transparent' : 'rgba(212,175,55,0.03)')}
@@ -253,31 +234,39 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                     : <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 11, fontWeight: 700, color: '#D4AF37' }}>{initials}</span>
                   }
                 </div>
-
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
-                    fontFamily: 'Inter, sans-serif', fontSize: 13,
-                    color: '#0A2342', lineHeight: 1.45, margin: 0,
-                  }}>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#0A2342', lineHeight: 1.45, margin: '0 0 3px' }}>
                     {notif.message}
                   </p>
-                  <p style={{
-                    fontFamily: 'Inter, sans-serif', fontSize: 11,
-                    color: '#8AA4C8', marginTop: 4, margin: '4px 0 0',
-                  }}>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#8AA4C8', margin: 0 }}>
                     {timeAgo(notif.created_at)}
                   </p>
                 </div>
-
                 {!notif.is_read && (
-                  <div style={{
-                    width: 8, height: 8, borderRadius: '50%',
-                    background: '#1a73e8', flexShrink: 0, marginTop: 6,
-                  }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1a73e8', flexShrink: 0, marginTop: 6 }} />
                 )}
               </div>
             )
           })}
+        </div>
+
+        {/* Footer — link to full page */}
+        <div style={{
+          padding: '10px 16px',
+          borderTop: '1px solid rgba(0,0,0,0.06)',
+          textAlign: 'center',
+        }}>
+          <button
+            onClick={() => { navigate('/notifications'); onClose() }}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: 'Montserrat, sans-serif', fontSize: 11,
+              fontWeight: 700, color: '#D4AF37',
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+            }}
+          >
+            View all notifications →
+          </button>
         </div>
       </div>
 
