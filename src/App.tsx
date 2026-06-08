@@ -9,6 +9,7 @@ import Courses from './pages/Courses'
 import ModuleLessons from './pages/ModuleLessons'
 import LessonPlayer from './pages/LessonPlayer'
 import MonthlyVideos from './pages/MonthlyVideos'
+import Profile from './pages/Profile'
 import Leaderboard from './pages/community-engagement/Leaderboard'
 import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
@@ -148,6 +149,10 @@ export default function App() {
     if (path === '/leaderboard')
       return <Leaderboard />
 
+    // Profile
+    if (path === '/profile')
+      return <Profile />
+
     // Resources
     if (path.startsWith('/resources'))
       return <ComingSoon title="Resources" />
@@ -155,10 +160,6 @@ export default function App() {
     // Support
     if (path.startsWith('/support'))
       return <ComingSoon title="Support Hub" />
-
-    // Profile
-    if (path === '/profile')
-      return <ComingSoon title="My Profile" />
 
     // 404
     return (
