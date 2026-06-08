@@ -59,7 +59,6 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
     const list = data ?? []
     setNotifs(list)
 
-    // Fetch sender profiles in one query
     const ids = [...new Set(list.filter(n => n.sender_id).map(n => n.sender_id as string))]
     if (ids.length > 0) {
       const { data: sd } = await supabase
@@ -102,7 +101,6 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
 
   const displayed = tab === 'unread' ? notifs.filter(n => !n.is_read) : notifs
 
-  // ── Icon helpers ────────────────────────────────────────────
   const IconMarkAll = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <polyline points="1 12 5 16 13 8"/><polyline points="9 12 13 16 21 8"/>
@@ -123,10 +121,8 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
 
   return (
     <>
-      {/* Backdrop */}
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
 
-      {/* Panel */}
       <div style={{
         position: 'fixed', top: 'var(--members-topnav-h, 100px)', right: 14,
         width: 360,
@@ -150,9 +146,21 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             {[
-              { icon: <IconMarkAll />, title: 'Mark all as read', action: markAllRead },
-              { icon: <IconExpand />,  title: 'Open full page',   action: () => { navigate('/notifications'); onClose() } },
-              { icon: <IconSettings />, title: 'Settings',        action: onClose },
+              {
+                icon: <IconMarkAll />,
+                title: 'Mark all as read',
+                action: markAllRead,
+              },
+              {
+                icon: <IconExpand />,
+                title: 'Open full page',
+                action: () => { navigate('/feed'); onClose() },
+              },
+              {
+                icon: <IconSettings />,
+                title: 'Notification settings',
+                action: () => { navigate('/profile#notifications'); onClose() },
+              },
             ].map((btn, i) => (
               <button
                 key={i}
@@ -160,6 +168,7 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                 title={btn.title}
                 style={{
                   padding: 6, color: '#8AA4C8', borderRadius: 6,
+                  background: 'none', border: 'none', cursor: 'pointer',
                   lineHeight: 0, transition: 'all 0.15s',
                 }}
               >
@@ -184,6 +193,7 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                 fontWeight: tab === t ? 700 : 400,
                 color: tab === t ? '#0A2342' : '#8AA4C8',
                 borderBottom: tab === t ? '2px solid #0A2342' : '2px solid transparent',
+                background: 'none', border: 'none', cursor: 'pointer',
                 textTransform: 'capitalize', transition: 'all 0.15s',
               }}
             >
@@ -231,7 +241,6 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                 onMouseEnter={e => (e.currentTarget.style.background = '#F9F8F5')}
                 onMouseLeave={e => (e.currentTarget.style.background = notif.is_read ? 'transparent' : 'rgba(212,175,55,0.03)')}
               >
-                {/* Avatar */}
                 <div style={{
                   width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
                   background: 'linear-gradient(135deg, #1e3d6e, #0A2342)',
@@ -245,23 +254,21 @@ export default function NotificationsPanel({ isOpen, onClose, onUnreadChange }: 
                   }
                 </div>
 
-                {/* Text */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
                     fontFamily: 'Inter, sans-serif', fontSize: 13,
-                    color: '#0A2342', lineHeight: 1.45,
+                    color: '#0A2342', lineHeight: 1.45, margin: 0,
                   }}>
                     {notif.message}
                   </p>
                   <p style={{
                     fontFamily: 'Inter, sans-serif', fontSize: 11,
-                    color: '#8AA4C8', marginTop: 4,
+                    color: '#8AA4C8', marginTop: 4, margin: '4px 0 0',
                   }}>
                     {timeAgo(notif.created_at)}
                   </p>
                 </div>
 
-                {/* Unread dot */}
                 {!notif.is_read && (
                   <div style={{
                     width: 8, height: 8, borderRadius: '50%',
