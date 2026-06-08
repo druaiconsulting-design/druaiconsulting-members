@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { supabase, formatDate } from './types';
+import { navigate } from '../../lib/router';
+import { supabase, formatRelativeTime } from './types';
 import type { CommunityNotification, NotificationPreferences, NotifType } from './types';
 import MemberAvatar from './MemberAvatar';
 
@@ -26,7 +27,11 @@ export function NotificationBell({
         setUnread(notifs.filter(n => !n.is_read).length);
       });
     const channel = supabase.channel(`notif_${userId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_notifications', filter: `recipient_id=eq.${userId}` }, (payload) => {
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public',
+        table: 'community_notifications',
+        filter: `recipient_id=eq.${userId}`,
+      }, (payload) => {
         const n = payload.new as CommunityNotification;
         setNotifications(prev => [n, ...prev]);
         setUnread(c => c + 1);
@@ -37,61 +42,199 @@ export function NotificationBell({
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setPanelOpen(false);
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setPanelOpen(false);
+      }
     };
     if (panelOpen) document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [panelOpen]);
 
   const markAllRead = async () => {
-    await supabase.from('community_notifications').update({ is_read: true }).eq('recipient_id', userId).eq('is_read', false);
+    await supabase
+      .from('community_notifications')
+      .update({ is_read: true })
+      .eq('recipient_id', userId)
+      .eq('is_read', false);
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     setUnread(0);
   };
 
-  const notifIcon: Record<NotifType, string> = { mention: '@', reply: '↪', new_post: '◆', new_agent_post: '◆' };
+  const notifIcon: Record<NotifType, string> = {
+    mention: '@', reply: '↪', new_post: '◆', new_agent_post: '◆',
+  };
+
+  const iconBtnStyle: React.CSSProperties = {
+    background: 'none', border: 'none', cursor: 'pointer',
+    padding: '4px 6px', borderRadius: 6, display: 'flex',
+    alignItems: 'center', justifyContent: 'center',
+    color: 'rgba(10,35,66,0.4)', fontSize: 14,
+    transition: 'background 0.15s, color 0.15s',
+  };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }} ref={panelRef}>
+    <div
+      style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}
+      ref={panelRef}
+    >
+      {/* Bell icon */}
       <button
-        onClick={() => { setPanelOpen(!panelOpen); if (!panelOpen && unread > 0) markAllRead(); }}
-        style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(10,35,66,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        onClick={() => {
+          setPanelOpen(!panelOpen);
+          if (!panelOpen && unread > 0) markAllRead();
+        }}
+        style={{
+          position: 'relative', background: 'none', border: 'none',
+          cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center',
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="rgba(10,35,66,0.5)" strokeWidth="2"
+          strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
         </svg>
         {unread > 0 && (
-          <span style={{ position: 'absolute', top: '0', right: '0', background: '#C2185B', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: '700' }}>
+          <span style={{
+            position: 'absolute', top: '0', right: '0',
+            background: '#C2185B', color: '#fff', borderRadius: '50%',
+            width: '16px', height: '16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Montserrat', sans-serif", fontSize: '9px', fontWeight: '700',
+          }}>
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
 
-      {/* Avatar — opens settings */}
-      <button onClick={onOpenSettings} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0', borderRadius: '50%' }}>
+      {/* Avatar — opens account settings */}
+      <button
+        onClick={onOpenSettings}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0', borderRadius: '50%' }}
+      >
         <MemberAvatar firstName={userFirstName} photoUrl={userPhotoUrl} size={44} />
       </button>
 
+      {/* Notification panel */}
       {panelOpen && (
-        <div style={{ position: 'absolute', top: '54px', right: '0', width: '320px', background: '#fff', border: '1px solid #E8E4DF', borderRadius: '12px', boxShadow: '0 8px 32px rgba(10,35,66,0.12)', zIndex: 100, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0EDE8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: "'Cinzel', serif", fontSize: '13px', fontWeight: '600', color: '#0A2342', letterSpacing: '0.5px' }}>Notifications</span>
-            {notifications.some(n => !n.is_read) && (
-              <button onClick={markAllRead} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: '#B8941F', fontWeight: '600' }}>Mark all read</button>
-            )}
+        <div style={{
+          position: 'absolute', top: '54px', right: '0',
+          width: '340px', background: '#fff',
+          border: '1px solid #E8E4DF', borderRadius: '12px',
+          boxShadow: '0 8px 32px rgba(10,35,66,0.12)',
+          zIndex: 100, overflow: 'hidden',
+        }}>
+
+          {/* Panel header */}
+          <div style={{
+            padding: '12px 14px',
+            borderBottom: '1px solid #F0EDE8',
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+            <span style={{
+              fontFamily: "'Cinzel', serif", fontSize: '13px',
+              fontWeight: '600', color: '#0A2342', letterSpacing: '0.5px',
+            }}>
+              Notifications
+            </span>
+
+            {/* Three action icons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+              {/* ✓✓ Mark all read */}
+              <button
+                title="Mark all as read"
+                onClick={markAllRead}
+                style={iconBtnStyle}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5"
+                  strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="2 12 7 17 13 11"/>
+                  <polyline points="9 12 14 17 22 9"/>
+                </svg>
+              </button>
+
+              {/* ⊞ Full page */}
+              <button
+                title="View all"
+                onClick={() => { setPanelOpen(false); navigate('/community'); }}
+                style={iconBtnStyle}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                </svg>
+              </button>
+
+              {/* ⚙ Notification settings */}
+              <button
+                title="Notification settings"
+                onClick={() => { setPanelOpen(false); navigate('/profile?tab=notifications'); }}
+                style={iconBtnStyle}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+              </button>
+            </div>
           </div>
-          <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+
+          {/* Notifications list */}
+          <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
             {notifications.length === 0 ? (
-              <div style={{ padding: '32px 16px', textAlign: 'center', color: 'rgba(10,35,66,0.35)', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontStyle: 'italic' }}>No notifications yet</div>
+              <div style={{
+                padding: '36px 16px', textAlign: 'center',
+                color: 'rgba(10,35,66,0.35)',
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: '13px', fontStyle: 'italic',
+              }}>
+                No notifications yet
+              </div>
             ) : notifications.map(n => (
-              <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid #F8F6F3', display: 'flex', alignItems: 'flex-start', gap: '10px', background: n.is_read ? '#fff' : '#FFFBEE' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: n.is_read ? '#F0EDE8' : '#F0D980', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: n.is_read ? 'rgba(10,35,66,0.4)' : '#7A5C00' }}>
+              <div key={n.id} style={{
+                padding: '12px 16px',
+                borderBottom: '1px solid #F8F6F3',
+                display: 'flex', alignItems: 'flex-start', gap: '10px',
+                background: n.is_read ? '#fff' : '#FFFBEE',
+              }}>
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: n.is_read ? '#F0EDE8' : '#F0D980',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: '12px', fontWeight: '700',
+                  color: n.is_read ? 'rgba(10,35,66,0.4)' : '#7A5C00',
+                }}>
                   {notifIcon[n.type] ?? '◆'}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.8)', lineHeight: '1.5', margin: '0 0 3px' }}>{n.message}</p>
-                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.35)', margin: 0 }}>{formatDate(n.created_at)}</p>
+                  <p style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: '12px', color: 'rgba(10,35,66,0.8)',
+                    lineHeight: '1.5', margin: '0 0 3px',
+                  }}>
+                    {n.message}
+                  </p>
+                  <p style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: '11px', color: 'rgba(10,35,66,0.35)', margin: 0,
+                  }}>
+                    {formatRelativeTime(n.created_at)}
+                  </p>
                 </div>
-                {!n.is_read && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#C2185B', flexShrink: 0, marginTop: '6px' }} />}
+                {!n.is_read && (
+                  <div style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: '#C2185B', flexShrink: 0, marginTop: '6px',
+                  }} />
+                )}
               </div>
             ))}
           </div>
@@ -102,7 +245,7 @@ export function NotificationBell({
 }
 
 // =============================================================================
-// SETTINGS PANEL
+// SETTINGS PANEL (kept for backward compatibility — Profile page is the primary settings UI)
 // =============================================================================
 export function SettingsPanel({
   userId, userFirstName, userPhotoUrl, onClose, onPhotoUpdate,
@@ -110,9 +253,9 @@ export function SettingsPanel({
   userId: string; userFirstName: string; userPhotoUrl?: string;
   onClose: () => void; onPhotoUpdate: (url: string) => void;
 }) {
-  const [tab, setTab]             = useState<'profile' | 'notifications'>('profile');
-  const [prefs, setPrefs]         = useState<NotificationPreferences | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [tab, setTab]                 = useState<'profile' | 'notifications'>('profile');
+  const [prefs, setPrefs]             = useState<NotificationPreferences | null>(null);
+  const [uploading, setUploading]     = useState(false);
   const [pushEnabled, setPushEnabled] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -145,7 +288,12 @@ export function SettingsPanel({
     setUploading(false);
   };
 
-  const prefGroups: { key: string; label: string; push: keyof NotificationPreferences; inapp: keyof NotificationPreferences; email: keyof NotificationPreferences }[] = [
+  const prefGroups: {
+    key: string; label: string;
+    push: keyof NotificationPreferences;
+    inapp: keyof NotificationPreferences;
+    email: keyof NotificationPreferences;
+  }[] = [
     { key: 'mention',        label: '@Mentions',      push: 'mention_push',        inapp: 'mention_inapp',        email: 'mention_email' },
     { key: 'reply',          label: 'Thread replies', push: 'reply_push',          inapp: 'reply_inapp',          email: 'reply_email' },
     { key: 'new_agent_post', label: 'Agent posts',    push: 'new_agent_post_push', inapp: 'new_agent_post_inapp', email: 'new_agent_post_email' },
@@ -153,23 +301,74 @@ export function SettingsPanel({
   ];
 
   const Toggle = ({ on, onClick }: { on: boolean; onClick: () => void }) => (
-    <button onClick={onClick} style={{ width: '36px', height: '20px', borderRadius: '10px', background: on ? '#0A2342' : '#E8E4DF', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
-      <div style={{ position: 'absolute', top: '2px', left: on ? '18px' : '2px', width: '16px', height: '16px', borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
+    <button
+      onClick={onClick}
+      style={{
+        width: '36px', height: '20px', borderRadius: '10px',
+        background: on ? '#0A2342' : '#E8E4DF', border: 'none',
+        cursor: 'pointer', position: 'relative',
+        transition: 'background 0.2s', flexShrink: 0,
+      }}
+    >
+      <div style={{
+        position: 'absolute', top: '2px',
+        left: on ? '18px' : '2px',
+        width: '16px', height: '16px', borderRadius: '50%',
+        background: '#fff', transition: 'left 0.2s',
+      }} />
     </button>
   );
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,35,66,0.4)', zIndex: 200, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', padding: '80px 24px 0 0' }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ width: '340px', background: '#fff', borderRadius: '14px', border: '1px solid #E8E4DF', boxShadow: '0 16px 48px rgba(10,35,66,0.15)', overflow: 'hidden' }}>
-        <div style={{ padding: '16px 18px', borderBottom: '1px solid #F0EDE8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: "'Cinzel', serif", fontSize: '13px', fontWeight: '600', color: '#0A2342', letterSpacing: '0.5px' }}>Settings</span>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(10,35,66,0.4)', fontSize: '16px', padding: '0' }}>✕</button>
+    <div
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(10,35,66,0.4)', zIndex: 200,
+        display: 'flex', alignItems: 'flex-start',
+        justifyContent: 'flex-end', padding: '80px 24px 0 0',
+      }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{
+        width: '340px', background: '#fff', borderRadius: '14px',
+        border: '1px solid #E8E4DF',
+        boxShadow: '0 16px 48px rgba(10,35,66,0.15)', overflow: 'hidden',
+      }}>
+        <div style={{
+          padding: '16px 18px', borderBottom: '1px solid #F0EDE8',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span style={{
+            fontFamily: "'Cinzel', serif", fontSize: '13px',
+            fontWeight: '600', color: '#0A2342', letterSpacing: '0.5px',
+          }}>
+            Settings
+          </span>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'rgba(10,35,66,0.4)', fontSize: '16px', padding: '0',
+            }}
+          >
+            ✕
+          </button>
         </div>
+
         <div style={{ display: 'flex', borderBottom: '1px solid #F0EDE8' }}>
           {(['profile', 'notifications'] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)}
-              style={{ flex: 1, padding: '10px', background: 'none', border: 'none', borderBottom: `2px solid ${tab === t ? '#0A2342' : 'transparent'}`, fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: tab === t ? '#0A2342' : 'rgba(10,35,66,0.4)', cursor: 'pointer', textTransform: 'capitalize', letterSpacing: '0.3px', transition: 'all 0.15s' }}>
+            <button
+              key={t} onClick={() => setTab(t)}
+              style={{
+                flex: 1, padding: '10px', background: 'none', border: 'none',
+                borderBottom: `2px solid ${tab === t ? '#0A2342' : 'transparent'}`,
+                fontFamily: "'Montserrat', sans-serif", fontSize: '12px',
+                fontWeight: '600',
+                color: tab === t ? '#0A2342' : 'rgba(10,35,66,0.4)',
+                cursor: 'pointer', textTransform: 'capitalize',
+                letterSpacing: '0.3px', transition: 'all 0.15s',
+              }}
+            >
               {t}
             </button>
           ))}
@@ -180,43 +379,129 @@ export function SettingsPanel({
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
               <MemberAvatar firstName={userFirstName} photoUrl={userPhotoUrl} size={72} />
               <div style={{ textAlign: 'center' }}>
-                <p style={{ fontFamily: "'Cinzel', serif", fontSize: '15px', fontWeight: '600', color: '#0A2342', marginBottom: '4px' }}>{userFirstName}</p>
-                <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.4)' }}>Community Member</p>
+                <p style={{
+                  fontFamily: "'Cinzel', serif", fontSize: '15px',
+                  fontWeight: '600', color: '#0A2342', marginBottom: '4px',
+                }}>
+                  {userFirstName}
+                </p>
+                <p style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: '11px', color: 'rgba(10,35,66,0.4)',
+                }}>
+                  Community Member
+                </p>
               </div>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-              <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                style={{ background: 'transparent', border: '1.5px solid #0A2342', borderRadius: '8px', padding: '9px 20px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: '#0A2342', cursor: uploading ? 'default' : 'pointer', letterSpacing: '0.5px', opacity: uploading ? 0.5 : 1 }}>
+              <input
+                ref={fileInputRef} type="file" accept="image/*"
+                onChange={handlePhotoUpload} style={{ display: 'none' }}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                style={{
+                  background: 'transparent', border: '1.5px solid #0A2342',
+                  borderRadius: '8px', padding: '9px 20px',
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: '12px', fontWeight: '700', color: '#0A2342',
+                  cursor: uploading ? 'default' : 'pointer',
+                  letterSpacing: '0.5px', opacity: uploading ? 0.5 : 1,
+                }}
+              >
                 {uploading ? 'Uploading...' : userPhotoUrl ? 'Change Photo' : 'Upload Photo'}
+              </button>
+              <button
+                onClick={() => { onClose(); navigate('/profile'); }}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: '11px', fontWeight: '700',
+                  color: '#D4AF37', letterSpacing: '0.5px',
+                  textDecoration: 'underline',
+                }}
+              >
+                Full Account Settings →
               </button>
             </div>
           </div>
         )}
 
         {tab === 'notifications' && prefs && (
-          <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #F0EDE8', marginBottom: '4px' }}>
+          <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '10px 0', borderBottom: '1px solid #F0EDE8', marginBottom: '4px',
+            }}>
               <div>
-                <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '700', color: '#0A2342', margin: '0 0 2px' }}>Push notifications</p>
-                <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(10,35,66,0.4)', margin: 0 }}>{pushEnabled ? 'Enabled on this device' : 'Not enabled'}</p>
+                <p style={{
+                  fontFamily: "'Montserrat', sans-serif", fontSize: '12px',
+                  fontWeight: '700', color: '#0A2342', margin: '0 0 2px',
+                }}>
+                  Push notifications
+                </p>
+                <p style={{
+                  fontFamily: "'Montserrat', sans-serif", fontSize: '11px',
+                  color: 'rgba(10,35,66,0.4)', margin: 0,
+                }}>
+                  {pushEnabled ? 'Enabled on this device' : 'Not enabled'}
+                </p>
               </div>
               {!pushEnabled && (
-                <button onClick={async () => { const perm = await Notification.requestPermission(); if (perm === 'granted') setPushEnabled(true); }}
-                  style={{ background: '#0A2342', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 12px', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Enable</button>
+                <button
+                  onClick={async () => {
+                    const perm = await Notification.requestPermission();
+                    if (perm === 'granted') setPushEnabled(true);
+                  }}
+                  style={{
+                    background: '#0A2342', color: '#fff', border: 'none',
+                    borderRadius: '6px', padding: '6px 12px',
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                  }}
+                >
+                  Enable
+                </button>
               )}
             </div>
             <div style={{ marginTop: '8px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px', marginBottom: '6px', paddingLeft: '120px' }}>
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+                gap: '4px', marginBottom: '6px', paddingLeft: '120px',
+              }}>
                 {['Push', 'In-App', 'Email'].map(l => (
-                  <span key={l} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', textAlign: 'center', letterSpacing: '0.5px' }}>{l.toUpperCase()}</span>
+                  <span key={l} style={{
+                    fontFamily: "'Montserrat', sans-serif", fontSize: '10px',
+                    fontWeight: '700', color: 'rgba(10,35,66,0.4)',
+                    textAlign: 'center', letterSpacing: '0.5px',
+                  }}>
+                    {l.toUpperCase()}
+                  </span>
                 ))}
               </div>
               {prefGroups.map(group => (
-                <div key={group.key} style={{ display: 'flex', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #F8F6F3' }}>
-                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#0A2342', width: '120px', flexShrink: 0 }}>{group.label}</span>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px', flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}><Toggle on={prefs[group.push]} onClick={() => togglePref(group.push)} /></div>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}><Toggle on={prefs[group.inapp]} onClick={() => togglePref(group.inapp)} /></div>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}><Toggle on={prefs[group.email]} onClick={() => togglePref(group.email)} /></div>
+                <div key={group.key} style={{
+                  display: 'flex', alignItems: 'center',
+                  padding: '10px 0', borderBottom: '1px solid #F8F6F3',
+                }}>
+                  <span style={{
+                    fontFamily: "'Montserrat', sans-serif", fontSize: '12px',
+                    color: '#0A2342', width: '120px', flexShrink: 0,
+                  }}>
+                    {group.label}
+                  </span>
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '4px', flex: 1,
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <Toggle on={prefs[group.push]} onClick={() => togglePref(group.push)} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <Toggle on={prefs[group.inapp]} onClick={() => togglePref(group.inapp)} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <Toggle on={prefs[group.email]} onClick={() => togglePref(group.email)} />
+                    </div>
                   </div>
                 </div>
               ))}
