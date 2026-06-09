@@ -7,7 +7,51 @@ import LevelBadge from '../community-engagement/LevelBadge';
 
 const APP_URL = 'https://app.druaiconsulting.com';
 
-// ── Video embed detector ──────────────────────────────────────────────────────
+// ── Bunny video player (fetches signed token before rendering) ────────────────
+function BunnyVideoPlayer({ embedUrl }: { embedUrl: string }) {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [loading,   setLoading]   = useState(true);
+
+  useEffect(() => {
+    const videoId = embedUrl.match(/iframe\.mediadelivery\.net\/embed\/\d+\/([a-zA-Z0-9-]+)/)?.[1];
+    if (!videoId) { setLoading(false); return; }
+
+    fetch('/api/bunny-token', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ videoId }),
+    })
+      .then(r => r.json())
+      .then(data => { setSignedUrl(data.signedUrl ?? null); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [embedUrl]);
+
+  if (loading) {
+    return (
+      <div style={{ padding: '1.5rem', textAlign: 'center', background: '#F8F6F2', borderRadius: 8 }}>
+        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.35)' }}>
+          Loading video…
+        </span>
+      </div>
+    );
+  }
+
+  if (!signedUrl) return null;
+
+  return (
+    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+      <iframe
+        src={signedUrl}
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title="Video"
+      />
+    </div>
+  );
+}
+
+// ── Non-Bunny video embed detector ────────────────────────────────────────────
 function getVideoEmbed(url: string): string | null {
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
   if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
@@ -65,6 +109,7 @@ export default function PostCard({
   const paragraphs   = formatContent(post.content);
   const category     = (post as any).category  as string  ?? 'general';
   const memberLevel  = isMemberPost ? (levelMap[post.agent_id] ?? 'Connected') : null;
+  const isBunnyVideo = !!(post.video_url && post.video_url.includes('mediadelivery.net'));
 
   const [pinned,       setPinned]       = useState<boolean>((post as any).is_pinned ?? false);
   const [pinLoading,   setPinLoading]   = useState(false);
@@ -156,7 +201,7 @@ export default function PostCard({
   };
 
   const countLabel      = commentCount === null ? '' : commentCount > 0 ? ` · ${commentCount}` : '';
-  const videoEmbed      = post.video_url ? getVideoEmbed(post.video_url) : null;
+  const videoEmbed      = (post.video_url && !isBunnyVideo) ? getVideoEmbed(post.video_url) : null;
   const topBorderColor  = pinned || !isMemberPost ? '#B8941F' : '#2D5A8E';
   const cardShadow      = pinned ? '0 1px 4px rgba(212,175,55,0.18)' : '0 1px 4px rgba(10,35,66,0.06)';
   const cardShadowHover = pinned ? '0 4px 20px rgba(212,175,55,0.22)' : '0 4px 20px rgba(10,35,66,0.1)';
@@ -217,7 +262,7 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* ── Title — agent posts only ───────────────────────────────────────── */}
+      {/* ── Title — agent/admin posts only ────────────────────────────────── */}
       {!isMemberPost && post.title && (
         <h3 style={{ fontFamily: "'Cinzel', serif", color: '#0A2342', fontSize: '17px', fontWeight: '600', lineHeight: '1.45', marginBottom: '16px' }}>
           {post.title}
@@ -238,15 +283,22 @@ export default function PostCard({
         </div>
       )}
 
-      {/* ── Video embed ───────────────────────────────────────────────────── */}
-      {post.video_url && videoEmbed && (
+      {/* ── Bunny video (signed token) ────────────────────────────────────── */}
+      {isBunnyVideo && (
+        <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #F0EDE8' }}>
+          <BunnyVideoPlayer embedUrl={post.video_url!} />
+        </div>
+      )}
+
+      {/* ── YouTube / Vimeo / Loom embed ──────────────────────────────────── */}
+      {post.video_url && !isBunnyVideo && videoEmbed && (
         <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #F0EDE8', position: 'relative', paddingBottom: '56.25%', height: 0 }}>
           <iframe src={videoEmbed} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="Video" />
         </div>
       )}
 
-      {/* ── Direct video ──────────────────────────────────────────────────── */}
-      {post.video_url && !videoEmbed && (
+      {/* ── Direct video (non-Bunny, non-embed) ───────────────────────────── */}
+      {post.video_url && !isBunnyVideo && !videoEmbed && (
         <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #F0EDE8' }}>
           <video src={post.video_url} controls style={{ width: '100%', maxHeight: '400px', display: 'block', background: '#000' }} />
         </div>
