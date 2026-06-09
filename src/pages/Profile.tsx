@@ -290,7 +290,7 @@ function ProfileTab({ profile, onUpdate }: {
 
         {editing ? (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 18 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 18 }}>
               <div><label style={labelStyle}>First Name</label><input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} style={inputStyle} /></div>
               <div><label style={labelStyle}>Last Name</label><input type="text" value={lastName} onChange={e => setLastName(e.target.value)} style={inputStyle} /></div>
             </div>
@@ -625,7 +625,7 @@ export default function Profile() {
   ]
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: window.innerWidth < 768 ? '16px 12px' : '28px 24px', maxWidth: 900, margin: '0 auto' }}>
 
       {/* Page header */}
       <div style={{ marginBottom: 20 }}>
@@ -638,7 +638,7 @@ export default function Profile() {
       </div>
 
       {/* Tab bar */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid rgba(10,35,66,0.08)', paddingBottom: 0 }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid rgba(10,35,66,0.08)', paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' as any }}>
         {tabs.map(t => (
           <button
             key={t.id}
@@ -660,7 +660,7 @@ export default function Profile() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 240px) minmax(0, 1fr)', gap: 20, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'minmax(0, 240px) minmax(0, 1fr)', gap: 20, alignItems: 'start' }}>
         <LeftCard profile={profile} />
 
         <div>

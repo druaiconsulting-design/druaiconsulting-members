@@ -200,7 +200,7 @@ export default function LessonPlayer() {
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ padding: '28px 24px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '16px 12px' : '28px 24px', maxWidth: 900, margin: '0 auto' }}>
 
       {/* Back nav + week/lesson badge */}
       <div style={{

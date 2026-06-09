@@ -2,7 +2,7 @@ import { navigate } from '../../lib/router'
 
 export default function Announcements() {
   return (
-    <div style={{ minHeight: '60vh', padding: '40px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '60vh', padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px 80px' : '40px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
       {/* Back link */}
       <div style={{ width: '100%', maxWidth: 600, marginBottom: 32 }}>

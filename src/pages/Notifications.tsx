@@ -288,7 +288,7 @@ export default function Notifications() {
   }
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: 760, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '16px 12px' : '28px 24px', maxWidth: 760, margin: '0 auto' }}>
 
       {/* Page header */}
       <div style={{

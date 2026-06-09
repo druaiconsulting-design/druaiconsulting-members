@@ -173,7 +173,7 @@ export default function Leaderboard() {
     return (
       <div
         key={row.id}
-        style={{ display: 'grid', gridTemplateColumns: '40px 1fr 120px', alignItems: 'center', gap: '12px', padding: '16px 20px', background: isMe ? '#FFFBEE' : '#FFFFFF', borderBottom: '1px solid #F0EDE8', borderLeft: isMe ? '3px solid #D4AF37' : '3px solid transparent', transition: 'background 0.15s ease' }}
+        style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth < 768 ? '32px 1fr 80px' : '40px 1fr 120px', alignItems: 'center', gap: typeof window !== 'undefined' && window.innerWidth < 768 ? '8px' : '12px', padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '12px 10px' : '16px 20px', background: isMe ? '#FFFBEE' : '#FFFFFF', borderBottom: '1px solid #F0EDE8', borderLeft: isMe ? '3px solid #D4AF37' : '3px solid transparent', transition: 'background 0.15s ease' }}
         onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFF8E1' : '#FAFAF8' }}
         onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = isMe ? '#FFFBEE' : '#FFFFFF' }}
       >
@@ -205,7 +205,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div style={{ minHeight: '60vh', padding: '40px 24px 80px' }}>
+    <div style={{ minHeight: '60vh', padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px 80px' : '40px 24px 80px' }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Back */}
@@ -249,7 +249,7 @@ export default function Leaderboard() {
             {/* Gold accent strip — rounded top to match card without overflow:hidden */}
             <div style={{ height: '4px', background: 'linear-gradient(90deg, #D4AF37, #B8941F, #D4AF37)', borderRadius: '16px 16px 0 0' }} />
 
-            <div style={{ padding: '28px 32px 32px' }}>
+            <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '16px 14px 20px' : '28px 32px 32px' }}>
 
               {/* Top row: avatar + name/level hero */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>

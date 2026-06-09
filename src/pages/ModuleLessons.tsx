@@ -275,7 +275,7 @@ export default function ModuleLessons() {
   const pct            = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
 
   return (
-    <div style={{ padding: '32px 24px', maxWidth: 740, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '16px 12px' : '32px 24px', maxWidth: 740, margin: '0 auto' }}>
 
       {/* Back nav */}
       <button

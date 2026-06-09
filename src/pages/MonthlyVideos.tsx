@@ -57,7 +57,7 @@ function Loader() {
 
 function UpgradeGate() {
   return (
-    <div style={{ padding: '40px 24px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px' : '40px 24px', maxWidth: 900, margin: '0 auto' }}>
 
       {/* Page header */}
       <div style={{ marginBottom: 28 }}>
@@ -348,7 +348,7 @@ export default function MonthlyVideos() {
   const replays = videos.filter(v => v.id !== selectedVideo?.id)
 
   return (
-    <div style={{ padding: '36px 24px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px' : '36px 24px', maxWidth: 900, margin: '0 auto' }}>
 
       {/* Page header */}
       <div style={{ marginBottom: 28 }}>

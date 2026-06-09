@@ -88,7 +88,7 @@ function CoursesLoader() {
 
 function LockedState() {
   return (
-    <div style={{ padding: '40px 24px', maxWidth: 1000, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px' : '40px 24px', maxWidth: 1000, margin: '0 auto' }}>
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -416,7 +416,7 @@ function EnrolledView({
   overallProgress: number
 }) {
   return (
-    <div style={{ padding: '36px 24px', maxWidth: 960, margin: '0 auto' }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px' : '36px 24px', maxWidth: 960, margin: '0 auto' }}>
 
       {/* Course header */}
       <div style={{ marginBottom: 36 }}>

@@ -122,7 +122,7 @@ export default function AcceleratorCircle() {
     return (
       <>
         <style>{globalStyles}</style>
-        <div style={{ minHeight: '60vh', padding: '40px 24px 80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ minHeight: '60vh', padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px 80px' : '40px 24px 80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: '100%', maxWidth: 520 }}>
             <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: 20, boxShadow: '0 8px 40px rgba(10,35,66,0.08)', overflow: 'hidden', textAlign: 'center' }}>
               <div style={{ height: 4, background: 'linear-gradient(90deg, #D4AF37, #B8941F, #D4AF37)' }} />
@@ -166,7 +166,7 @@ export default function AcceleratorCircle() {
     <>
       <style>{globalStyles}</style>
       <div style={{ minHeight: '100%', background: '#FAFAF8' }}>
-        <main style={{ padding: '40px 24px 80px' }}>
+        <main style={{ padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px 80px' : '40px 24px 80px' }}>
           <div style={{ maxWidth: 860, margin: '0 auto' }}>
 
             {/* Header */}
