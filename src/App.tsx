@@ -14,6 +14,7 @@ import Notifications from './pages/Notifications'
 import Leaderboard from './pages/community-engagement/Leaderboard'
 import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
+import SupportHub from './pages/SupportHub'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -162,9 +163,9 @@ export default function App() {
     if (path.startsWith('/resources'))
       return <ComingSoon title="Resources" />
 
-    // Support
+    // Support Hub
     if (path.startsWith('/support'))
-      return <ComingSoon title="Support Hub" />
+      return <SupportHub />
 
     // 404
     return (
