@@ -97,9 +97,11 @@ export default function Sidebar({
         top: 'var(--members-topnav-h, 64px)' as any,
         left: mobileOpen ? 0 : -SIDEBAR_WIDTH,
         width: SIDEBAR_WIDTH,
-        height: 'calc(100vh - var(--members-topnav-h, 64px))' as any,
+        height: 'calc(100vh - var(--members-topnav-h, 64px) - 60px)' as any,
         transition: 'left 0.25s ease',
         zIndex: 50,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch' as any,
       }
     : {
         position: 'fixed',
