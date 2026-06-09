@@ -60,7 +60,7 @@ const pageContent: React.CSSProperties = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SupportHub() {
-  const { profile, session, profileDisplayName } = useAuth()
+  const { profile, session } = useAuth()
 
   const [view,          setView]          = useState<View>('landing')
   const [category,      setCategory]      = useState<string | null>(null)
@@ -75,9 +75,9 @@ export default function SupportHub() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   const email      = session?.user?.email || ''
-  const memberName = profileDisplayName
-    || (profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '')
-    || email
+  const memberName = profile
+    ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || email
+    : email
 
   const stripeUrl = `${STRIPE_PORTAL}${email ? `?prefilled_email=${encodeURIComponent(email)}` : ''}`
 
@@ -120,7 +120,7 @@ export default function SupportHub() {
         .from('support_requests')
         .insert({
           member_id:    session?.user?.id,
-          member_name:  memberName,
+          member_name:  memberName || email,
           member_email: email,
           member_tier:  profile?.tier || 'navigator',
           category,
