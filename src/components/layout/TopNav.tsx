@@ -449,7 +449,6 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
               height: 52,
               borderRadius: 12,
               objectFit: 'cover',
-              display: 'block',
               flexShrink: 0,
               alignSelf: 'center',
             }}
