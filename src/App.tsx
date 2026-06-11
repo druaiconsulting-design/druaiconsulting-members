@@ -15,6 +15,7 @@ import Leaderboard from './pages/community-engagement/Leaderboard'
 import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
 import SupportHub from './pages/SupportHub'
+import Frameworks from './pages/Frameworks'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -142,6 +143,10 @@ export default function App() {
     // Courses — main catalog
     if (path === '/courses' || path === '/courses/')
       return <Courses />
+
+    // Frameworks
+    if (path === '/frameworks' || path.startsWith('/frameworks'))
+      return <Frameworks />
 
     // Monthly Videos
     if (path === '/videos' || path.startsWith('/videos/'))
