@@ -1,5 +1,4 @@
 import { useState } from "react";
-import MemberLayout from "../components/layout/MemberLayout";
 
 const BYPASS_PAYMENT = false;
 
@@ -232,7 +231,7 @@ export default function Frameworks() {
   const openModal = (url: string, title: string) => setModal({ url, title });
 
   return (
-    <MemberLayout currentPath={window.location.pathname}>
+    <>
       {modal && <TermsModal modal={modal} onClose={() => setModal(null)} />}
       <main style={{ flex: 1, padding: "2.5rem 1.5rem", maxWidth: 680, margin: "0 auto", width: "100%" }}>
 
@@ -488,6 +487,6 @@ export default function Frameworks() {
           © 2026 DRU CLEAR™ · All Rights Reserved · DRU AI Consulting
         </footer>
       </main>
-    </MemberLayout>
+    </>
   );
 }
