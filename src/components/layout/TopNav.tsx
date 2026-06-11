@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { label: 'Home',           path: '/' },
   { label: 'Community',      path: '/feed' },
   { label: 'Courses',        path: '/courses' },
+  { label: 'Frameworks',     path: '/frameworks' },
   { label: 'Monthly Videos', path: '/videos',  acceleratorOnly: true },
   { label: 'Leaderboard',    path: '/leaderboard' },
 ]
@@ -25,6 +26,7 @@ const NAV_LINKS = [
 const MOBILE_TABS = [
   { label: 'Community',      path: '/feed' },
   { label: 'Courses',        path: '/courses' },
+  { label: 'Frameworks',     path: '/frameworks' },
   { label: 'Monthly Videos', path: '/videos',  acceleratorOnly: true },
   { label: 'Leaderboard',    path: '/leaderboard' },
 ]
@@ -151,8 +153,6 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
       <div onClick={() => setAvatarMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
       <div style={{
         position: 'fixed',
-        // On mobile: anchor above the bottom bar (bottom: BOTTOM_BAR_H + 8)
-        // On desktop: anchor below the top nav
         ...(isMobile
           ? { bottom: BOTTOM_BAR_H + 8, top: 'auto' }
           : { top: 'var(--members-topnav-h, 100px)', bottom: 'auto' }
@@ -395,13 +395,10 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
       <header className="dru-members-header" style={{
         position: 'fixed', top: 0, left: 0, right: 0,
         height: isMobile ? 64 : 100,
-        // MOBILE: transparent — floats on page background like Circle app
-        // DESKTOP: full navy bar
         background: isMobile ? 'transparent' : '#0A2342',
         borderBottom: isMobile ? 'none' : '1px solid rgba(212,175,55,0.18)',
         display: 'flex', alignItems: 'center', padding: '0 12px', gap: '8px',
         zIndex: 100,
-        // Hide on scroll down (mobile only)
         transform: (isMobile && !topBarVisible) ? 'translateY(-100%)' : 'translateY(0)',
         transition: 'transform 0.25s ease',
       }}>
@@ -413,7 +410,6 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           style={{
             width: 40, height: 40, borderRadius: 8,
             background: 'transparent', border: 'none',
-            // Mobile: dark icon on light page bg; Desktop: light icon on navy bg
             color: isMobile ? '#0A2342' : '#EDE8DB',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', transition: 'color 0.15s',
@@ -432,14 +428,12 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           onClick={() => navigate('/')}
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', display: 'flex', alignItems: 'center', flexShrink: 0 }}
         >
-          {/* Full logo — desktop */}
           <img
             src="/new-dru-clear-transparent-logo.png"
             alt="DRU CLEAR™"
             className="dru-members-logo-full"
             style={{ height: 100, width: 'auto', objectFit: 'contain', display: 'block' }}
           />
-          {/* Shield — mobile: original 512x512 icon as rounded square badge */}
           <img
             src="/dru-shield-icon.png"
             alt="DRU CLEAR™"
@@ -455,7 +449,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
           />
         </button>
 
-        {/* ── DESKTOP: scrollable nav links centered (hidden on mobile via JS isMobile) ── */}
+        {/* ── DESKTOP: scrollable nav links ── */}
         {!isMobile && (
         <nav
           className="dru-members-nav-scroll"
@@ -483,7 +477,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         </nav>
         )}
 
-        {/* ── MOBILE: scrollable pill tabs (Home is in bottom bar) ── */}
+        {/* ── MOBILE: scrollable pill tabs ── */}
         {isMobile && (
         <nav
           className="dru-members-nav-scroll"
