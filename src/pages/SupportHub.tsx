@@ -868,6 +868,29 @@ export default function SupportHub() {
           )}
 
           {/* ── Stripe Elements: Update Payment Form ── */}
+          {showUpdatePayment && !billing && !billingLoading && (
+            <div style={{
+              background:   'rgba(27,77,142,0.05)',
+              border:       '1px solid rgba(27,77,142,0.15)',
+              borderRadius: 12,
+              padding:      '18px 20px',
+              marginBottom: 20,
+            }}>
+              <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 15, fontWeight: 700, color: NAVY, margin: '0 0 6px' }}>
+                We couldn't locate your billing record
+              </p>
+              <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: '#555', margin: '0 0 12px', lineHeight: 1.6 }}>
+                This can happen if your payment was processed under a different email. Our team can update your payment method directly.
+              </p>
+              <button
+                onClick={() => { setShowUpdatePayment(false); setView('contact') }}
+                style={{ background: NAVY, color: '#fff', border: 'none', borderRadius: 32, padding: '10px 22px', fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Contact Our Team →
+              </button>
+            </div>
+          )}
+
           {showUpdatePayment && billing && (
             <Elements stripe={stripePromise}>
               <UpdatePaymentForm
@@ -884,7 +907,38 @@ export default function SupportHub() {
           )}
 
           {/* ── Cancel confirmation ── */}
-          {showCancelConfirm && (
+          {showCancelConfirm && !billing && (
+            <div style={{
+              background:   'rgba(194,24,91,0.05)',
+              border:       '1.5px solid rgba(194,24,91,0.2)',
+              borderRadius: 12,
+              padding:      '18px 20px',
+              marginBottom: 20,
+            }}>
+              <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 15, fontWeight: 700, color: MAGENTA, margin: '0 0 6px' }}>
+                We couldn't locate your billing record
+              </p>
+              <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: '#555', margin: '0 0 12px', lineHeight: 1.6 }}>
+                Please contact our team to cancel your subscription and we'll take care of it right away.
+              </p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => { setShowCancelConfirm(false); setView('contact') }}
+                  style={{ background: MAGENTA, color: '#fff', border: 'none', borderRadius: 32, padding: '10px 22px', fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Contact Our Team →
+                </button>
+                <button
+                  onClick={() => setShowCancelConfirm(false)}
+                  style={{ background: 'transparent', color: '#666', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 32, padding: '10px 22px', fontFamily: 'Montserrat, sans-serif', fontSize: 13, cursor: 'pointer' }}
+                >
+                  Never Mind
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showCancelConfirm && billing && (
             <div style={{
               background:   'rgba(194,24,91,0.05)',
               border:       `1.5px solid rgba(194,24,91,0.2)`,
