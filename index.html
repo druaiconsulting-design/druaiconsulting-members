@@ -3,9 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0A2342" />
     <meta name="description" content="DRU AI Leadership Ecosystem™ Member Portal" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DRU AI" />
     <title>DRU Member Portal</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -41,22 +46,28 @@
       ::-webkit-scrollbar-thumb { background: #1e3d6e; border-radius: 4px; }
       ::-webkit-scrollbar-thumb:hover { background: #2d5a9e; }
 
-      /* Spinner keyframe used in loading screen */
+      /* Spinner */
       @keyframes dru-spin {
         to { transform: rotate(360deg); }
       }
 
-      /* Fade-in for page transitions */
+      /* Fade-in */
       @keyframes dru-fadein {
         from { opacity: 0; transform: translateY(6px); }
         to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Pulse — used for Coming Soon indicators */
+      @keyframes dru-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.5; transform: scale(0.85); }
       }
 
       .dru-page-enter {
         animation: dru-fadein 0.22s ease forwards;
       }
 
-      /* Sidebar hover effects need :hover so we define them here */
+      /* Sidebar hover effects */
       .sidebar-nav-item:hover {
         background: rgba(212,175,55,0.08) !important;
         color: #D4AF37 !important;
@@ -77,5 +88,12 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {})
+        })
+      }
+    </script>
   </body>
 </html>
