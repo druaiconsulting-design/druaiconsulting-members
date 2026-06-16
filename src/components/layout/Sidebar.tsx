@@ -50,6 +50,9 @@ function isActive(itemPath: string, currentPath: string): boolean {
   if (itemPath === '/') {
     return currentPath === '/' || currentPath === '/home'
   }
+  if (itemPath === '/videos') {
+    return currentPath === '/videos' || currentPath === '/videos/'
+  }
   return currentPath === itemPath || currentPath.startsWith(itemPath + '/')
 }
 
