@@ -107,6 +107,8 @@ export default function PostCard({
 }) {
   const isMemberPost = post.post_type === 'member_post';
   const paragraphs   = formatContent(post.content);
+  const [showSpanish, setShowSpanish] = useState(false);
+  const contentEs = (post as any).content_es as string | null | undefined;
   const category     = (post as any).category  as string  ?? 'general';
   const memberLevel  = isMemberPost ? (levelMap[post.agent_id] ?? 'Connected') : null;
   const isBunnyVideo = !!(post.video_url && post.video_url.includes('mediadelivery.net'));
@@ -272,8 +274,16 @@ export default function PostCard({
       {/* ── Content ───────────────────────────────────────────────────────── */}
       {post.content.trim() && (
         <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', lineHeight: '1.85', color: 'rgba(10,35,66,0.7)' }}>
-          {paragraphs.map((p, i) => <p key={i} style={{ marginBottom: '12px' }}>{p}</p>)}
+          {(showSpanish && contentEs ? contentEs.split('\n').filter((p: string) => p.trim()) : paragraphs).map((p, i) => <p key={i} style={{ marginBottom: '12px' }}>{p}</p>)}
         </div>
+      )}
+      {/* 🌐 Español toggle */}
+      {contentEs && (
+        <button
+          onClick={() => setShowSpanish(s => !s)}
+          style={{ marginTop: '8px', background: showSpanish ? 'rgba(166,137,32,0.12)' : 'transparent', border: '1px solid rgba(166,137,32,0.4)', borderRadius: 20, padding: '3px 12px', fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: 700, color: '#A68920', cursor: 'pointer', letterSpacing: '0.04em', transition: 'all 0.15s' }}>
+          🌐 {showSpanish ? 'Ver en Inglés' : 'Ver en Español'}
+        </button>
       )}
 
       {/* ── Image ─────────────────────────────────────────────────────────── */}
