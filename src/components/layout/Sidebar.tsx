@@ -325,7 +325,7 @@ export default function Sidebar({
 
           {[
             { icon: '🎥', label: 'Monthly Leadership Lab!', path: '/videos' },
-            { icon: '▶️', label: 'Replays',                  path: '/videos/replays' },
+            { icon: '🎬', label: 'Member Vault',             path: '/videos/replays' },
           ].map((item) => renderItem({ ...item, acceleratorOnly: true }, true))}
         </div>
 
