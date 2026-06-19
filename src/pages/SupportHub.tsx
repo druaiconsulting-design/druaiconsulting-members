@@ -319,6 +319,11 @@ export default function SupportHub() {
     }
   }, [view])
 
+  // ─── Always start at the top when switching views (fixes mobile scroll-jump) ──
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [view])
+
   // ─── Handlers ──────────────────────────────────────────────────────────
 
   const handlePasswordReset = async () => {
@@ -582,18 +587,26 @@ export default function SupportHub() {
 
     return (
       <div style={pageWrap}>
-        <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
-          <img
-            src="/manage-account-banner.png"
-            alt="Manage Your Account"
-            style={{ width: '100%', display: 'block' }}
-          />
-          <button
-            onClick={() => setView('landing')}
-            style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 32, marginBottom: 0 }}
-          >
-            ← Support Hub
-          </button>
+        <div style={{
+          padding:   isMobile ? '16px 16px 0' : '24px 40px 0',
+          maxWidth:  isMobile ? undefined : 1100,
+          margin:    '0 auto',
+          boxSizing: 'border-box',
+          width:     '100%',
+        }}>
+          <div style={{ background: NAVY, position: 'relative', borderRadius: 16, overflow: 'hidden' }}>
+            <img
+              src="/manage-account-banner.png"
+              alt="Manage Your Account"
+              style={{ width: '100%', display: 'block' }}
+            />
+            <button
+              onClick={() => setView('landing')}
+              style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 24, marginBottom: 0 }}
+            >
+              ← Support Hub
+            </button>
+          </div>
         </div>
 
         <div style={pageContent}>
@@ -1017,18 +1030,26 @@ export default function SupportHub() {
 
     return (
       <div style={pageWrap}>
-        <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
-          <img
-            src="/contact-team-banner.png"
-            alt="Contact the Team"
-            style={{ width: '100%', display: 'block' }}
-          />
-          <button
-            onClick={() => setView('landing')}
-            style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 32, marginBottom: 0 }}
-          >
-            ← Support Hub
-          </button>
+        <div style={{
+          padding:   isMobile ? '16px 16px 0' : '24px 40px 0',
+          maxWidth:  isMobile ? undefined : 1100,
+          margin:    '0 auto',
+          boxSizing: 'border-box',
+          width:     '100%',
+        }}>
+          <div style={{ background: NAVY, position: 'relative', borderRadius: 16, overflow: 'hidden' }}>
+            <img
+              src="/contact-team-banner.png"
+              alt="Contact the Team"
+              style={{ width: '100%', display: 'block' }}
+            />
+            <button
+              onClick={() => setView('landing')}
+              style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 24, marginBottom: 0 }}
+            >
+              ← Support Hub
+            </button>
+          </div>
         </div>
 
         <div style={pageContent}>
@@ -1129,18 +1150,26 @@ export default function SupportHub() {
 
     return (
       <div style={pageWrap}>
-        <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
-          <img
-            src="/community-protocols-banner.png"
-            alt="Community Protocols"
-            style={{ width: '100%', display: 'block' }}
-          />
-          <button
-            onClick={() => setView('landing')}
-            style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 32, marginBottom: 0 }}
-          >
-            ← Support Hub
-          </button>
+        <div style={{
+          padding:   isMobile ? '16px 16px 0' : '24px 40px 0',
+          maxWidth:  isMobile ? undefined : 1100,
+          margin:    '0 auto',
+          boxSizing: 'border-box',
+          width:     '100%',
+        }}>
+          <div style={{ background: NAVY, position: 'relative', borderRadius: 16, overflow: 'hidden' }}>
+            <img
+              src="/community-protocols-banner.png"
+              alt="Community Protocols"
+              style={{ width: '100%', display: 'block' }}
+            />
+            <button
+              onClick={() => setView('landing')}
+              style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 24, marginBottom: 0 }}
+            >
+              ← Support Hub
+            </button>
+          </div>
         </div>
 
         <div style={pageContent}>
