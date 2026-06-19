@@ -114,6 +114,7 @@ export default function PostCard({
   const isBunnyVideo = !!(post.video_url && post.video_url.includes('mediadelivery.net'));
 
   const [pinned,       setPinned]       = useState<boolean>((post as any).is_pinned ?? false);
+  const [videoStarted, setVideoStarted] = useState(false);
   const [pinLoading,   setPinLoading]   = useState(false);
   const [hearted,      setHearted]      = useState(false);
   const [heartCount,   setHeartCount]   = useState(0);
@@ -296,7 +297,22 @@ export default function PostCard({
       {/* ── Bunny video (signed token) ────────────────────────────────────── */}
       {isBunnyVideo && (
         <div style={{ marginTop: '12px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #F0EDE8' }}>
-          <BunnyVideoPlayer embedUrl={post.video_url!} />
+          {videoStarted || !post.thumbnail_url ? (
+            <BunnyVideoPlayer embedUrl={post.video_url!} />
+          ) : (
+            <button
+              onClick={() => setVideoStarted(true)}
+              aria-label="Play video"
+              style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', cursor: 'pointer', background: 'none' }}
+            >
+              <img src={post.thumbnail_url} alt="" style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(10,35,66,0.25)', transition: 'background 0.15s' }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.25)' }}>
+                  <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '10px 0 10px 16px', borderColor: 'transparent transparent transparent #0A2342', marginLeft: 4 }} />
+                </div>
+              </div>
+            </button>
+          )}
         </div>
       )}
 
