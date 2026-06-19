@@ -447,7 +447,7 @@ export default function MonthlyVideos() {
               />
             ) : !playClicked ? (
               <button
-                onClick={() => setPlayClicked(true)}
+                onClick={() => { setVideoLoading(true); setPlayClicked(true) }}
                 aria-label="Play video"
                 style={{ position: 'absolute', inset: 0, padding: 0, border: 'none', cursor: 'pointer', background: 'none' }}
               >
