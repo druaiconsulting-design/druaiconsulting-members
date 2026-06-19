@@ -38,7 +38,7 @@ export interface CommunityPost {
   post_type: PostType; tier_required: TierRequired;
   agent_id: string; agent_name: string;
   published_at: string; is_active: boolean;
-  pdf_url?: string; video_url?: string; image_url?: string;
+  pdf_url?: string; video_url?: string; image_url?: string; thumbnail_url?: string;
   content_es?: string | null;
   // Engagement fields
   category?:   PostCategory;
