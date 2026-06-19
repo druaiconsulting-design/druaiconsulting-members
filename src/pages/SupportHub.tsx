@@ -18,7 +18,7 @@ const CATEGORIES = [
   'Other',
 ]
 
-const HERO_BANNER_URL = '/images/support-hub/support-hub-banner.png'
+const HERO_BANNER_URL = '/support-hub-banner.png'
 
 const NAVY       = '#1B4D8E'
 const GOLD       = '#D4AF37'
@@ -417,21 +417,21 @@ export default function SupportHub() {
     const cards = [
       {
         id:     'manage'    as View,
-        banner: '/images/support-hub/manage-account-banner.png',
+        banner: '/manage-account-banner.png',
         label:  'Account',
         title:  'Manage Your Account',
         sub:    'Billing, password & settings',
       },
       {
         id:     'contact'   as View,
-        banner: '/images/support-hub/contact-team-banner.png',
+        banner: '/contact-team-banner.png',
         label:  'Support',
         title:  'Contact The Team',
         sub:    'Reply within one business day',
       },
       {
         id:     'protocols' as View,
-        banner: '/images/support-hub/community-protocols-banner.png',
+        banner: '/community-protocols-banner.png',
         label:  'Community',
         title:  'Community Protocols',
         sub:    'Standards & guidelines',
@@ -584,7 +584,7 @@ export default function SupportHub() {
       <div style={pageWrap}>
         <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
           <img
-            src="/images/support-hub/manage-account-banner.png"
+            src="/manage-account-banner.png"
             alt="Manage Your Account"
             style={{ width: '100%', display: 'block' }}
           />
@@ -1019,7 +1019,7 @@ export default function SupportHub() {
       <div style={pageWrap}>
         <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
           <img
-            src="/images/support-hub/contact-team-banner.png"
+            src="/contact-team-banner.png"
             alt="Contact the Team"
             style={{ width: '100%', display: 'block' }}
           />
@@ -1131,7 +1131,7 @@ export default function SupportHub() {
       <div style={pageWrap}>
         <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
           <img
-            src="/images/support-hub/community-protocols-banner.png"
+            src="/community-protocols-banner.png"
             alt="Community Protocols"
             style={{ width: '100%', display: 'block' }}
           />
