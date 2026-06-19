@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const url =
       `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}` +
       `?token=${token}&expires=${expiration}` +
-      `&autoplay=false&loop=false&muted=false&preload=true&responsive=true`
+      `&autoplay=true&loop=false&muted=false&preload=true&responsive=true`
 
     return res.status(200).json({ url, expires: expiration })
 
