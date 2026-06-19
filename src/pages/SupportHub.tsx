@@ -251,44 +251,6 @@ function UpdatePaymentForm({
   )
 }
 
-// ─── Card icons (line-art, matches banner icon style) ────────────────────────
-
-function CardIcon({ id, color, size }: { id: View; color: string; size: number }) {
-  const common = {
-    width: size, height: size, viewBox: '0 0 24 24',
-    fill: 'none', stroke: color, strokeWidth: 1.6,
-    strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const,
-  }
-  if (id === 'manage') {
-    // Lock icon — Account & Security
-    return (
-      <svg {...common}>
-        <rect x="5" y="11" width="14" height="9" rx="2" />
-        <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
-        <circle cx="12" cy="15.5" r="1.3" fill={color} stroke="none" />
-      </svg>
-    )
-  }
-  if (id === 'contact') {
-    // Headset icon — Support
-    return (
-      <svg {...common}>
-        <path d="M4 13.5V12a8 8 0 0 1 16 0v1.5" />
-        <rect x="3.2" y="13" width="4" height="6.5" rx="1.6" />
-        <rect x="16.8" y="13" width="4" height="6.5" rx="1.6" />
-        <path d="M18.8 19.5v.8a2.7 2.7 0 0 1-2.7 2.7h-2.4" />
-      </svg>
-    )
-  }
-  // Shield icon — Community
-  return (
-    <svg {...common}>
-      <path d="M12 3.5l7 3v5.2c0 4.6-3 7.7-7 8.8-4-1.1-7-4.2-7-8.8V6.5l7-3z" />
-      <path d="M8.7 12.2l2.3 2.3 4.3-4.6" />
-    </svg>
-  )
-}
-
 
 
 export default function SupportHub() {
@@ -454,34 +416,25 @@ export default function SupportHub() {
   if (view === 'landing') {
     const cards = [
       {
-        id:    'manage'    as View,
-        icon:  '💳',
-        label: 'Account',
-        title: 'Manage Your Account',
-        sub:   'Billing, password & settings',
-        ring:  'rgba(212,175,55,0.18)',
-        rbdr:  'rgba(212,175,55,0.3)',
-        accent: GOLD,
+        id:     'manage'    as View,
+        banner: '/images/support-hub/manage-account-banner.png',
+        label:  'Account',
+        title:  'Manage Your Account',
+        sub:    'Billing, password & settings',
       },
       {
-        id:    'contact'   as View,
-        icon:  '🎧',
-        label: 'Support',
-        title: 'Contact Our Team',
-        sub:   'Reply within one business day',
-        ring:  'rgba(194,24,91,0.15)',
-        rbdr:  'rgba(194,24,91,0.35)',
-        accent: MAGENTA,
+        id:     'contact'   as View,
+        banner: '/images/support-hub/contact-team-banner.png',
+        label:  'Support',
+        title:  'Contact The Team',
+        sub:    'Reply within one business day',
       },
       {
-        id:    'protocols' as View,
-        icon:  '👥',
-        label: 'Community',
-        title: 'Community Protocols',
-        sub:   'Standards & guidelines',
-        ring:  'rgba(212,175,55,0.12)',
-        rbdr:  'rgba(212,175,55,0.25)',
-        accent: GOLD,
+        id:     'protocols' as View,
+        banner: '/images/support-hub/community-protocols-banner.png',
+        label:  'Community',
+        title:  'Community Protocols',
+        sub:    'Standards & guidelines',
       },
     ]
 
@@ -538,31 +491,24 @@ export default function SupportHub() {
               }}
             >
               <div style={{
-                background:     NAVY,
-                padding:        isMobile ? '24px 20px 20px' : '20px 16px 16px',
-                display:        'flex',
-                flexDirection:  'column',
-                alignItems:     'center',
-                justifyContent: 'center',
-                minHeight:      isMobile ? 140 : 120,
+                width:    '100%',
+                height:   isMobile ? 160 : 130,
+                overflow: 'hidden',
               }}>
-                <div style={{ marginBottom: 12 }}>
-                  {<CardIcon id={card.id} color={card.accent} size={isMobile ? 40 : 32} />}
-                </div>
-                <div style={{
-                  fontFamily:    'Montserrat, sans-serif', fontSize: 9,
-                  color:         'rgba(255,255,255,0.5)', textTransform: 'uppercase',
-                  letterSpacing: '1.5px', marginBottom: 5,
-                }}>
-                  {card.label}
-                </div>
+                <img
+                  src={card.banner}
+                  alt={card.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+
+              <div style={{ background: '#fff', padding: '12px 14px' }}>
                 <div style={{
                   fontFamily: 'Playfair Display, serif',
-                  fontSize:   isMobile ? 17 : 15,
+                  fontSize:   14,
                   fontWeight: 700,
-                  color:      '#fff',
-                  textAlign:  'center',
-                  lineHeight: 1.2,
+                  color:      NAVY,
+                  marginBottom: 3,
                 }}>
                   {card.title}
                 </div>
@@ -570,7 +516,7 @@ export default function SupportHub() {
 
               <div style={{
                 background:     '#fff',
-                padding:        '10px 14px',
+                padding:        '0 14px 12px',
                 display:        'flex',
                 justifyContent: 'space-between',
                 alignItems:     'center',
