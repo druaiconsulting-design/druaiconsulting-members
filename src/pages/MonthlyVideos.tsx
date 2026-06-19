@@ -21,7 +21,7 @@ interface LabVideo {
 
 function extractBunnyVideoId(url: string): string | null {
   try {
-    const match = url.match(/iframe\.mediadelivery\.net\/embed\/[^/]+\/([^/?]+)/)
+    const match = url.match(/(?:iframe|player)\.mediadelivery\.net\/(?:embed|play)\/[^/]+\/([^/?]+)/)
     return match ? match[1] : null
   } catch {
     return null
