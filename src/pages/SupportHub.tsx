@@ -18,7 +18,7 @@ const CATEGORIES = [
   'Other',
 ]
 
-const HERO_BANNER_URL = '' // ← paste your hero image URL here when ready
+const HERO_BANNER_URL = '/images/support-hub/support-hub-banner.png'
 
 const NAVY       = '#1B4D8E'
 const GOLD       = '#D4AF37'
@@ -251,7 +251,45 @@ function UpdatePaymentForm({
   )
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Card icons (line-art, matches banner icon style) ────────────────────────
+
+function CardIcon({ id, color, size }: { id: View; color: string; size: number }) {
+  const common = {
+    width: size, height: size, viewBox: '0 0 24 24',
+    fill: 'none', stroke: color, strokeWidth: 1.6,
+    strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const,
+  }
+  if (id === 'manage') {
+    // Lock icon — Account & Security
+    return (
+      <svg {...common}>
+        <rect x="5" y="11" width="14" height="9" rx="2" />
+        <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+        <circle cx="12" cy="15.5" r="1.3" fill={color} stroke="none" />
+      </svg>
+    )
+  }
+  if (id === 'contact') {
+    // Headset icon — Support
+    return (
+      <svg {...common}>
+        <path d="M4 13.5V12a8 8 0 0 1 16 0v1.5" />
+        <rect x="3.2" y="13" width="4" height="6.5" rx="1.6" />
+        <rect x="16.8" y="13" width="4" height="6.5" rx="1.6" />
+        <path d="M18.8 19.5v.8a2.7 2.7 0 0 1-2.7 2.7h-2.4" />
+      </svg>
+    )
+  }
+  // Shield icon — Community
+  return (
+    <svg {...common}>
+      <path d="M12 3.5l7 3v5.2c0 4.6-3 7.7-7 8.8-4-1.1-7-4.2-7-8.8V6.5l7-3z" />
+      <path d="M8.7 12.2l2.3 2.3 4.3-4.6" />
+    </svg>
+  )
+}
+
+
 
 export default function SupportHub() {
   const { profile, session } = useAuth()
@@ -423,6 +461,7 @@ export default function SupportHub() {
         sub:   'Billing, password & settings',
         ring:  'rgba(212,175,55,0.18)',
         rbdr:  'rgba(212,175,55,0.3)',
+        accent: GOLD,
       },
       {
         id:    'contact'   as View,
@@ -432,6 +471,7 @@ export default function SupportHub() {
         sub:   'Reply within one business day',
         ring:  'rgba(194,24,91,0.15)',
         rbdr:  'rgba(194,24,91,0.35)',
+        accent: MAGENTA,
       },
       {
         id:    'protocols' as View,
@@ -441,56 +481,29 @@ export default function SupportHub() {
         sub:   'Standards & guidelines',
         ring:  'rgba(212,175,55,0.12)',
         rbdr:  'rgba(212,175,55,0.25)',
+        accent: GOLD,
       },
     ]
 
     return (
       <div style={pageWrap}>
 
-        {/* ── Header ── */}
-        {isMobile ? (
-          <div style={{ background: NAVY, padding: '24px 20px 28px' }}>
-            <div style={{
-              fontFamily: 'Cinzel, serif', fontSize: 11, color: GOLD,
-              letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 8,
-            }}>
-              Support Hub
-            </div>
-            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 26, fontWeight: 700, color: '#fff', margin: '0 0 6px' }}>
-              How can we help you?
-            </h1>
-            <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-              Select a topic below to get started.
-            </p>
-          </div>
-        ) : (
-          <div style={{ padding: '28px 40px 16px', background: WARM_WHITE }}>
-            <div style={{
-              fontFamily: 'Cinzel, serif', fontSize: 10, color: NAVY,
-              letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6,
-            }}>
-              Support Hub
-            </div>
-            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 28, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>
-              How can we help you?
-            </h1>
-          </div>
-        )}
-
-        {/* ── Hero banner image (optional) ── */}
-        {HERO_BANNER_URL && (
-          <div style={{
-            margin:       isMobile ? '0' : '0 40px 0',
-            overflow:     'hidden',
-            borderRadius: isMobile ? 0 : 12,
-          }}>
+        {/* ── Header (banner image) ── */}
+        <div style={{
+          padding:   isMobile ? '16px 16px 0' : '24px 40px 0',
+          maxWidth:  isMobile ? undefined : 1100,
+          margin:    '0 auto',
+          boxSizing: 'border-box',
+          width:     '100%',
+        }}>
+          <div style={{ borderRadius: 14, overflow: 'hidden' }}>
             <img
               src={HERO_BANNER_URL}
-              alt="Support Hub"
-              style={{ width: '100%', display: 'block', maxHeight: isMobile ? 180 : 220, objectFit: 'cover' }}
+              alt="Support Hub — How can we help you?"
+              style={{ width: '100%', display: 'block' }}
             />
           </div>
-        )}
+        </div>
 
         {/* ── Cards ── */}
         <div style={{
@@ -533,19 +546,8 @@ export default function SupportHub() {
                 justifyContent: 'center',
                 minHeight:      isMobile ? 140 : 120,
               }}>
-                <div style={{
-                  width:          isMobile ? 72 : 56,
-                  height:         isMobile ? 72 : 56,
-                  borderRadius:   '50%',
-                  background:     card.ring,
-                  border:         `1.5px solid ${card.rbdr}`,
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  marginBottom:   10,
-                  fontSize:       isMobile ? 36 : 28,
-                }}>
-                  {card.icon}
+                <div style={{ marginBottom: 12 }}>
+                  {<CardIcon id={card.id} color={card.accent} size={isMobile ? 40 : 32} />}
                 </div>
                 <div style={{
                   fontFamily:    'Montserrat, sans-serif', fontSize: 9,
@@ -634,17 +636,18 @@ export default function SupportHub() {
 
     return (
       <div style={pageWrap}>
-        <div style={{ background: NAVY, padding: isMobile ? '14px 20px 22px' : '14px 40px 22px' }}>
-          <button onClick={() => setView('landing')} style={backBtn}>← Support Hub</button>
-          <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 5 }}>
-            Support Hub
-          </div>
-          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? 22 : 26, fontWeight: 700, color: '#fff', margin: '0 0 3px' }}>
-            Manage Your Account
-          </h1>
-          <p style={{ fontFamily: 'Montserrat, sans-serif', fontStyle: 'italic', fontSize: 13, color: GOLD, margin: 0 }}>
-            Your Account, Your Control
-          </p>
+        <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
+          <img
+            src="/images/support-hub/manage-account-banner.png"
+            alt="Manage Your Account"
+            style={{ width: '100%', display: 'block' }}
+          />
+          <button
+            onClick={() => setView('landing')}
+            style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 32, marginBottom: 0 }}
+          >
+            ← Support Hub
+          </button>
         </div>
 
         <div style={pageContent}>
@@ -1068,11 +1071,18 @@ export default function SupportHub() {
 
     return (
       <div style={pageWrap}>
-        <div style={{ background: NAVY, padding: isMobile ? '14px 20px 22px' : '14px 40px 22px' }}>
-          <button onClick={() => setView('landing')} style={backBtn}>← Support Hub</button>
-          <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 5 }}>Support Hub</div>
-          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? 22 : 26, fontWeight: 700, color: '#fff', margin: '0 0 3px' }}>Contact Our Team</h1>
-          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0 }}>We'll respond within one business day.</p>
+        <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
+          <img
+            src="/images/support-hub/contact-team-banner.png"
+            alt="Contact the Team"
+            style={{ width: '100%', display: 'block' }}
+          />
+          <button
+            onClick={() => setView('landing')}
+            style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 32, marginBottom: 0 }}
+          >
+            ← Support Hub
+          </button>
         </div>
 
         <div style={pageContent}>
@@ -1173,10 +1183,18 @@ export default function SupportHub() {
 
     return (
       <div style={pageWrap}>
-        <div style={{ background: NAVY, padding: isMobile ? '14px 20px 22px' : '14px 40px 22px' }}>
-          <button onClick={() => setView('landing')} style={backBtn}>← Support Hub</button>
-          <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 5 }}>DRU AI Leadership Ecosystem™</div>
-          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? 22 : 26, fontWeight: 700, color: '#fff', margin: 0 }}>Community Protocols</h1>
+        <div style={{ background: NAVY, position: 'relative', borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
+          <img
+            src="/images/support-hub/community-protocols-banner.png"
+            alt="Community Protocols"
+            style={{ width: '100%', display: 'block' }}
+          />
+          <button
+            onClick={() => setView('landing')}
+            style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 32, marginBottom: 0 }}
+          >
+            ← Support Hub
+          </button>
         </div>
 
         <div style={pageContent}>
