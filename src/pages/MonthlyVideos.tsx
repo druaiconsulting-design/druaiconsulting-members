@@ -13,6 +13,7 @@ interface LabVideo {
   title: string
   month_year: string
   video_url: string
+  thumbnail_url?: string
   created_at: string
 }
 
@@ -220,9 +221,10 @@ function ReplayCard({
         ;(e.currentTarget as HTMLButtonElement).style.boxShadow = 'none'
       }}
     >
-      {/* Thumbnail placeholder */}
+      {/* Thumbnail */}
       <div style={{
-        background: '#0A2342', borderRadius: 8,
+        background: video.thumbnail_url ? `#0A2342 url(${video.thumbnail_url}) center/cover no-repeat` : '#0A2342',
+        borderRadius: 8,
         aspectRatio: '16/9', display: 'flex',
         alignItems: 'center', justifyContent: 'center',
         marginBottom: 12, position: 'relative', overflow: 'hidden',
@@ -233,11 +235,15 @@ function ReplayCard({
             height: 3, background: '#D4AF37',
           }} />
         )}
+        {video.thumbnail_url && (
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,35,66,0.2)' }} />
+        )}
         <div style={{
           width: 32, height: 32, borderRadius: '50%',
           background: 'rgba(212,175,55,0.15)',
           border: '1.5px solid rgba(212,175,55,0.45)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', zIndex: 1,
         }}>
           <div style={{
             width: 0, height: 0, borderStyle: 'solid',
@@ -276,6 +282,7 @@ export default function MonthlyVideos() {
   const [selectedVideo, setSelectedVideo] = useState<LabVideo | null>(null)
   const [signedUrl, setSignedUrl]         = useState<string | null>(null)
   const [videoLoading, setVideoLoading]   = useState(false)
+  const [playClicked, setPlayClicked]     = useState(false)
 
   useEffect(() => {
     if (!session?.user) return
@@ -298,7 +305,7 @@ export default function MonthlyVideos() {
 
       const { data: vids } = await supabase
         .from('lab_videos')
-        .select('id, title, month_year, video_url, created_at')
+        .select('id, title, month_year, video_url, thumbnail_url, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
 
@@ -312,9 +319,9 @@ export default function MonthlyVideos() {
     }
   }
 
-  // Fetch signed Bunny URL whenever selected video changes
+  // Fetch signed Bunny URL whenever selected video changes — only after play is clicked
   useEffect(() => {
-    if (!selectedVideo || !session?.access_token) {
+    if (!selectedVideo || !session?.access_token || !playClicked) {
       setSignedUrl(null)
       return
     }
@@ -338,7 +345,7 @@ export default function MonthlyVideos() {
       .catch(err => console.error('[MonthlyVideos] bunny token error:', err))
       .finally(() => setVideoLoading(false))
 
-  }, [selectedVideo?.id, session?.access_token])
+  }, [selectedVideo?.id, session?.access_token, playClicked])
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
@@ -438,6 +445,31 @@ export default function MonthlyVideos() {
                 allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen
               />
+            ) : !playClicked ? (
+              <button
+                onClick={() => setPlayClicked(true)}
+                aria-label="Play video"
+                style={{ position: 'absolute', inset: 0, padding: 0, border: 'none', cursor: 'pointer', background: 'none' }}
+              >
+                {selectedVideo.thumbnail_url ? (
+                  <img src={selectedVideo.thumbnail_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : null}
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(10,35,66,0.3)' }}>
+                  <div style={{
+                    width: 56, height: 56, borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.92)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 2px 14px rgba(0,0,0,0.3)',
+                  }}>
+                    <div style={{
+                      width: 0, height: 0, borderStyle: 'solid',
+                      borderWidth: '11px 0 11px 18px',
+                      borderColor: 'transparent transparent transparent #0A2342',
+                      marginLeft: 4,
+                    }} />
+                  </div>
+                </div>
+              </button>
             ) : (
               <div style={{
                 position: 'absolute', inset: 0,
@@ -481,7 +513,7 @@ export default function MonthlyVideos() {
                 key={v.id}
                 video={v}
                 isSelected={false}
-                onClick={() => setSelectedVideo(v)}
+                onClick={() => { setSelectedVideo(v); setPlayClicked(false) }}
               />
             ))}
           </div>
