@@ -13,7 +13,7 @@ function BunnyVideoPlayer({ embedUrl }: { embedUrl: string }) {
   const [loading,   setLoading]   = useState(true);
 
   useEffect(() => {
-    const videoId = embedUrl.match(/iframe\.mediadelivery\.net\/embed\/\d+\/([a-zA-Z0-9-]+)/)?.[1];
+    const videoId = embedUrl.match(/(?:iframe|player)\.mediadelivery\.net\/(?:embed|play)\/[^/]+\/([^/?]+)/)?.[1];
     if (!videoId) { setLoading(false); return; }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
