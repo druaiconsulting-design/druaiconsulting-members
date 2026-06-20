@@ -31,15 +31,27 @@ function BunnyVideoPlayer({ embedUrl }: { embedUrl: string }) {
 
   if (loading) {
     return (
-      <div style={{ padding: '1.5rem', textAlign: 'center', background: '#F8F6F2', borderRadius: 8 }}>
-        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.35)' }}>
-          Loading video…
-        </span>
+      <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, background: '#F8F6F2' }}>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.35)' }}>
+            Loading video…
+          </span>
+        </div>
       </div>
     );
   }
 
-  if (!signedUrl) return null;
+  if (!signedUrl) {
+    return (
+      <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, background: '#F8F6F2' }}>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.35)' }}>
+            Video unavailable
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
