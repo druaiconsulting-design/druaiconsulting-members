@@ -5,15 +5,7 @@ import { supabase } from '../../lib/supabaseClient'
 import LevelBadge from './LevelBadge'
 import MemberAvatar from '../community/MemberAvatar'
 import MemberProfile from './MemberProfile'
-
-// ── Level thresholds — must match compute_community_level() in Supabase ───────
-const LEVELS = [
-  { name: 'Connected',   min: 0    },
-  { name: 'Contributor', min: 50   },
-  { name: 'Cultivator',  min: 150  },
-  { name: 'Cornerstone', min: 400  },
-  { name: 'Changemaker', min: 1000 },
-] as const
+import { useCommunityLevels, levelStyle, type LevelTier } from '../../lib/communityLevels'
 
 interface LeaderboardRow {
   id:              string
@@ -32,6 +24,7 @@ interface LeaderboardRow {
 // HOW DO POINTS WORK — modal
 // =============================================================================
 function HowPointsWorkModal({ onClose }: { onClose: () => void }) {
+  const levels = useCommunityLevels()
   return (
     <div
       onClick={onClose}
@@ -87,15 +80,8 @@ function HowPointsWorkModal({ onClose }: { onClose: () => void }) {
             As you earn Clarity Points™ you advance through community levels. Your level badge is displayed on every post and on the leaderboard.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            {LEVELS.map((level, i) => {
-              const colors: Record<string, { bg: string; color: string }> = {
-                Connected:   { bg: '#F1EFE8', color: '#5F5E5A' },
-                Contributor: { bg: '#E6F1FB', color: '#185FA5' },
-                Cultivator:  { bg: '#EAF3DE', color: '#27500A' },
-                Cornerstone: { bg: '#FAEEDA', color: '#633806' },
-                Changemaker: { bg: '#0A2342', color: '#D4AF37' },
-              }
-              const s = colors[level.name]
+            {levels.map((level, i) => {
+              const s = levelStyle(level.name, levels)
               return (
                 <div key={level.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', padding: '10px 12px', border: '1px solid #E8E4DF', borderRadius: '8px', background: '#FAFAF8' }}>
                   <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '4px', background: s.bg, color: s.color }}>{level.name}</span>
@@ -152,11 +138,12 @@ export default function Leaderboard() {
   }, [view, userId])
 
   // ── Personal stats helpers ────────────────────────────────────────────────
+  const levels          = useCommunityLevels()
   const communityLevel  = myData?.community_level ?? 'Connected'
   const clarityPts      = myData?.clarity_points  ?? 0
-  const safeIdx         = Math.max(0, LEVELS.findIndex(l => l.name === communityLevel))
-  const currentLevel    = LEVELS[safeIdx]
-  const nextLevel       = LEVELS[safeIdx + 1] ?? null
+  const safeIdx         = Math.max(0, levels.findIndex(l => l.name === communityLevel))
+  const currentLevel    = levels[safeIdx]
+  const nextLevel       = levels[safeIdx + 1] ?? null
   const pointsToNext    = nextLevel ? Math.max(0, nextLevel.min - clarityPts) : 0
   const progressPct     = nextLevel
     ? Math.min(100, ((clarityPts - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)
@@ -319,7 +306,7 @@ export default function Leaderboard() {
                 <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', marginBottom: '14px' }}>COMMUNITY LEVELS</div>
                 <div style={{ overflowX: 'auto', paddingBottom: '4px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 'max-content', gap: 0 }}>
-                    {LEVELS.map((level, i) => {
+                    {levels.map((level, i) => {
                       const isUnlocked = safeIdx >= i
                       const isCurrent  = level.name === communityLevel
                       return (
@@ -340,7 +327,7 @@ export default function Leaderboard() {
                               {level.min === 0 ? '0 pts' : `${level.min} pts`}
                             </span>
                           </div>
-                          {i < LEVELS.length - 1 && (
+                          {i < levels.length - 1 && (
                             <div style={{ width: '36px', height: '2px', background: isUnlocked && !isCurrent ? '#D4AF37' : isUnlocked ? 'rgba(212,175,55,0.35)' : '#E0DDD7', margin: '17px 0 0', flexShrink: 0 }} />
                           )}
                         </div>
