@@ -114,7 +114,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
       case 'navigator':
         return { label: 'Navigator',   bg: 'transparent', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.6)' }
       default:
-        return { label: 'Free Member', bg: 'transparent', color: '#8AA4C8', border: '1px solid rgba(138,164,200,0.4)' }
+        return { label: 'Free Tier', bg: 'transparent', color: '#8AA4C8', border: '1px solid rgba(138,164,200,0.4)' }
     }
   })()
 
