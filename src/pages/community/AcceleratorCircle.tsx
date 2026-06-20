@@ -64,15 +64,14 @@ export default function AcceleratorCircle() {
     const adminEmail = import.meta.env.VITE_ADMIN_EMAIL
     setIsAdmin(sessionData?.session?.user?.email?.toLowerCase() === adminEmail?.toLowerCase())
 
-    // 3. Load posts from Accelerator members only
-    const accIds = members.map(m => m.id)
-    if (accIds.length === 0) { setPosts([]); setLoading(false); return }
+    // 3. Load posts tagged for the Accelerator Circle
+    if (members.length === 0) { setPosts([]); setLoading(false); return }
 
     const { data: postsData } = await supabase
       .from('community_posts')
       .select('*')
       .eq('is_active', true)
-      .in('agent_id', accIds)
+      .eq('tier_required', 'accelerator')
       .order('is_pinned',    { ascending: false })
       .order('published_at', { ascending: false })
       .limit(50)
@@ -91,7 +90,7 @@ export default function AcceleratorCircle() {
     const channel = supabase.channel('acc_circle_live')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_posts' }, (payload) => {
         const newPost = payload.new as CommunityPost
-        if (!newPost.is_active) return
+        if (!newPost.is_active || newPost.tier_required !== 'accelerator') return
         setPosts(prev => prev.find(p => p.id === newPost.id) ? prev : [newPost, ...prev])
       })
       .subscribe()
@@ -243,6 +242,7 @@ export default function AcceleratorCircle() {
                 userName={userName}
                 userPhotoUrl={userPhotoUrl}
                 onPostSubmitted={handleNewPost}
+                tierRequired="accelerator"
               />
 
               {loading ? (
