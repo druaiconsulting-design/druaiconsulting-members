@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
 import type { NotificationPreferences } from './community/types'
+import { useCommunityLevels, getLevelInfo } from '../lib/communityLevels'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,31 +25,6 @@ interface ProfileData {
   created_at: string | null
   show_in_directory: boolean | null
   prevent_messaging: boolean | null
-}
-
-// ─── Level logic ──────────────────────────────────────────────────────────────
-
-const LEVELS = [
-  { name: 'Connected',   min: 0,    next: 50   },
-  { name: 'Contributor', min: 50,   next: 150  },
-  { name: 'Cultivator',  min: 150,  next: 400  },
-  { name: 'Cornerstone', min: 400,  next: 1000 },
-  { name: 'Changemaker', min: 1000, next: null },
-]
-
-function getLevelInfo(points: number) {
-  let current = LEVELS[0]
-  for (const level of LEVELS) {
-    if (points >= level.min) current = level
-    else break
-  }
-  const pct = current.next
-    ? Math.min(100, Math.round(((points - current.min) / (current.next - current.min)) * 100))
-    : 100
-  const ptsToNext = current.next ? current.next - points : 0
-  const idx = LEVELS.findIndex(l => l.name === current.name)
-  const nextName = current.next ? LEVELS[idx + 1]?.name ?? null : null
-  return { level: current.name, nextName, pct, ptsToNext }
 }
 
 function formatMemberSince(iso: string | null): string {
@@ -138,8 +114,9 @@ function Toggle({ on, onClick, gold = false }: { on: boolean; onClick: () => voi
 // ─── Left card (shared across all tabs) ───────────────────────────────────────
 
 function LeftCard({ profile }: { profile: ProfileData }) {
+  const levels = useCommunityLevels()
   const points = profile.clarity_points ?? 0
-  const levelInfo = getLevelInfo(points)
+  const levelInfo = getLevelInfo(points, levels)
   const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.email
 
   return (
@@ -220,6 +197,7 @@ function ProfileTab({ profile, onUpdate }: {
   const [photoUrl,  setPhotoUrl]  = useState('')
 
   const { session } = useAuth()
+  const levels = useCommunityLevels()
   const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.email
 
   function openEdit() {
@@ -347,7 +325,7 @@ function ProfileTab({ profile, onUpdate }: {
               )}
               <div style={{ background: '#FAFAF8', borderRadius: 10, padding: '14px 16px', border: '1px solid rgba(10,35,66,0.07)' }}>
                 <div style={labelStyle as React.CSSProperties}>Community Level</div>
-                <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 700, color: '#0A2342' }}>{profile.community_level ?? getLevelInfo(profile.clarity_points ?? 0).level}</div>
+                <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 700, color: '#0A2342' }}>{profile.community_level ?? getLevelInfo(profile.clarity_points ?? 0, levels).level}</div>
               </div>
             </div>
             <button onClick={openEdit} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '11px 24px', background: '#0A2342', color: '#D4AF37', fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
