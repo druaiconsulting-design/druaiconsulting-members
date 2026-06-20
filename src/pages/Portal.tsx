@@ -199,7 +199,7 @@ export default function Portal() {
 
         {/* Header */}
         <div style={{ marginBottom: "2rem" }}>
-          <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#B8941F", fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1rem" }}>Your AI Transformation Hub</p>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#B8941F", fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1rem" }}>Your Transformational Connection</p>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.875rem" }}>
             <PortalAvatar profile={profile} user={user} />
             <div>
