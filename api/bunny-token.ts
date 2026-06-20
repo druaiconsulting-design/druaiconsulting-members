@@ -2,8 +2,28 @@ import { createHash } from 'crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
 
+// Allowed cross-origin callers. This endpoint's secrets (BUNNY_TOKEN_AUTH_KEY,
+// VITE_BUNNY_LIBRARY_ID) live only in this repo's Vercel project — the admin
+// app (app.druaiconsulting.com) calls out to this endpoint rather than
+// keeping its own copy of the Bunny credentials.
+const ALLOWED_ORIGINS = [
+  'https://app.druaiconsulting.com',
+  'https://members.druaiconsulting.com',
+]
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 'no-store')
+
+  const origin = req.headers.origin
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end()
+  }
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' })
