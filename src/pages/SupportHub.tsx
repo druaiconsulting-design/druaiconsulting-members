@@ -257,7 +257,10 @@ export default function SupportHub() {
   const { profile, session } = useAuth()
 
   const [isMobile,    setIsMobile]    = useState(window.innerWidth < 768)
-  const [view,        setView]        = useState<View>('landing')
+  const [view,        setView]        = useState<View>(() => {
+    const qp = new URLSearchParams(window.location.search).get('view')
+    return qp === 'protocols' ? 'protocols' : 'landing'
+  })
   const [category,    setCategory]    = useState<string | null>(null)
   const [question,    setQuestion]    = useState('')
   const [file,        setFile]        = useState<File | null>(null)
