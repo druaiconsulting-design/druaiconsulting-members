@@ -26,10 +26,11 @@ const CATEGORIES = [
 // COMPOSE BOX
 // =============================================================================
 export default function ComposeBox({
-  userId, userName, userPhotoUrl, onPostSubmitted,
+  userId, userName, userPhotoUrl, onPostSubmitted, tierRequired = 'navigator',
 }: {
   userId: string; userName: string; userPhotoUrl?: string;
   onPostSubmitted: (post: CommunityPost) => void;
+  tierRequired?: 'navigator' | 'accelerator';
 }) {
   const [text, setText]               = useState('');
   const [expanded, setExpanded]       = useState(false);
@@ -132,7 +133,7 @@ export default function ComposeBox({
       content,
       category,
       post_type:     'member_post',
-      tier_required: 'navigator',
+      tier_required: tierRequired,
       agent_id:      userId,
       agent_name:    userName || 'Member',
       published_at:  new Date().toISOString(),
