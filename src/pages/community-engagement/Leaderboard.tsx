@@ -228,7 +228,7 @@ export default function Leaderboard() {
               <button
                 onClick={() => navigate('/feed')}
                 style={{ display: 'inline-flex', marginTop: 18, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: 12, fontWeight: 600, color: 'rgba(10,35,66,0.45)' }}
-              >← Back to Community Feed</button>
+              >← Back to Community</button>
             </div>
           </div>
         </div>
