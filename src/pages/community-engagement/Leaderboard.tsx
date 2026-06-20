@@ -6,6 +6,7 @@ import LevelBadge from './LevelBadge'
 import MemberAvatar from '../community/MemberAvatar'
 import MemberProfile from './MemberProfile'
 import { useCommunityLevels, levelStyle, type LevelTier } from '../../lib/communityLevels'
+import { NAVIGATOR_PAYMENT_LINK } from '../community/types'
 
 interface LeaderboardRow {
   id:              string
@@ -102,7 +103,7 @@ function HowPointsWorkModal({ onClose }: { onClose: () => void }) {
 // LEADERBOARD
 // =============================================================================
 export default function Leaderboard() {
-  const { profile } = useAuth()
+  const { profile, isPaid } = useAuth()
   const userId = profile?.id ?? ''
 
   const [view,             setView]             = useState<'weekly' | 'alltime'>('weekly')
@@ -114,7 +115,7 @@ export default function Leaderboard() {
   const [showHowPoints,    setShowHowPoints]    = useState(false)
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId || !isPaid) return
     const load = async () => {
       setLoading(true)
       const { data } = await supabase.from('community_leaderboard').select('*')
@@ -185,6 +186,50 @@ export default function Leaderboard() {
           <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: '700', color: '#0A2342' }}>{pts?.toLocaleString() ?? '—'}</div>
           <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)' }}>
             {view === 'weekly' ? 'this week' : 'Clarity Points™'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── NAVIGATOR GATE — leaderboard is a paid-tier benefit ─────────────────
+  if (!isPaid) {
+    return (
+      <div style={{ minHeight: '60vh', padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '20px 12px 80px' : '40px 24px 80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: 520 }}>
+          <div style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: 20, boxShadow: '0 8px 40px rgba(10,35,66,0.08)', overflow: 'hidden', textAlign: 'center' }}>
+            <div style={{ height: 4, background: 'linear-gradient(90deg, #D4AF37, #B8941F, #D4AF37)' }} />
+            <div style={{ padding: '44px 36px 48px' }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(212,175,55,0.08)', border: '2px solid rgba(212,175,55,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: 36 }}>🏆</div>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '3px', color: '#B8941F', marginBottom: 10 }}>NAVIGATOR &amp; ACCELERATOR ONLY</div>
+              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(20px, 4vw, 26px)', fontWeight: 700, color: '#0A2342', lineHeight: 1.2, margin: '0 0 14px' }}>Clarity Points™ Leaderboard</h2>
+              <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 13, color: 'rgba(10,35,66,0.55)', lineHeight: 1.75, margin: '0 auto 28px', maxWidth: 400 }}>
+                Track your Clarity Points™, climb the community levels, and see where you rank — available to Navigator and Accelerator members.
+              </p>
+              <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.25), transparent)', marginBottom: 28 }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 32 }}>
+                {[
+                  'Weekly and all-time leaderboard rankings',
+                  'Clarity Points™ tracking and level progression',
+                  'Full community feed access',
+                  'Monthly Strategic Edge insights',
+                ].map(item => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: "'Montserrat', sans-serif", fontSize: 12, color: 'rgba(10,35,66,0.6)' }}>
+                    <span style={{ color: '#D4AF37', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <a href={NAVIGATOR_PAYMENT_LINK} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'block', background: 'linear-gradient(135deg, #D4AF37 0%, #B8941F 100%)', color: '#0A2342', fontFamily: "'Montserrat', sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: '0.05em', padding: '14px 32px', borderRadius: 10, textDecoration: 'none', marginBottom: 12, boxShadow: '0 4px 16px rgba(212,175,55,0.25)' }}>
+                Upgrade to Navigator — $97/mo
+              </a>
+              <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 11, color: 'rgba(10,35,66,0.35)' }}>Cancel anytime · Instant access</div>
+              <button
+                onClick={() => navigate('/feed')}
+                style={{ display: 'inline-flex', marginTop: 18, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: 12, fontWeight: 600, color: 'rgba(10,35,66,0.45)' }}
+              >← Back to Community Feed</button>
+            </div>
           </div>
         </div>
       </div>
