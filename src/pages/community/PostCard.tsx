@@ -4,6 +4,7 @@ import type { CommunityPost } from './types';
 import MemberAvatar from './MemberAvatar';
 import CommentSection from './CommentSection';
 import LevelBadge from '../community-engagement/LevelBadge';
+import { DEFAULT_LEVEL_NAME } from '../../lib/communityLevels';
 
 const APP_URL = 'https://app.druaiconsulting.com';
 
@@ -125,7 +126,7 @@ export default function PostCard({
   const [showSpanish, setShowSpanish] = useState(false);
   const contentEs = (post as any).content_es as string | null | undefined;
   const category     = (post as any).category  as string  ?? 'general';
-  const memberLevel  = isMemberPost ? (levelMap[post.agent_id] ?? 'Connected') : null;
+  const memberLevel  = isMemberPost ? (levelMap[post.agent_id] ?? DEFAULT_LEVEL_NAME) : null;
   const isBunnyVideo = !!(post.video_url && post.video_url.includes('mediadelivery.net'));
 
   const [pinned,       setPinned]       = useState<boolean>((post as any).is_pinned ?? false);
