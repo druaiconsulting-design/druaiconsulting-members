@@ -282,8 +282,7 @@ export default function MonthlyVideos() {
   const [videos, setVideos]               = useState<LabVideo[]>([])
   const [selectedVideo, setSelectedVideo] = useState<LabVideo | null>(null)
   const [signedUrl, setSignedUrl]         = useState<string | null>(null)
-  const [videoLoading, setVideoLoading]   = useState(false)
-  const [playClicked, setPlayClicked]     = useState(false)
+  const [phase, setPhase]                 = useState<'thumbnail' | 'loading' | 'playing'>('thumbnail')
 
   useEffect(() => {
     if (!session?.user) return
@@ -320,33 +319,37 @@ export default function MonthlyVideos() {
     }
   }
 
-  // Fetch signed Bunny URL whenever selected video changes — only after play is clicked
-  useEffect(() => {
-    if (!selectedVideo || !session?.access_token || !playClicked) {
-      setSignedUrl(null)
-      return
-    }
+  // Fetch signed Bunny URL — only ever runs when the user explicitly clicks play.
+  // No useEffect here on purpose: a single direct async function means there is
+  // no in-between render where loading clears before signedUrl is set (that gap
+  // was what caused the thumbnail to flash back during load).
+  async function handlePlayClick() {
+    if (!selectedVideo || !session?.access_token) return
+
+    setPhase('loading')
 
     const videoId = extractBunnyVideoId(selectedVideo.video_url)
 
     if (!videoId) {
       // Non-Bunny URL — use as-is (Supabase storage etc.)
       setSignedUrl(selectedVideo.video_url)
+      setPhase('playing')
       return
     }
 
-    setVideoLoading(true)
-    setSignedUrl(null)
-
-    fetch(`/api/bunny-token?videoId=${videoId}`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    })
-      .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(({ url }) => setSignedUrl(url))
-      .catch(err => console.error('[MonthlyVideos] bunny token error:', err))
-      .finally(() => setVideoLoading(false))
-
-  }, [selectedVideo?.id, session?.access_token, playClicked])
+    try {
+      const res = await fetch(`/api/bunny-token?videoId=${videoId}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (!res.ok) throw new Error(String(res.status))
+      const { url } = await res.json()
+      setSignedUrl(url)
+      setPhase('playing')
+    } catch (err) {
+      console.error('[MonthlyVideos] bunny token error:', err)
+      setPhase('thumbnail')
+    }
+  }
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
@@ -433,7 +436,7 @@ export default function MonthlyVideos() {
             background: '#0A2342', borderRadius: 12, overflow: 'hidden',
             border: '1px solid rgba(10,35,66,0.15)',
           }}>
-            {videoLoading ? (
+            {phase === 'loading' ? (
               <div style={{
                 position: 'absolute', inset: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -445,7 +448,7 @@ export default function MonthlyVideos() {
                   animation: 'dru-spin 0.8s linear infinite',
                 }} />
               </div>
-            ) : signedUrl ? (
+            ) : phase === 'playing' && signedUrl ? (
               <iframe
                 key={selectedVideo.id}
                 src={signedUrl}
@@ -456,9 +459,9 @@ export default function MonthlyVideos() {
                 allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen
               />
-            ) : !playClicked ? (
+            ) : selectedVideo.video_url ? (
               <button
-                onClick={() => { setVideoLoading(true); setPlayClicked(true) }}
+                onClick={handlePlayClick}
                 aria-label="Play video"
                 style={{ position: 'absolute', inset: 0, padding: 0, border: 'none', cursor: 'pointer', background: 'none' }}
               >
@@ -524,7 +527,7 @@ export default function MonthlyVideos() {
                 key={v.id}
                 video={v}
                 isSelected={false}
-                onClick={() => { setSelectedVideo(v); setPlayClicked(false) }}
+                onClick={() => { setSelectedVideo(v); setPhase('thumbnail'); setSignedUrl(null) }}
               />
             ))}
           </div>
