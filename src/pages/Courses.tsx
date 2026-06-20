@@ -97,18 +97,52 @@ function ComingSoonState() {
           {COURSE_TITLE}
         </h1>
 
-        {/* Description */}
-        <p style={{
-          fontFamily: 'Montserrat, sans-serif',
-          fontSize:   isMobile ? 13 : 15,
-          color:      'rgba(10,35,66,0.6)',
-          lineHeight: 1.75,
-          margin:     0,
+        {/* Course banner image */}
+        <img
+          src="/from-confusion-to-confidence-banner.png"
+          alt="From Confusion to Confidence with AI"
+          style={{
+            width:        '100%',
+            maxWidth:     420,
+            borderRadius: 14,
+            boxShadow:    '0 10px 30px rgba(10,35,66,0.18)',
+            margin:       '0 0 28px',
+          }}
+        />
+
+        {/* Quote pill */}
+        <div style={{
+          display:       'inline-flex',
+          flexDirection: 'column',
+          alignItems:    'center',
+          gap:           10,
+          background:    'rgba(10,35,66,0.04)',
+          border:        '1px solid rgba(212,175,55,0.3)',
+          borderRadius:  999,
+          padding:       isMobile ? '22px 26px' : '26px 40px',
+          maxWidth:      480,
         }}>
-          A complete AI readiness journey built on your DRU CLEAR™ results
-          and delivered by your personal AI leadership team.
-          We'll announce the launch date right here in the community.
-        </p>
+          <p style={{
+            fontFamily: 'Playfair Display, serif',
+            fontStyle:  'italic',
+            fontSize:   isMobile ? 14 : 16,
+            color:      NAVY,
+            lineHeight: 1.55,
+            margin:     0,
+          }}>
+            "The real bottleneck isn't the tools — it's the strategy they're bolted onto."
+          </p>
+          <span style={{
+            fontFamily:    'Montserrat, sans-serif',
+            fontSize:      11,
+            fontWeight:    700,
+            color:         GOLD,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+          }}>
+            — DeAnna R Upshaw
+          </span>
+        </div>
 
       </div>
     </div>
