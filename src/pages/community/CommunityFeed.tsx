@@ -215,6 +215,11 @@ export default function CommunityFeed({
 
           <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent)', marginBottom: '28px' }} />
 
+          {/* TEMP DEBUG MARKER — remove once leak is confirmed fixed */}
+          <div style={{ background: '#FFF3CD', border: '1px solid #E0C36B', borderRadius: 6, padding: '6px 10px', marginBottom: 16, fontFamily: 'monospace', fontSize: 11, color: '#5A4400' }}>
+            BUILD CHECK v2 — accelerator-filter active — posts loaded: {posts.length}
+          </div>
+
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {[0,1,2].map(i => (
