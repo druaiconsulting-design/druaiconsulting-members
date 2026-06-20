@@ -16,14 +16,17 @@ function BunnyVideoPlayer({ embedUrl }: { embedUrl: string }) {
     const videoId = embedUrl.match(/iframe\.mediadelivery\.net\/embed\/\d+\/([a-zA-Z0-9-]+)/)?.[1];
     if (!videoId) { setLoading(false); return; }
 
-    fetch('/api/bunny-token', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ videoId }),
-    })
-      .then(r => r.json())
-      .then(data => { setSignedUrl(data.signedUrl ?? null); setLoading(false); })
-      .catch(() => setLoading(false));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { setLoading(false); return; }
+
+      fetch(`/api/bunny-token?videoId=${videoId}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(({ url }) => setSignedUrl(url ?? null))
+        .catch(() => setSignedUrl(null))
+        .finally(() => setLoading(false));
+    });
   }, [embedUrl]);
 
   if (loading) {
