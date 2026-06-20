@@ -143,7 +143,7 @@ export default function LessonPlayer() {
         setVideoLoading(true)
         try {
           const resp = await fetch(
-            `/api/bunny-token?videoId=${lessonData.bunny_video_id}`,
+            `/api/bunny-course-token?videoId=${lessonData.bunny_video_id}`,
             { headers: { Authorization: `Bearer ${session!.access_token}` } }
           )
           if (resp.ok) {
