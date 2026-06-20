@@ -5,7 +5,7 @@ import { navigate } from '../lib/router'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const COURSE_TITLE = 'From Confusion to Confident with AI™'
+const COURSE_TITLE = 'From Confusion to Confidece with AI™'
 
 const NAVY       = '#0A2342'
 const GOLD       = '#D4AF37'
