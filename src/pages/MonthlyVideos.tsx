@@ -14,6 +14,7 @@ interface LabVideo {
   month_year: string
   video_url: string
   thumbnail_url?: string
+  content?: string
   created_at: string
 }
 
@@ -305,7 +306,7 @@ export default function MonthlyVideos() {
 
       const { data: vids } = await supabase
         .from('lab_videos')
-        .select('id, title, month_year, video_url, thumbnail_url, created_at')
+        .select('id, title, month_year, video_url, thumbnail_url, content, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
 
@@ -415,6 +416,16 @@ export default function MonthlyVideos() {
           }}>
             Published {formatDate(selectedVideo.created_at)}
           </div>
+
+          {selectedVideo.content && (
+            <p style={{
+              fontFamily: 'Inter, sans-serif', fontSize: 14,
+              color: 'rgba(10,35,66,0.7)', lineHeight: 1.7,
+              marginBottom: 20, whiteSpace: 'pre-wrap',
+            }}>
+              {selectedVideo.content}
+            </p>
+          )}
 
           {/* Video */}
           <div style={{
