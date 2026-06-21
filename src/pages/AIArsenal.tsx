@@ -126,13 +126,13 @@ export default function AIArsenal() {
         </div>
         <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13.5, color: 'rgba(10,35,66,0.7)', lineHeight: 1.75 }}>
           <p style={{ margin: '0 0 12px' }}>
-            This AI Arsenal is a reference, not a checklist. Discover the specific need for your problem, find what solves it, and keep moving forward. Browsing aimlessly causes tool overload, which we want to avoid.
+            This AI Arsenal is a reference, not a checklist. <strong style={{ color: '#D4AF37' }}>Discover</strong> the specific need for your problem, find what solves it, and keep moving forward. Browsing aimlessly causes tool overload, which we want to avoid.
           </p>
           <p style={{ margin: '0 0 12px' }}>
             <strong style={{ color: '#0A2342' }}>Here's the most important thing to keep in mind before you continue scrolling:</strong>
           </p>
           <p style={{ margin: '0 0 12px' }}>
-            You don't have to sign up for or buy all these tools. Take your time — learn each one as necessary, focusing on what's right for your business at the moment.
+            You don't have to sign up for or buy all these tools. Take your time — <strong style={{ color: '#D4AF37' }}>learn</strong> each one as necessary, focusing on what's right for your business at the moment.
           </p>
           <p style={{ margin: '0 0 16px' }}>
             Remember 😊 — it's the people, not the tools, that make this community powerful. Ask questions, share what works for you, and rely on those around you. Everyone started somewhere, and no one masters this alone.
@@ -147,7 +147,7 @@ export default function AIArsenal() {
             <li style={{ marginBottom: 6 }}>Most tools mentioned here offer a free plan or free trial, so you can get started without spending money.</li>
             <li style={{ marginBottom: 6 }}>Many tools overlap intentionally because different people work differently. There's no single right tool — only what's right for you and your business now.</li>
             <li style={{ marginBottom: 6 }}>If you're new and unfamiliar with these names, that's perfectly normal. Begin with Claude or ChatGPT.</li>
-            <li>Advanced? Great! Enter with a clear vision, discover a solution, learn, apply, and transform.</li>
+            <li>Advanced? Great! Enter with a clear vision, <strong style={{ color: '#D4AF37' }}>discover</strong> a solution, <strong style={{ color: '#D4AF37' }}>learn</strong>, <strong style={{ color: '#D4AF37' }}>apply</strong>, and <strong style={{ color: '#D4AF37' }}>transform</strong>.</li>
           </ul>
 
           <p style={{ margin: '0 0 12px' }}>
