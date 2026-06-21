@@ -10,6 +10,7 @@ export interface Tool {
   pricingModel: string   // e.g. "Free + Paid", "Freemium", "Paid"
   inputModel: string     // e.g. "Template-Based", "Prompt-Based", "Automated"
   url: string
+  displayUrl?: string    // cleaner label to show instead of the raw url (e.g. affiliate links) — href still uses url
   bestFor: string
   features: string[]
   useWhen: string
@@ -725,25 +726,102 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
   },
   {
     id: 'funnels-automation',
-    title: 'Funnels & Automation',
-    description: 'CRM, funnels, and automations that run your business while you lead it.',
-    imageFile: 'ai-arsenal-funnels-automation.png',
+    title: 'Automation & Lead Generation',
+    description: 'Develop your marketing strategy, oversee client relations, and automate the processes between acquiring a lead and finalizing a client agreement.',
+    imageFile: 'auto-lead-gen.png',
     tools: [
       {
         name: 'GoHighLevel (GHL)',
-        difficulty: 'Intermediate',
+        difficulty: 'Advanced',
         pricingModel: 'Paid',
         inputModel: 'Automated',
-        url: '#',
-        bestFor: 'CRM, funnels, automations, calendars, and email — the backbone of the DRU AI Consulting ecosystem',
+        url: 'https://go.aiforbusiness.com/ai4b-pro?_go=id66g2',
+        displayUrl: 'druaiconsulting.com/ghl',
+        bestFor: 'Managing your CRM, funnels, marketing, and automation in one platform.',
         features: [
-          'All-in-one CRM and pipeline management',
-          'Funnel and landing page builder',
-          'Built-in automations and workflows',
-          'Calendar booking and email/SMS in one platform',
+          'Sales funnels and landing pages',
+          'CRM and pipeline management',
+          'Email and SMS automation',
+          'Appointment scheduling and workflows',
         ],
-        useWhen: 'You want one platform running your whole client and lead pipeline',
+        useWhen: 'You want an all-in-one platform to capture, nurture, and convert leads automatically.',
       },
+      {
+        name: 'Zapier',
+        difficulty: 'Beginner',
+        pricingModel: 'Freemium',
+        inputModel: 'Automated',
+        url: 'https://zapier.com',
+        bestFor: 'Connecting your apps and automating repetitive tasks without coding.',
+        features: [
+          '7,000+ app integrations',
+          'Trigger-based workflows',
+          'Multi-step automations',
+          'AI-powered workflow creation',
+        ],
+        useWhen: 'You need your favorite apps to work together and eliminate manual tasks.',
+      },
+      {
+        name: 'Make',
+        difficulty: 'Advanced',
+        pricingModel: 'Freemium',
+        inputModel: 'Automated',
+        url: 'https://www.make.com',
+        bestFor: 'Building advanced workflows and complex business automations visually.',
+        features: [
+          'Visual drag-and-drop automations',
+          'Advanced logic and branching',
+          'Deep integrations',
+          'Data transformation and routing',
+        ],
+        useWhen: 'Your automation needs are more sophisticated than simple app connections.',
+      },
+      {
+        name: 'Lindy',
+        difficulty: 'Advanced',
+        pricingModel: 'Paid',
+        inputModel: 'Automated',
+        url: 'https://www.lindy.ai',
+        bestFor: 'Creating AI employees that handle repetitive business tasks and follow-up.',
+        features: [
+          'AI assistants and agents',
+          'Email and calendar automation',
+          'Meeting coordination',
+          'Lead qualification and follow-up',
+        ],
+        useWhen: 'You want AI agents to perform administrative tasks and customer communications.',
+      },
+      {
+        name: 'Manus',
+        difficulty: 'Advanced',
+        pricingModel: 'Freemium',
+        inputModel: 'Automated',
+        url: 'https://manus.im/invitation/KJTBXETXGVNB?utm_source=invitation&utm_medium=social&utm_campaign=copy_link',
+        displayUrl: 'druaiconsulting.com/manus',
+        bestFor: 'Building AI-powered applications, workflows, and digital solutions through natural language.',
+        features: [
+          'Create apps and tools with prompts',
+          'Build automations and workflows',
+          'Rapid prototyping and deployment',
+          'Generate websites and business solutions',
+        ],
+        useWhen: 'You want to build custom AI applications or quickly turn ideas into working solutions without heavy coding.',
+        alsoUsedIn: ['Research & Analysis'],
+      },
+    ],
+    quickRecommendations: [
+      { need: 'All-in-One CRM & Marketing', tool: 'GoHighLevel (GHL)' },
+      { need: 'Sales Funnels', tool: 'GoHighLevel (GHL)' },
+      { need: 'Email & SMS Automation', tool: 'GoHighLevel (GHL)' },
+      { need: 'Connect Multiple Apps', tool: 'Zapier' },
+      { need: 'Simple Workflow Automation', tool: 'Zapier' },
+      { need: 'Advanced Business Automation', tool: 'Make' },
+      { need: 'Complex Integrations', tool: 'Make' },
+      { need: 'AI Administrative Assistant', tool: 'Lindy' },
+      { need: 'AI Follow-Up & Scheduling', tool: 'Lindy' },
+      { need: 'Build AI Apps & PWAs', tool: 'Manus' },
+      { need: 'Rapid Prototyping', tool: 'Manus' },
+      { need: 'Custom Business Solutions', tool: 'Manus' },
     ],
   },
   {
@@ -775,11 +853,12 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
     imageFile: 'ai-arsenal-research-analysis.png',
     tools: [
       {
-        name: 'Manus AI',
+        name: 'Manus',
         difficulty: 'Advanced',
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
         url: 'https://manus.im/invitation/KJTBXETXGVNB?utm_source=invitation&utm_medium=social&utm_campaign=copy_link',
+        displayUrl: 'druaiconsulting.com/manus',
         bestFor: 'Complex, multi-step agent tasks — research, workflows, and automation that used to require a team',
         features: [
           'The most capable AI agent platform for multi-step tasks',
@@ -787,6 +866,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
           'Handles research and execution, not just chat',
         ],
         useWhen: 'You need an AI agent to actually complete a multi-step task, not just answer a question',
+        alsoUsedIn: ['Automation & Lead Generation'],
       },
     ],
   },
