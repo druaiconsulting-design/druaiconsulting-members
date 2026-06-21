@@ -16,6 +16,11 @@ export interface Tool {
   alsoUsedIn?: string[]  // category titles this tool also shows up under
 }
 
+export interface QuickRecommendation {
+  need: string
+  tool: string
+}
+
 export interface ToolCategory {
   id: string
   title: string
@@ -24,6 +29,7 @@ export interface ToolCategory {
   tools: Tool[]
   quickStart?: string[]
   levelUp?: string[]
+  quickRecommendations?: QuickRecommendation[]
 }
 
 // ─── Difficulty → color (traffic-light, kept universal for readability) ────
@@ -39,9 +45,9 @@ export const DIFFICULTY_COLOR: Record<Difficulty, string> = {
 export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
   {
     id: 'image-design',
-    title: 'Image & Design',
-    description: 'Create graphics, generate custom images, and produce professional visuals for your business — no design background needed.',
-    imageFile: 'ai-arsenal-image-design.png',
+    title: 'Design & Image',
+    description: 'Create graphics, craft custom images, and generate professional visuals for your business—no design experience required.',
+    imageFile: 'design-image.png',
     tools: [
       {
         name: 'Canva',
@@ -49,14 +55,14 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Template-Based',
         url: 'https://www.canva.com',
-        bestFor: 'Designing social posts, presentations, and marketing visuals',
+        bestFor: 'Creating professional graphics, presentations, and marketing materials quickly.',
         features: [
-          'Thousands of templates for posts, slides, and ads',
-          'Drag-and-drop editor (no design skills needed)',
-          'Magic Design, background remover, and AI tools',
-          'Brand kit for consistent colors, fonts, and logos',
+          'Drag-and-drop design tools',
+          'Thousands of templates',
+          'AI image and content generation',
+          'Team collaboration and brand kits',
         ],
-        useWhen: 'You want structure and templates instead of starting from scratch',
+        useWhen: 'You need social media graphics, presentations, flyers, workbooks, or marketing assets without design experience.',
         alsoUsedIn: ['Presentations & Slides'],
       },
       {
@@ -65,15 +71,14 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
         url: 'https://gemini.google.com',
-        bestFor: 'Creating images with text, infographics, and marketing visuals',
+        bestFor: "Generating AI-powered visuals and creative concepts within Google's ecosystem.",
         features: [
-          'Generates images with clean, readable text',
-          'Strong for infographics, social graphics, and ads',
-          'Combines writing + visuals in one workflow',
-          'Can connect to Google tools (Docs, Drive, Gmail) when enabled',
-          "Powered by Google's Imagen / Nano Banana models",
+          'Conversational image generation',
+          'Integrates with Google Workspace',
+          'Brainstorming assistance',
+          'Multimodal capabilities',
         ],
-        useWhen: 'You need a free image with text inside it — ad graphics, quote cards, social posts with words',
+        useWhen: 'You need ideas, quick graphics, or visuals alongside documents, spreadsheets, and presentations.',
         alsoUsedIn: ['Writing & Content Creation'],
       },
       {
@@ -81,31 +86,31 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         difficulty: 'Beginner',
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
-        url: 'https://grok.x.ai',
-        bestFor: 'Social graphics and trend-based visual content',
+        url: 'https://grok.com',
+        bestFor: 'Creating real-time, conversational images with access to current information and trends.',
         features: [
-          'Generates images with legible text embedded',
-          'Built into X (Twitter) for real-time content creation',
-          'Can post/share directly to your feed',
-          'Pulls from live trends and conversations',
+          'Conversational image creation',
+          'Real-time web knowledge',
+          'Creative ideation',
+          'Social content assistance',
         ],
-        useWhen: "You're creating fast-moving social content or trend-based visuals",
+        useWhen: 'Creating trending social content, memes, and visuals tied to current events.',
         alsoUsedIn: ['Writing & Content Creation', 'Social Media'],
       },
       {
-        name: 'DALL-E 3 (via ChatGPT)',
+        name: 'DALL·E 3',
         difficulty: 'Beginner',
         pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
-        url: 'https://chat.openai.com',
-        bestFor: 'Generating custom images inside ChatGPT — no extra tools',
+        url: 'https://openai.com/dall-e-3',
+        bestFor: 'Highly detailed image generation from natural language prompts.',
         features: [
-          'Generates images from text descriptions directly in the chat window',
-          'Strong at photorealistic scenes and illustrated concepts',
-          'Edit images you upload — change backgrounds, add elements, adjust style',
-          'Free to use with a ChatGPT account',
+          'Excellent prompt understanding',
+          'Photorealistic images',
+          'Text within images',
+          'Creative scene generation',
         ],
-        useWhen: 'You need a custom image and already have ChatGPT open — fastest path to a visual',
+        useWhen: 'You need marketing visuals, conceptual graphics, or illustrations from simple instructions.',
       },
       {
         name: 'Ideogram',
@@ -113,14 +118,14 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
         url: 'https://ideogram.ai',
-        bestFor: 'Text-in-image graphics and quick image-to-video animations',
+        bestFor: 'Creating images with accurate text and typography.',
         features: [
-          'Best-in-class text rendering inside images',
-          'Great for quotes, ads, thumbnails, and graphics',
-          'Simple prompting with consistent outputs',
-          'Fast generation',
+          'Superior text rendering',
+          'Logo concepts',
+          'Poster creation',
+          'Social graphics',
         ],
-        useWhen: 'You need a clean graphic with words in it, or want to quickly animate a photo into a short clip',
+        useWhen: 'Your image needs words, headlines, quotes, or branded messaging inside the graphic.',
       },
       {
         name: 'Midjourney',
@@ -128,14 +133,14 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Paid',
         inputModel: 'Prompt-Based',
         url: 'https://www.midjourney.com',
-        bestFor: 'High-end visuals, brand imagery, and product mockups',
+        bestFor: 'Producing artistic, cinematic, and visually stunning imagery.',
         features: [
-          'Produces highly polished, aesthetic images',
-          'Strong for brand visuals and product mockups',
-          'Style references and moodboards for consistency',
-          'More creative control than beginner tools',
+          'Exceptional artistic quality',
+          'Cinematic style',
+          'Highly creative outputs',
+          'Strong visual aesthetics',
         ],
-        useWhen: "Image quality really matters and you're willing to invest time in learning the prompting style",
+        useWhen: 'Creating premium branding, book covers, concept art, and attention-grabbing visuals.',
       },
       {
         name: 'OpenArt',
@@ -143,14 +148,14 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
         url: 'https://openart.ai',
-        bestFor: 'Advanced image generation with more control',
+        bestFor: 'Experimenting with multiple AI art styles and custom image models.',
         features: [
-          'Access to multiple AI models in one place',
-          'Style customization and control',
-          'Prompt library and workflows',
-          'More flexibility than basic tools',
+          'Multiple AI models',
+          'Style customization',
+          'Image editing tools',
+          'Community templates',
         ],
-        useWhen: 'You want more control over style and outputs',
+        useWhen: 'You want flexibility, experimentation, and access to many artistic styles.',
       },
       {
         name: 'Leonardo AI',
@@ -158,14 +163,14 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
         url: 'https://leonardo.ai',
-        bestFor: 'Consistent branding, product images, and character visuals',
+        bestFor: 'Creating production-ready marketing assets and game-quality graphics.',
         features: [
-          'Train models for consistent styles',
-          'Strong for product and brand visuals',
-          'Fine control over lighting and detail',
-          'Batch generation for multiple assets',
+          'Consistent character generation',
+          'Image editing and upscaling',
+          'Asset creation tools',
+          'Fine-tuned models',
         ],
-        useWhen: 'You need visuals that match across your brand',
+        useWhen: 'You need branded graphics, product mockups, or consistent visual assets.',
       },
       {
         name: 'Adobe Firefly',
@@ -173,40 +178,43 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Template-Based',
         url: 'https://firefly.adobe.com',
-        bestFor: 'Commercial-safe images and editing',
+        bestFor: 'Commercially safe AI image generation integrated with Adobe products.',
         features: [
-          'Licensed outputs for business/commercial use',
-          'Generative fill to edit parts of images',
-          'Text effects and design tools',
-          'Integrates with Photoshop and Adobe tools',
+          'Commercial-friendly training data',
+          'Generative Fill',
+          'Text effects',
+          'Seamless Adobe integration',
         ],
-        useWhen: 'You need images for ads, clients, or business use',
+        useWhen: 'Working in Photoshop, Illustrator, or creating business assets that require commercial usage confidence.',
       },
       {
-        name: 'Remove.bg',
+        name: 'remove.bg',
         difficulty: 'Beginner',
         pricingModel: 'Free + Paid',
         inputModel: 'Automated',
         url: 'https://www.remove.bg',
-        bestFor: 'Removing backgrounds instantly',
+        bestFor: 'Removing backgrounds from images in seconds.',
         features: [
           'One-click background removal',
-          'Clean, professional cutouts',
-          'Works for people, products, and objects',
-          'Fast and simple',
+          'Transparent PNG export',
+          'Batch processing',
+          'Fast and easy editing',
         ],
-        useWhen: 'You need clean images for marketing or design',
+        useWhen: 'You need headshots, product photos, logos, or images with transparent backgrounds.',
       },
     ],
-    quickStart: [
-      'Start with Canva for most designs',
-      'Use Gemini or Grok for quick visuals with text',
-      'Use Ideogram for text-heavy graphics',
-    ],
-    levelUp: [
-      'Use Midjourney or Leonardo for brand visuals',
-      'Use OpenArt for more control',
-      'Combine Canva + AI images for full content creation',
+    quickRecommendations: [
+      { need: 'Social Media Graphics', tool: 'Canva' },
+      { need: 'Presentations & Workbooks', tool: 'Canva' },
+      { need: 'Marketing Images', tool: 'DALL·E 3' },
+      { need: 'Images with Text', tool: 'Ideogram' },
+      { need: 'Premium Artistic Images', tool: 'Midjourney' },
+      { need: 'Brand Consistency', tool: 'Leonardo AI' },
+      { need: 'Adobe Workflow', tool: 'Adobe Firefly' },
+      { need: 'Trending Content', tool: 'Grok' },
+      { need: 'Brainstorming & Google Integration', tool: 'Gemini' },
+      { need: 'Background Removal', tool: 'remove.bg' },
+      { need: 'Experimenting with Styles', tool: 'OpenArt' },
     ],
   },
 
