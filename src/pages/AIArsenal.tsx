@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { AI_ARSENAL_CATEGORIES } from '../data/aiArsenalData'
 import ToolCategoryModal from '../components/resources/ToolCategoryModal'
@@ -51,7 +51,18 @@ function UpgradeGate() {
 // ─── Category card ──────────────────────────────────────────────────────────
 
 function CategoryCard({ title, description, imageFile, onClick }: { title: string; description: string; imageFile: string; onClick: () => void }) {
-  const [imgError, setImgError] = useState(false)
+  const [status, setStatus] = useState<'loading' | 'ok' | 'missing'>('loading')
+
+  useEffect(() => {
+    if (!imageFile) { setStatus('missing'); return }
+    let active = true
+    const img = new Image()
+    img.onload = () => { if (active) setStatus('ok') }
+    img.onerror = () => { if (active) setStatus('missing') }
+    img.src = `/${imageFile}`
+    return () => { active = false }
+  }, [imageFile])
+
   return (
     <button
       onClick={onClick}
@@ -69,24 +80,23 @@ function CategoryCard({ title, description, imageFile, onClick }: { title: strin
         ;(e.currentTarget as HTMLButtonElement).style.boxShadow = 'none'
       }}
     >
-      <div style={{
-        aspectRatio: '16/9',
-        background: imgError || !imageFile
-          ? 'linear-gradient(135deg, #0A2342, #1B4D8E)'
-          : `#0A2342 url(/${imageFile}) center/cover no-repeat`,
-      }}>
-        {!imgError && imageFile && (
-          <img src={`/${imageFile}`} alt="" style={{ display: 'none' }} onError={() => setImgError(true)} />
-        )}
-      </div>
-      <div style={{ padding: '14px 16px 16px' }}>
-        <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14.5, fontWeight: 700, color: '#0A2342', marginBottom: 4 }}>
-          {title}
-        </div>
-        <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12.5, color: 'rgba(10,35,66,0.5)', lineHeight: 1.5 }}>
-          {description}
-        </div>
-      </div>
+      {status === 'ok' ? (
+        // Finished card design — the image already contains title + description, show it as-is
+        <img src={`/${imageFile}`} alt={title} style={{ width: '100%', display: 'block' }} />
+      ) : (
+        // Loading, or no designed card yet — fall back to text so the category is still identifiable
+        <>
+          <div style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #0A2342, #1B4D8E)' }} />
+          <div style={{ padding: '14px 16px 16px' }}>
+            <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14.5, fontWeight: 700, color: '#0A2342', marginBottom: 4 }}>
+              {title}
+            </div>
+            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12.5, color: 'rgba(10,35,66,0.5)', lineHeight: 1.5 }}>
+              {description}
+            </div>
+          </div>
+        </>
+      )}
     </button>
   )
 }
