@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabaseClient'
-import { AI_ARSENAL_CATEGORIES, DIFFICULTY_COLOR, ToolCategory, Tool } from '../../data/aiArsenalData'
+import { AI_ARSENAL_CATEGORIES, DIFFICULTY_COLOR, ToolCategory, Tool, QuickRecommendation } from '../../data/aiArsenalData'
 
 interface SummaryBullet { name: string; meta: string; body: string }
 interface SummaryPayload { bullets: SummaryBullet[]; quickStart?: string; levelUp?: string }
@@ -56,6 +56,37 @@ function SummarizeStar({ spinning }: { spinning: boolean }) {
 }
 
 // ─── Tool entry (full detail view) ───────────────────────────────────────────
+
+// ─── Quick recommendation lookup table (Need → Best Tool) ─────────────────
+
+function QuickRecTable({ rows }: { rows: QuickRecommendation[] }) {
+  return (
+    <div style={{
+      border: '1px solid rgba(10,35,66,0.1)', borderRadius: 10, overflow: 'hidden',
+      marginBottom: 24,
+    }}>
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr',
+        background: 'rgba(10,35,66,0.04)', padding: '8px 14px',
+        fontFamily: 'Montserrat, sans-serif', fontSize: 11, fontWeight: 700,
+        color: 'rgba(10,35,66,0.5)', letterSpacing: '0.06em', textTransform: 'uppercase',
+      }}>
+        <span>Need</span>
+        <span>Best Tool</span>
+      </div>
+      {rows.map((r, i) => (
+        <div key={i} style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', padding: '9px 14px',
+          borderTop: '1px solid rgba(10,35,66,0.06)',
+          fontFamily: 'Inter, sans-serif', fontSize: 13,
+        }}>
+          <span style={{ color: 'rgba(10,35,66,0.75)' }}>{r.need}</span>
+          <span style={{ color: '#0A2342', fontWeight: 600 }}>{r.tool}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function ToolEntry({ tool, isLast }: { tool: Tool; isLast: boolean }) {
   return (
@@ -360,6 +391,10 @@ export default function ToolCategoryModal({ categoryId, onClose, onNavigate }: T
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontStyle: 'italic', color: 'rgba(10,35,66,0.6)', lineHeight: 1.7, margin: '0 0 22px' }}>
             {category.description}
           </p>
+
+          {category.quickRecommendations && category.quickRecommendations.length > 0 && (
+            <QuickRecTable rows={category.quickRecommendations} />
+          )}
 
           {category.tools.length === 0 ? (
             <div style={{
