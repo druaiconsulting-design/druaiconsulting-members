@@ -121,18 +121,40 @@ export default function AIArsenal() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
           <span style={{ fontSize: 16 }}>📌</span>
           <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 15, fontWeight: 700, color: '#0A2342', margin: 0 }}>
-            Before You Dive In
+            Before You Dive In... Please Read
           </h2>
         </div>
         <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13.5, color: 'rgba(10,35,66,0.7)', lineHeight: 1.75 }}>
           <p style={{ margin: '0 0 12px' }}>
-            This is a reference, not a checklist. You don't need every tool here — you need the right one for the problem in front of you right now. Come in with a specific need, find what solves it, and get back to building.
+            This AI Arsenal is a reference, not a checklist. Discover the specific need for your problem, find what solves it, and keep moving forward. Browsing aimlessly causes tool overload, which we want to avoid.
           </p>
           <p style={{ margin: '0 0 12px' }}>
-            Most tools listed have a free plan or trial, so you can try before you commit. Some categories overlap on purpose — different tools fit different working styles, and there's rarely a single "right" answer.
+            <strong style={{ color: '#0A2342' }}>Here's the most important thing to keep in mind before you continue scrolling:</strong>
           </p>
-          <p style={{ margin: 0, fontStyle: 'italic', color: 'rgba(10,35,66,0.45)', fontSize: 12.5 }}>
-            Disclosure: some links in this library are affiliate links. We may earn a small commission if you make a purchase, at no extra cost to you.
+          <p style={{ margin: '0 0 12px' }}>
+            You don't have to sign up for or buy all these tools. Take your time — learn each one as necessary, focusing on what's right for your business at the moment.
+          </p>
+          <p style={{ margin: '0 0 16px' }}>
+            Remember 😊 — it's the people, not the tools, that make this community powerful. Ask questions, share what works for you, and rely on those around you. Everyone started somewhere, and no one masters this alone.
+          </p>
+
+          <div style={{ height: 1, background: 'rgba(10,35,66,0.08)', margin: '0 0 16px' }} />
+
+          <p style={{ margin: '0 0 10px' }}>
+            <strong style={{ color: '#0A2342' }}>A few things to keep in mind as you use your AI Arsenal</strong>
+          </p>
+          <ul style={{ margin: '0 0 16px', paddingLeft: 18 }}>
+            <li style={{ marginBottom: 6 }}>Most tools mentioned here offer a free plan or free trial, so you can get started without spending money.</li>
+            <li style={{ marginBottom: 6 }}>Many tools overlap intentionally because different people work differently. There's no single right tool — only what's right for you and your business now.</li>
+            <li style={{ marginBottom: 6 }}>If you're new and unfamiliar with these names, that's perfectly normal. Begin with Claude or ChatGPT.</li>
+            <li>Advanced? Great! Enter with a clear vision, discover a solution, learn, apply, and transform.</li>
+          </ul>
+
+          <p style={{ margin: '0 0 12px' }}>
+            The AI Arsenal is updated regularly as the AI landscape evolves. Have a tool to suggest? Drop it in Community.
+          </p>
+          <p style={{ margin: 0 }}>
+            <strong style={{ color: '#0A2342' }}>Disclaimer:</strong> Some links in this arsenal are affiliate links. We may earn a small commission if you make a purchase, at no extra cost to you.
           </p>
         </div>
       </div>
