@@ -111,7 +111,7 @@ function ToolEntry({ tool, isLast }: { tool: Tool; isLast: boolean }) {
       {tool.url !== '#' && (
         <a href={tool.url} target="_blank" rel="noopener noreferrer"
           style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#1565C0', textDecoration: 'none', wordBreak: 'break-all' }}>
-          {tool.url}
+          {tool.displayUrl || tool.url}
         </a>
       )}
 
