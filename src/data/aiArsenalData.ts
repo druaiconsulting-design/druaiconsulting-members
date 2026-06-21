@@ -848,6 +848,9 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         ],
         useWhen: 'You\u2019re designing app architecture, creating specifications, writing code, or solving technical problems.',
         alsoUsedIn: ['Design & Image', 'Content Creation & Writing', 'Business Intelligence & Research'],
+      },
+      {
+        name: 'Lovable',
         difficulty: 'Beginner',
         pricingModel: 'Freemium',
         inputModel: 'Automated',
