@@ -80,23 +80,20 @@ function CategoryCard({ title, description, imageFile, onClick }: { title: strin
         ;(e.currentTarget as HTMLButtonElement).style.boxShadow = 'none'
       }}
     >
-      {status === 'ok' ? (
-        // Finished card design — the image already contains title + description, show it as-is
-        <img src={`/${imageFile}`} alt={title} style={{ width: '100%', display: 'block' }} />
-      ) : (
-        // Loading, or no designed card yet — fall back to text so the category is still identifiable
-        <>
-          <div style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #0A2342, #1B4D8E)' }} />
-          <div style={{ padding: '14px 16px 16px' }}>
-            <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14.5, fontWeight: 700, color: '#0A2342', marginBottom: 4 }}>
-              {title}
-            </div>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12.5, color: 'rgba(10,35,66,0.5)', lineHeight: 1.5 }}>
-              {description}
-            </div>
-          </div>
-        </>
-      )}
+      <div style={{
+        aspectRatio: '16/9',
+        background: status === 'ok'
+          ? `#0A2342 url(/${imageFile}) center/cover no-repeat`
+          : 'linear-gradient(135deg, #0A2342, #1B4D8E)',
+      }} />
+      <div style={{ padding: '14px 16px 16px' }}>
+        <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14.5, fontWeight: 700, color: '#0A2342', marginBottom: 4 }}>
+          {title}
+        </div>
+        <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12.5, color: 'rgba(10,35,66,0.5)', lineHeight: 1.5 }}>
+          {description}
+        </div>
+      </div>
     </button>
   )
 }
