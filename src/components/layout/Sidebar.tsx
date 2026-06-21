@@ -16,6 +16,7 @@ interface NavItem {
   label: string
   path: string
   acceleratorOnly?: boolean
+  paidOnly?: boolean
   badge?: number | null
 }
 
@@ -86,7 +87,7 @@ export default function Sidebar({
   mobileOpen,
   onMobileClose,
 }: SidebarProps) {
-  const { isAccelerator } = useAuth()
+  const { isAccelerator, isPaid } = useAuth()
 
   const SIDEBAR_WIDTH = 264
   const COLLAPSED_W   = 64
@@ -118,7 +119,7 @@ export default function Sidebar({
 
   // ── Nav item renderer ────────────────────────────────────────────────────
   const renderItem = (item: NavItem, sectionAcceleratorOnly?: boolean) => {
-    const locked = (item.acceleratorOnly || sectionAcceleratorOnly) && !isAccelerator
+    const locked = ((item.acceleratorOnly || sectionAcceleratorOnly) && !isAccelerator) || (item.paidOnly && !isPaid)
     const active = isActive(item.path, currentPath)
 
     return (
@@ -348,6 +349,7 @@ export default function Sidebar({
           )}
           {[
             { icon: '📋', label: 'Accelerator Weekly PDF', path: '/resources/accelerator-pdf', acceleratorOnly: true },
+            { icon: '🧰', label: 'AI Arsenal', path: '/resources/ai-arsenal', paidOnly: true },
           ].map((item) => renderItem(item))}
         </div>
 
