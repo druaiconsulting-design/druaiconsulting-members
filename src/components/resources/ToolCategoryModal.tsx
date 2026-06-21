@@ -459,3 +459,4 @@ function navArrowStyle(side: 'left' | 'right'): React.CSSProperties {
     color: '#0A2342', cursor: 'pointer',
   } as React.CSSProperties
 }
+
