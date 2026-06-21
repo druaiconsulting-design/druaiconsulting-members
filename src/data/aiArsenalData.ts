@@ -202,6 +202,22 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         ],
         useWhen: 'You need headshots, product photos, logos, or images with transparent backgrounds.',
       },
+      {
+        name: 'Claude',
+        difficulty: 'Beginner',
+        pricingModel: 'Free + Paid',
+        inputModel: 'Prompt-Based',
+        url: 'https://claude.ai',
+        bestFor: 'Building interactive designs, diagrams, infographics, and UI mockups straight from a conversation — code-driven visuals, not photos.',
+        features: [
+          'Generates SVG graphics, diagrams, and infographics from a simple prompt',
+          'Builds interactive HTML/React mockups and prototypes you can refine in real time',
+          'Creates polished slide decks, one-pagers, and presentation visuals',
+          'Iterates on designs instantly based on feedback — no separate design software needed',
+        ],
+        useWhen: 'You need a diagram, infographic, UI mockup, or interactive prototype built fast, without opening a separate design tool.',
+        alsoUsedIn: ['Content Creation & Writing'],
+      },
     ],
     quickRecommendations: [
       { need: 'Social Media Graphics', tool: 'Canva' },
@@ -215,6 +231,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       { need: 'Brainstorming & Google Integration', tool: 'Gemini' },
       { need: 'Background Removal', tool: 'remove.bg' },
       { need: 'Experimenting with Styles', tool: 'OpenArt' },
+      { need: 'Diagrams, Mockups & Interactive Designs', tool: 'Claude' },
     ],
   },
 
@@ -246,14 +263,15 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
         url: 'https://claude.ai',
-        bestFor: 'Working with long documents and producing thoughtful, high-quality writing.',
+        bestFor: 'A top-tier AI assistant for deep writing, document analysis, and complex reasoning — built for quality over speed.',
         features: [
-          'Large document context window',
-          'Excellent summarization',
-          'Strong analytical reasoning',
-          'Natural writing style',
+          'Massive context window for analyzing entire books, contracts, or codebases at once',
+          'Best-in-class long-form writing — natural tone, strong structure, minimal editing needed',
+          'Deep analytical reasoning for strategy, research synthesis, and complex problem-solving',
+          'Built-in document, spreadsheet, and presentation creation directly in chat',
         ],
-        useWhen: 'You need to review reports, contracts, books, or policies, or create polished long-form content.',
+        useWhen: 'You need the highest-quality long-form writing, deep document review, or careful reasoning on complex or high-stakes content.',
+        alsoUsedIn: ['Design & Image'],
       },
       {
         name: 'Gemini',
@@ -465,4 +483,3 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
     tools: [],
   },
 ]
-
