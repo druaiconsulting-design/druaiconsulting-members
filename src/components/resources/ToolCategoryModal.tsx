@@ -68,7 +68,7 @@ function ToolEntry({ tool, isLast }: { tool: Tool; isLast: boolean }) {
       </h3>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: DIFFICULTY_COLOR[tool.difficulty], flexShrink: 0 }} />
+        <span style={{ width: 14, height: 14, borderRadius: '50%', background: DIFFICULTY_COLOR[tool.difficulty], flexShrink: 0, boxShadow: `0 0 0 3px ${DIFFICULTY_COLOR[tool.difficulty]}22` }} />
         <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'rgba(10,35,66,0.75)' }}>
           {tool.difficulty} | {tool.pricingModel}
         </span>
@@ -79,7 +79,7 @@ function ToolEntry({ tool, isLast }: { tool: Tool; isLast: boolean }) {
 
       {tool.url !== '#' && (
         <a href={tool.url} target="_blank" rel="noopener noreferrer"
-          style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#1B4D8E', textDecoration: 'none', wordBreak: 'break-all' }}>
+          style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#1565C0', textDecoration: 'none', wordBreak: 'break-all' }}>
           {tool.url}
         </a>
       )}
