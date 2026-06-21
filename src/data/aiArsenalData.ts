@@ -50,6 +50,22 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
     imageFile: 'design-image.png',
     tools: [
       {
+        name: 'Claude',
+        difficulty: 'Beginner',
+        pricingModel: 'Free + Paid',
+        inputModel: 'Prompt-Based',
+        url: 'https://claude.ai',
+        bestFor: 'Building interactive designs, diagrams, infographics, and UI mockups straight from a conversation — code-driven visuals, not photos.',
+        features: [
+          'Generates SVG graphics, diagrams, and infographics from a simple prompt',
+          'Builds interactive HTML/React mockups and prototypes you can refine in real time',
+          'Creates polished slide decks, one-pagers, and presentation visuals',
+          'Iterates on designs instantly based on feedback — no separate design software needed',
+        ],
+        useWhen: 'You need a diagram, infographic, UI mockup, or interactive prototype built fast, without opening a separate design tool.',
+        alsoUsedIn: ['Content Creation & Writing'],
+      },
+      {
         name: 'Canva',
         difficulty: 'Beginner',
         pricingModel: 'Free + Paid',
@@ -202,22 +218,6 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         ],
         useWhen: 'You need headshots, product photos, logos, or images with transparent backgrounds.',
       },
-      {
-        name: 'Claude',
-        difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
-        inputModel: 'Prompt-Based',
-        url: 'https://claude.ai',
-        bestFor: 'Building interactive designs, diagrams, infographics, and UI mockups straight from a conversation — code-driven visuals, not photos.',
-        features: [
-          'Generates SVG graphics, diagrams, and infographics from a simple prompt',
-          'Builds interactive HTML/React mockups and prototypes you can refine in real time',
-          'Creates polished slide decks, one-pagers, and presentation visuals',
-          'Iterates on designs instantly based on feedback — no separate design software needed',
-        ],
-        useWhen: 'You need a diagram, infographic, UI mockup, or interactive prototype built fast, without opening a separate design tool.',
-        alsoUsedIn: ['Content Creation & Writing'],
-      },
     ],
     quickRecommendations: [
       { need: 'Social Media Graphics', tool: 'Canva' },
@@ -243,21 +243,6 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
     imageFile: 'content-creation.png',
     tools: [
       {
-        name: 'ChatGPT',
-        difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
-        inputModel: 'Prompt-Based',
-        url: 'https://chatgpt.com',
-        bestFor: 'An all-in-one AI assistant for content creation, strategy, images, research, and productivity.',
-        features: [
-          'Create custom images, infographics, social graphics, and ads',
-          'Write, brainstorm, research, and analyze information',
-          'Connect with Google Drive, Gmail, Docs, and other tools',
-          'Build custom GPTs and automate workflows',
-        ],
-        useWhen: 'You need one platform to think, create, design, research, and streamline work across your business.',
-      },
-      {
         name: 'Claude',
         difficulty: 'Beginner',
         pricingModel: 'Free + Paid',
@@ -272,6 +257,21 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         ],
         useWhen: 'You need the highest-quality long-form writing, deep document review, or careful reasoning on complex or high-stakes content.',
         alsoUsedIn: ['Design & Image'],
+      },
+      {
+        name: 'ChatGPT',
+        difficulty: 'Beginner',
+        pricingModel: 'Free + Paid',
+        inputModel: 'Prompt-Based',
+        url: 'https://chatgpt.com',
+        bestFor: 'An all-in-one AI assistant for content creation, strategy, images, research, and productivity.',
+        features: [
+          'Create custom images, infographics, social graphics, and ads',
+          'Write, brainstorm, research, and analyze information',
+          'Connect with Google Drive, Gmail, Docs, and other tools',
+          'Build custom GPTs and automate workflows',
+        ],
+        useWhen: 'You need one platform to think, create, design, research, and streamline work across your business.',
       },
       {
         name: 'Gemini',
