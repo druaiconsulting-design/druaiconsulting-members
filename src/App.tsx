@@ -16,6 +16,7 @@ import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
 import SupportHub from './pages/SupportHub'
 import Frameworks from './pages/Frameworks'
+import AIArsenal from './pages/AIArsenal'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -163,6 +164,10 @@ export default function App() {
     // Profile / Account Settings
     if (path === '/profile')
       return <Profile />
+
+    // Resources — AI Arsenal
+    if (path.startsWith('/resources/ai-arsenal'))
+      return <AIArsenal />
 
     // Resources
     if (path.startsWith('/resources'))
