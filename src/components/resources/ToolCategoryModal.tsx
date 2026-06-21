@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabaseClient'
 import { AI_ARSENAL_CATEGORIES, DIFFICULTY_COLOR, ToolCategory, Tool } from '../../data/aiArsenalData'
@@ -268,12 +269,12 @@ export default function ToolCategoryModal({ categoryId, onClose, onNavigate }: T
     }
   }
 
-  return (
+  return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(10,35,66,0.55)', backdropFilter: 'blur(4px)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(10,35,66,0.55)', backdropFilter: 'blur(4px)' }} />
 
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 201,
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 301,
         width: expanded ? 'calc(100vw - 24px)' : 'min(720px, calc(100vw - 24px))',
         height: expanded ? 'calc(100vh - 24px)' : 'min(820px, calc(100vh - 60px))',
         background: '#fff', borderRadius: 16, boxShadow: '0 24px 80px rgba(0,0,0,0.35)',
@@ -407,14 +408,15 @@ export default function ToolCategoryModal({ categoryId, onClose, onNavigate }: T
           </button>
         )}
       </div>
-    </>
+    </>,
+    document.body
   )
 }
 
 function navArrowStyle(side: 'left' | 'right'): React.CSSProperties {
   return {
     position: 'fixed', top: '50%', [side]: 'max(8px, calc(50vw - 400px))',
-    transform: 'translateY(-50%)', zIndex: 202,
+    transform: 'translateY(-50%)', zIndex: 302,
     width: 40, height: 40, borderRadius: '50%',
     background: '#fff', border: '1px solid rgba(10,35,66,0.1)',
     boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
