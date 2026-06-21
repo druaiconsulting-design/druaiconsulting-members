@@ -65,6 +65,9 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         ],
         useWhen: 'You need a diagram, infographic, UI mockup, or interactive prototype built fast, without opening a separate design tool.',
         alsoUsedIn: ['Content Creation & Writing', 'App & Website Development'],
+      },
+      {
+        name: 'Canva',
         difficulty: 'Beginner',
         pricingModel: 'Free + Paid',
         inputModel: 'Template-Based',
@@ -255,6 +258,9 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
         ],
         useWhen: 'You need the highest-quality long-form writing, deep document review, or careful reasoning on complex or high-stakes content.',
         alsoUsedIn: ['Design & Image', 'App & Website Development'],
+      },
+      {
+        name: 'ChatGPT',
         difficulty: 'Beginner',
         pricingModel: 'Free + Paid',
         inputModel: 'Prompt-Based',
