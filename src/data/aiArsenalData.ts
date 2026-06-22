@@ -7,7 +7,7 @@ export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced'
 export interface Tool {
   name: string
   difficulty: Difficulty
-  pricingModel: string   // e.g. "Free + Paid", "Freemium", "Paid"
+  pricingModel: string   // e.g. "Freemium", "Paid"
   inputModel: string     // e.g. "Template-Based", "Prompt-Based", "Automated"
   url: string
   displayUrl?: string    // cleaner label to show instead of the raw url (e.g. affiliate links) — href still uses url
@@ -53,7 +53,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Claude',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://claude.ai',
         bestFor: 'Writing presentation narratives and creating high-quality slide content.',
@@ -69,7 +69,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Gamma',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://gamma.app',
         bestFor: 'Creating interactive presentations and modern slide experiences in minutes.',
@@ -85,7 +85,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Beautiful.ai',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://www.beautiful.ai',
         bestFor: 'Creating professional business presentations with automatic slide design.',
@@ -100,7 +100,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Canva',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Template-Based',
         url: 'https://www.canva.com',
         bestFor: 'Designing visually appealing presentations and branded slide decks quickly.',
@@ -148,7 +148,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Manus',
         difficulty: 'Intermediate',
-        pricingModel: 'Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://manus.im/invitation/KJTBXETXGVNB?utm_source=invitation&utm_medium=social&utm_campaign=copy_link',
         displayUrl: 'druaiconsulting.com/manus',
@@ -187,7 +187,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Claude',
         difficulty: 'Beginner',
-        pricingModel: 'Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://claude.ai',
         bestFor: 'Analyzing large documents and turning complex information into actionable insights.',
@@ -235,7 +235,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'ChatGPT',
         difficulty: 'Beginner',
-        pricingModel: 'Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://chatgpt.com',
         bestFor: 'Researching, analyzing, and transforming information into strategies, content, and business insights.',
@@ -266,7 +266,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Manus',
         difficulty: 'Advanced',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://manus.im/invitation/KJTBXETXGVNB?utm_source=invitation&utm_medium=social&utm_campaign=copy_link',
         displayUrl: 'druaiconsulting.com/manus',
@@ -381,7 +381,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Calendly',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://calendly.com',
         bestFor: 'Automating appointment scheduling and reducing booking friction.',
@@ -397,7 +397,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Typeform',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Template-Based',
         url: 'https://www.typeform.com',
         bestFor: 'Creating engaging forms, surveys, and lead qualification experiences.',
@@ -466,7 +466,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Grok',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://grok.com',
         bestFor: 'Creating content around trends, news, and real-time conversations.',
@@ -482,7 +482,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Opus Clip',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://www.opus.pro',
         bestFor: 'Turning long videos into short, social-ready clips automatically.',
@@ -498,7 +498,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'CapCut',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Template-Based',
         url: 'https://www.capcut.com',
         bestFor: 'Editing engaging short-form videos quickly and professionally.',
@@ -514,7 +514,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Canva',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Template-Based',
         url: 'https://www.canva.com',
         bestFor: 'Creating branded social graphics, carousels, and marketing assets.',
@@ -530,7 +530,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Later',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://later.com',
         bestFor: 'Planning, scheduling, and managing social media content visually.',
@@ -545,7 +545,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Buffer',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://buffer.com',
         bestFor: 'Publishing and managing social media content simply and efficiently.',
@@ -560,7 +560,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Metricool',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://metricool.com',
         bestFor: 'Tracking performance and optimizing social media strategy with analytics.',
@@ -613,7 +613,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'HeyGen',
         difficulty: 'Beginner',
-        pricingModel: 'Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://www.heygen.com',
         bestFor: 'Creating AI avatar videos and personalized video messages at scale.',
@@ -745,7 +745,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'ElevenLabs',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://elevenlabs.io',
         bestFor: 'Creating realistic AI voiceovers and professional narration.',
@@ -761,7 +761,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Otter.ai',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://otter.ai',
         bestFor: 'Capturing conversations and turning them into searchable notes and transcripts.',
@@ -808,7 +808,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Descript',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://www.descript.com',
         bestFor: 'Editing podcasts, videos, and audio as easily as editing a document.',
@@ -824,7 +824,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Suno',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://suno.com',
         bestFor: 'Generating original songs and music from simple prompts.',
@@ -839,7 +839,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Udio',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://www.udio.com',
         bestFor: 'Creating high-quality, customizable music and soundtracks.',
@@ -954,7 +954,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Calendly',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://calendly.com',
         bestFor: 'Eliminating scheduling back-and-forth and simplifying appointments.',
@@ -970,7 +970,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Spark Mail',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://sparkmailapp.com',
         bestFor: 'Organizing email and collaborating with your team around shared inboxes.',
@@ -1022,7 +1022,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Claude',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://claude.ai',
         bestFor: 'Building interactive designs, diagrams, infographics, and UI mockups straight from a conversation — code-driven visuals, not photos.',
@@ -1038,7 +1038,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Canva',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Template-Based',
         url: 'https://www.canva.com',
         bestFor: 'Creating professional graphics, presentations, and marketing materials quickly.',
@@ -1054,7 +1054,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Gemini',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://gemini.google.com',
         bestFor: "Generating AI-powered visuals and creative concepts within Google's ecosystem.",
@@ -1070,7 +1070,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Grok',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://grok.com',
         bestFor: 'Creating real-time, conversational images with access to current information and trends.',
@@ -1101,7 +1101,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Ideogram',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://ideogram.ai',
         bestFor: 'Creating images with accurate text and typography.',
@@ -1131,7 +1131,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'OpenArt',
         difficulty: 'Intermediate',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://openart.ai',
         bestFor: 'Experimenting with multiple AI art styles and custom image models.',
@@ -1146,7 +1146,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Leonardo AI',
         difficulty: 'Intermediate',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://leonardo.ai',
         bestFor: 'Creating production-ready marketing assets and game-quality graphics.',
@@ -1161,7 +1161,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Adobe Firefly',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Template-Based',
         url: 'https://firefly.adobe.com',
         bestFor: 'Commercially safe AI image generation integrated with Adobe products.',
@@ -1176,7 +1176,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'remove.bg',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://www.remove.bg',
         bestFor: 'Removing backgrounds from images in seconds.',
@@ -1574,7 +1574,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'ClickUp',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://clickup.com',
         bestFor: 'Managing projects, tasks, and team productivity in one platform.',
@@ -1651,7 +1651,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Scribe',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://scribehow.com',
         bestFor: 'Creating step-by-step process documentation automatically.',
@@ -1822,7 +1822,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Claude',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://claude.ai',
         bestFor: 'A top-tier AI assistant for deep writing, document analysis, and complex reasoning — built for quality over speed.',
@@ -1838,7 +1838,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'ChatGPT',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://chatgpt.com',
         bestFor: 'An all-in-one AI assistant for content creation, strategy, images, research, and productivity.',
@@ -1854,7 +1854,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Gemini',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Prompt-Based',
         url: 'https://gemini.google.com',
         bestFor: "Boosting productivity within the Google ecosystem.",
@@ -1902,7 +1902,7 @@ export const AI_ARSENAL_CATEGORIES: ToolCategory[] = [
       {
         name: 'Grammarly',
         difficulty: 'Beginner',
-        pricingModel: 'Free + Paid',
+        pricingModel: 'Freemium',
         inputModel: 'Automated',
         url: 'https://www.grammarly.com',
         bestFor: 'Improving writing quality, clarity, and professionalism.',
