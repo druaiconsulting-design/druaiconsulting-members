@@ -16,6 +16,7 @@ import Announcements from './pages/community/Announcements'
 import AcceleratorCircle from './pages/community/AcceleratorCircle'
 import SupportHub from './pages/SupportHub'
 import StartHere from './pages/StartHere'
+import MyResults from './pages/MyResults'
 import Frameworks from './pages/Frameworks'
 import AIArsenal from './pages/AIArsenal'
 import MemberLayout from './components/layout/MemberLayout'
@@ -133,6 +134,10 @@ export default function App() {
     // Start Here
     if (path === '/start-here')
       return <StartHere />
+
+    // My Results (assessment)
+    if (path === '/my-results')
+      return <MyResults />
 
     // Courses — lesson player
     if (path.startsWith('/courses/lesson/'))
