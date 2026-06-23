@@ -122,7 +122,7 @@ export default function MyResults() {
       const { data, error } = await supabase
         .from("submissions")
         .select("total_score, tier, clarity_score, leadership_score, execution_score, alignment_score, results_score, created_at, user_timezone")
-        .eq("email", user.email)
+        .ilike("email", user.email)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
