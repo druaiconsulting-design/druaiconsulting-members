@@ -40,13 +40,14 @@ export default function StartHere() {
 
   useEffect(() => {
     if (!user) return
+    const userId = user.id
     let active = true
 
     async function load() {
       const { data, error } = await supabase
         .from('member_onboarding_steps')
         .select('step_number, completed, completed_at')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
 
       if (!active) return
       if (error) {
@@ -79,6 +80,7 @@ export default function StartHere() {
 
   async function toggleStep(stepNumber: number) {
     if (!user) return
+    const userId = user.id
     const current = completions[stepNumber]
     const nextCompleted = !current?.completed
 
@@ -96,7 +98,7 @@ export default function StartHere() {
       .from('member_onboarding_steps')
       .upsert(
         {
-          user_id: user.id,
+          user_id: userId,
           step_number: stepNumber,
           completed: nextCompleted,
           completed_at: nextCompleted ? new Date().toISOString() : null,
