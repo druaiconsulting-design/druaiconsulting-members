@@ -30,7 +30,7 @@ function UpgradeGate() {
           📋
         </div>
         <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 22, fontWeight: 700, color: '#0A2342', margin: '0 0 10px' }}>
-          The Weekly PDF is an Accelerator Access
+          The Weekly PDF requires Accelerator Access
         </h2>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'rgba(10,35,66,0.55)', lineHeight: 1.7, margin: '0 0 28px' }}>
           Each week's leadership deep-dive — with action steps and reflection prompts for the Circle — unlocks the moment you upgrade to Accelerator.
