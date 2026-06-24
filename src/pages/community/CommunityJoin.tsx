@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { NAVIGATOR_PAYMENT_LINK, ACCELERATOR_PAYMENT_LINK } from './types'
 import UpgradeModal from '../../components/layout/UpgradeModal'
@@ -7,6 +8,7 @@ const NAVIGATOR_FEATURES = [
   'Access to DRU AI Consulting — Community Connection',
   'Daily Leadership with AI Insights',
   'Framework Micro-Lessons',
+  'AI Arsenal — Your Curated Library of 100+ AI Tools',
   'Executive Founder Pricing — Locked In Forever',
 ]
 
@@ -15,7 +17,7 @@ const ACCELERATOR_FEATURES = [
   'Everything in Navigator, plus:',
   'Today\'s Action Challenge',
   'DeAnna\'s Strategic Edge',
-  'Weekly Framework PDF',
+  'Weekly Leadership Deep-Dive — Delivered to You',
   'DeAnna\'s Monthly Leadership Training Lab! Video',
   'Executive Founder Pricing — Locked In Forever',
 ]
