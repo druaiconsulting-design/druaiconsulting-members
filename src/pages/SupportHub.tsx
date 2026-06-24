@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { NAVIGATOR_PAYMENT_LINK, ACCELERATOR_PAYMENT_LINK } from './community/types'
 
 // ─── Stripe setup ─────────────────────────────────────────────────────────────
 
@@ -294,6 +295,7 @@ export default function SupportHub() {
     : email
   const tier      = profile?.tier || 'navigator'
   const isAcc     = tier === 'accelerator'
+  const isFree    = tier === 'free'
   const planLabel = isAcc ? 'Accelerator' : 'Navigator'
   const planPrice = isAcc ? '$197' : '$97'
 
@@ -315,7 +317,7 @@ export default function SupportHub() {
   }
 
   useEffect(() => {
-    if (view === 'manage') {
+    if (view === 'manage' && !isFree) {
       setShowUpdatePayment(false)
       setShowCancelConfirm(false)
       fetchBilling()
@@ -546,6 +548,74 @@ export default function SupportHub() {
   // ─────────────────────────────────────────────────────────────────────────
 
   if (view === 'manage') {
+
+    // Free tier has no subscription to manage — show an upgrade prompt
+    // instead of falling through to the paid-tier billing card below.
+    if (isFree) {
+      return (
+        <div style={pageWrap}>
+          <div style={{
+            padding:   isMobile ? '16px 16px 0' : '24px 40px 0',
+            maxWidth:  isMobile ? undefined : 1100,
+            margin:    '0 auto',
+            boxSizing: 'border-box',
+            width:     '100%',
+          }}>
+            <div style={{ background: NAVY, position: 'relative', borderRadius: 16, overflow: 'hidden' }}>
+              <img
+                src="/manage-account-banner.png"
+                alt="Manage Your Account"
+                style={{ width: '100%', display: 'block' }}
+              />
+              <button
+                onClick={() => setView('landing')}
+                style={{ ...backBtn, position: 'absolute', top: 14, left: isMobile ? 16 : 24, marginBottom: 0 }}
+              >
+                ← Support Hub
+              </button>
+            </div>
+          </div>
+
+          <div style={{ padding: isMobile ? '24px 20px' : '32px 40px', maxWidth: 760, margin: '0 auto', boxSizing: 'border-box', width: '100%' }}>
+            <div style={{
+              background:   '#fff',
+              border:       '1px solid rgba(212,175,55,0.25)',
+              borderRadius: 16,
+              padding:      '32px 28px',
+              textAlign:    'center',
+            }}>
+              <div style={{
+                fontFamily: 'Montserrat, sans-serif', fontSize: 10, color: 'rgba(10,35,66,0.45)',
+                textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 10,
+              }}>
+                Current Plan
+              </div>
+              <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 20, fontWeight: 700, color: '#0A2342', marginBottom: 18 }}>
+                Free Tier
+              </div>
+              <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: 'rgba(10,35,66,0.6)', lineHeight: 1.7, margin: '0 0 26px' }}>
+                You're not on a paid plan, so there's no subscription or payment method to manage here. Upgrade to Navigator or Accelerator to unlock billing, community access, and the full member experience.
+              </p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href={NAVIGATOR_PAYMENT_LINK} target="_blank" rel="noopener noreferrer" style={{
+                  padding: '13px 22px', background: NAVY, color: '#fff', borderRadius: 32,
+                  fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                }}>
+                  Navigator — $97/mo
+                </a>
+                <a href={ACCELERATOR_PAYMENT_LINK} target="_blank" rel="noopener noreferrer" style={{
+                  padding: '13px 22px', background: MAGENTA, color: '#fff', borderRadius: 32,
+                  fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                }}>
+                  Accelerator — $197/mo
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     const pageContent: React.CSSProperties = {
       padding:   isMobile ? '24px 20px' : '32px 40px',
       maxWidth:  760,
