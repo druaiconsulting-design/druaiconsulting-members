@@ -293,9 +293,9 @@ export default function SupportHub() {
   const memberName = profile
     ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || email
     : email
+  const isFree    = !profile?.tier
   const tier      = profile?.tier || 'navigator'
   const isAcc     = tier === 'accelerator'
-  const isFree    = tier === 'free'
   const planLabel = isAcc ? 'Accelerator' : 'Navigator'
   const planPrice = isAcc ? '$197' : '$97'
 
@@ -401,7 +401,7 @@ export default function SupportHub() {
         member_id:    session?.user?.id,
         member_name:  memberName || email,
         member_email: email,
-        member_tier:  tier,
+        member_tier:  profile?.tier || 'free',
         category,
         question:     question.trim(),
         file_url:     fileUrl,
