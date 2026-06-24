@@ -19,6 +19,7 @@ import StartHere from './pages/StartHere'
 import MyResults from './pages/MyResults'
 import Frameworks from './pages/Frameworks'
 import AIArsenal from './pages/AIArsenal'
+import AcceleratorWeeklyPDF from './pages/AcceleratorWeeklyPDF'
 import MemberLayout from './components/layout/MemberLayout'
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -174,6 +175,10 @@ export default function App() {
     // Resources — AI Arsenal
     if (path.startsWith('/resources/ai-arsenal'))
       return <AIArsenal />
+
+    // Resources — Accelerator Weekly PDF
+    if (path.startsWith('/resources/accelerator-pdf'))
+      return <AcceleratorWeeklyPDF />
 
     // Resources
     if (path.startsWith('/resources'))
