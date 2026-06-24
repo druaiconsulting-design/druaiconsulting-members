@@ -7,7 +7,7 @@ interface WeeklyPdfRow {
   id: string
   title: string
   week_of: string
-  pdf_url: string // storage PATH in the private acc-weekly-pdfs bucket, not a URL
+  pdf_url: string
   is_active: boolean
   created_at: string
 }
@@ -48,42 +48,9 @@ function UpgradeGate() {
   )
 }
 
-// ─── Shared: fetch a fresh signed URL and open it ───────────────────────────
-
-async function openSignedPdf(path: string, mode: 'view' | 'download', setBusy: (v: string | null) => void) {
-  setBusy(path + mode)
-  try {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
-
-    const res = await fetch(`/api/weekly-pdf-url?path=${encodeURIComponent(path)}`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    })
-
-    if (!res.ok) {
-      window.alert("Couldn't open that file. Try again in a moment.")
-      return
-    }
-
-    const { url } = await res.json()
-    const a = document.createElement('a')
-    a.href = url
-    a.target = '_blank'
-    a.rel = 'noopener noreferrer'
-    if (mode === 'download') a.download = ''
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-  } catch {
-    window.alert("Couldn't open that file. Try again in a moment.")
-  } finally {
-    setBusy(null)
-  }
-}
-
 // ─── Current week hero card ───────────────────────────────────────────────
 
-function CurrentPdfCard({ row, busy, setBusy }: { row: WeeklyPdfRow; busy: string | null; setBusy: (v: string | null) => void }) {
+function CurrentPdfCard({ row }: { row: WeeklyPdfRow }) {
   return (
     <div style={{
       background: '#0A2342', borderRadius: 16, padding: '32px 28px',
@@ -102,32 +69,21 @@ function CurrentPdfCard({ row, busy, setBusy }: { row: WeeklyPdfRow; busy: strin
         {row.title}
       </div>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <button
-          onClick={() => openSignedPdf(row.pdf_url, 'view', setBusy)}
-          disabled={busy === row.pdf_url + 'view'}
-          style={{
-            padding: '12px 20px', background: '#D4AF37', color: '#0A2342', borderRadius: 8,
-            border: 'none', cursor: busy ? 'default' : 'pointer',
-            fontFamily: 'Montserrat, sans-serif', fontSize: 12.5, fontWeight: 700,
-            letterSpacing: '0.04em', textTransform: 'uppercase',
-            opacity: busy === row.pdf_url + 'view' ? 0.6 : 1,
-          }}
-        >
-          {busy === row.pdf_url + 'view' ? 'Opening…' : 'View PDF'}
-        </button>
-        <button
-          onClick={() => openSignedPdf(row.pdf_url, 'download', setBusy)}
-          disabled={busy === row.pdf_url + 'download'}
-          style={{
-            padding: '12px 20px', background: 'rgba(255,255,255,0.08)', color: '#fff', borderRadius: 8,
-            border: '1px solid rgba(255,255,255,0.2)', cursor: busy ? 'default' : 'pointer',
-            fontFamily: 'Montserrat, sans-serif', fontSize: 12.5, fontWeight: 700,
-            letterSpacing: '0.04em', textTransform: 'uppercase',
-            opacity: busy === row.pdf_url + 'download' ? 0.6 : 1,
-          }}
-        >
-          {busy === row.pdf_url + 'download' ? 'Preparing…' : 'Download'}
-        </button>
+        <a href={row.pdf_url} target="_blank" rel="noopener noreferrer" style={{
+          padding: '12px 20px', background: '#D4AF37', color: '#0A2342', borderRadius: 8,
+          fontFamily: 'Montserrat, sans-serif', fontSize: 12.5, fontWeight: 700,
+          letterSpacing: '0.04em', textTransform: 'uppercase', textDecoration: 'none',
+        }}>
+          View PDF
+        </a>
+        <a href={row.pdf_url} download target="_blank" rel="noopener noreferrer" style={{
+          padding: '12px 20px', background: 'rgba(255,255,255,0.08)', color: '#fff', borderRadius: 8,
+          border: '1px solid rgba(255,255,255,0.2)',
+          fontFamily: 'Montserrat, sans-serif', fontSize: 12.5, fontWeight: 700,
+          letterSpacing: '0.04em', textTransform: 'uppercase', textDecoration: 'none',
+        }}>
+          Download
+        </a>
       </div>
     </div>
   )
@@ -135,18 +91,14 @@ function CurrentPdfCard({ row, busy, setBusy }: { row: WeeklyPdfRow; busy: strin
 
 // ─── Archive row ─────────────────────────────────────────────────────────
 
-function ArchiveRow({ row, busy, setBusy }: { row: WeeklyPdfRow; busy: string | null; setBusy: (v: string | null) => void }) {
+function ArchiveRow({ row }: { row: WeeklyPdfRow }) {
   return (
-    <button
-      onClick={() => openSignedPdf(row.pdf_url, 'view', setBusy)}
-      disabled={busy === row.pdf_url + 'view'}
-      style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        width: '100%', padding: '14px 16px', background: '#fff', borderRadius: 10,
-        border: '1px solid rgba(10,35,66,0.08)', textAlign: 'left',
-        cursor: busy ? 'default' : 'pointer', marginBottom: 8,
-      }}
-    >
+    <a href={row.pdf_url} target="_blank" rel="noopener noreferrer" style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '14px 16px', background: '#fff', borderRadius: 10,
+      border: '1px solid rgba(10,35,66,0.08)', textDecoration: 'none',
+      marginBottom: 8,
+    }}>
       <div>
         <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13.5, fontWeight: 700, color: '#0A2342' }}>
           {row.title}
@@ -156,9 +108,9 @@ function ArchiveRow({ row, busy, setBusy }: { row: WeeklyPdfRow; busy: string | 
         </div>
       </div>
       <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 11.5, fontWeight: 700, color: '#C2185B', letterSpacing: '0.04em' }}>
-        {busy === row.pdf_url + 'view' ? 'OPENING…' : 'VIEW →'}
+        VIEW →
       </div>
-    </button>
+    </a>
   )
 }
 
@@ -169,7 +121,6 @@ export default function AcceleratorWeeklyPDF() {
   const [rows, setRows] = useState<WeeklyPdfRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [busy, setBusy] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isAccelerator) { setLoading(false); return }
@@ -224,7 +175,7 @@ export default function AcceleratorWeeklyPDF() {
         </div>
       )}
 
-      {!loading && !error && current && <CurrentPdfCard row={current} busy={busy} setBusy={setBusy} />}
+      {!loading && !error && current && <CurrentPdfCard row={current} />}
 
       {!loading && !error && archive.length > 0 && (
         <div>
@@ -234,7 +185,7 @@ export default function AcceleratorWeeklyPDF() {
           }}>
             ARCHIVE
           </div>
-          {archive.map(row => <ArchiveRow key={row.id} row={row} busy={busy} setBusy={setBusy} />)}
+          {archive.map(row => <ArchiveRow key={row.id} row={row} />)}
         </div>
       )}
     </div>
