@@ -74,14 +74,6 @@ function CurrentPdfCard({ row }: { row: WeeklyPdfRow }) {
           fontFamily: 'Montserrat, sans-serif', fontSize: 12.5, fontWeight: 700,
           letterSpacing: '0.04em', textTransform: 'uppercase', textDecoration: 'none',
         }}>
-          View PDF
-        </a>
-        <a href={row.pdf_url} download target="_blank" rel="noopener noreferrer" style={{
-          padding: '12px 20px', background: 'rgba(255,255,255,0.08)', color: '#fff', borderRadius: 8,
-          border: '1px solid rgba(255,255,255,0.2)',
-          fontFamily: 'Montserrat, sans-serif', fontSize: 12.5, fontWeight: 700,
-          letterSpacing: '0.04em', textTransform: 'uppercase', textDecoration: 'none',
-        }}>
           Download
         </a>
       </div>
