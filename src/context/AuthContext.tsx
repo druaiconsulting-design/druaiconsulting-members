@@ -18,7 +18,7 @@ export interface Profile {
   role: string | null
   picture: string | null
   photo_url: string | null
-  tier: 'navigator' | 'accelerator' | null
+  tier: 'navigator' | 'accelerator' | 'free' | null
   pathway_stage: string | null
   clarity_points: number | null
   community_level: string | null
