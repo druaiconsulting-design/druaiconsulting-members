@@ -293,7 +293,7 @@ export default function SupportHub() {
   const memberName = profile
     ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || email
     : email
-  const isFree    = !profile?.tier
+  const isFree    = !profile?.tier || profile.tier === 'free'
   const tier      = profile?.tier || 'navigator'
   const isAcc     = tier === 'accelerator'
   const planLabel = isAcc ? 'Accelerator' : 'Navigator'
