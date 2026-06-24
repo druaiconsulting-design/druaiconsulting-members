@@ -22,7 +22,7 @@ function UpgradeGate() {
           🧰
         </div>
         <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 22, fontWeight: 700, color: '#0A2342', margin: '0 0 10px' }}>
-          AI Arsenal is a Navigator & Accelerator Access 
+          AI Arsenal requires Navigator or Accelerator Access 
         </h2>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'rgba(10,35,66,0.55)', lineHeight: 1.7, margin: '0 0 28px' }}>
           The full curated tool library — categories, recommendations, and quick-start guidance — unlocks the moment you join Navigator or Accelerator.
