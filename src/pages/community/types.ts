@@ -12,6 +12,7 @@ export const NAVIGATOR_FEATURES = [
   'Access to DRU AI Consulting — Community Connection',
   'Daily Leadership with AI Insights',
   'Framework Micro-Lessons',
+  'AI Arsenal — Curated AI Tool Library',
   'Executive Founder Pricing — Locked In Forever',
 ];
 
@@ -19,7 +20,7 @@ export const ACCELERATOR_FEATURES = [
   'Everything in Navigator, plus:',
   "Today's Action Challenge",
   "DeAnna's Strategic Edge",
-  'Weekly Framework PDF Downloadable',
+  'Weekly Leadership Deep-Dive — Delivered to You',
   "Monthly DeAnna's Leadership Lab! Video Access",
   'Executive Founder Pricing — Locked In Forever',
 ];
