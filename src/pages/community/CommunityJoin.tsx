@@ -17,6 +17,7 @@ const ACCELERATOR_FEATURES = [
   'Everything in Navigator, plus:',
   'Today\'s Action Challenge',
   'DeAnna\'s Strategic Edge',
+  'Accelerator Circle — Your Exclusive Community with Top-Tier Leaders',
   'Weekly Leadership Deep-Dive — Delivered to You',
   'DeAnna\'s Monthly Leadership Training Lab! Video',
   'Executive Founder Pricing — Locked In Forever',
