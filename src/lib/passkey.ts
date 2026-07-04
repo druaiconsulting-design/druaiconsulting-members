@@ -1,7 +1,9 @@
 import { startRegistration, startAuthentication } from "@simplewebauthn/browser";
 import { supabase } from "./supabaseClient";
 
-const APP_URL = "https://app.druaiconsulting.com";
+// Passkeys here are scoped to members.druaiconsulting.com only — this is a
+// fully separate, self-contained system from the one on app.druaiconsulting.com.
+// All calls are same-origin (relative paths), so no cross-site CORS is needed.
 
 // ─── Register a Passkey (user must be logged in) ─────────────────────
 export async function registerPasskey(): Promise<{ success: boolean; error?: string }> {
@@ -10,7 +12,7 @@ export async function registerPasskey(): Promise<{ success: boolean; error?: str
     if (!session) return { success: false, error: "You must be logged in to set up a passkey." };
 
     // 1. Get registration options from server
-    const optionsRes = await fetch(`${APP_URL}/api/passkey/register-options`, {
+    const optionsRes = await fetch(`/api/passkey/register-options`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,10 +26,10 @@ export async function registerPasskey(): Promise<{ success: boolean; error?: str
     const options = await optionsRes.json();
 
     // 2. Prompt biometric (Face ID / fingerprint / Windows Hello)
-    const credential = await startRegistration(options);
+    const credential = await startRegistration({ optionsJSON: options });
 
     // 3. Send credential to server for verification
-    const verifyRes = await fetch(`${APP_URL}/api/passkey/register-verify`, {
+    const verifyRes = await fetch(`/api/passkey/register-verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +54,7 @@ export async function registerPasskey(): Promise<{ success: boolean; error?: str
 export async function loginWithPasskey(): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. Get authentication options from server
-    const optionsRes = await fetch(`${APP_URL}/api/passkey/auth-options`, {
+    const optionsRes = await fetch(`/api/passkey/auth-options`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
@@ -63,10 +65,10 @@ export async function loginWithPasskey(): Promise<{ success: boolean; error?: st
     const options = await optionsRes.json();
 
     // 2. Prompt biometric (Face ID / fingerprint / Windows Hello)
-    const credential = await startAuthentication(options);
+    const credential = await startAuthentication({ optionsJSON: options });
 
     // 3. Send to server for verification
-    const verifyRes = await fetch(`${APP_URL}/api/passkey/auth-verify`, {
+    const verifyRes = await fetch(`/api/passkey/auth-verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credential),
