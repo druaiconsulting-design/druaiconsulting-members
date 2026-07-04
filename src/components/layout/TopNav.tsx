@@ -193,6 +193,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
         {/* Nav links */}
         {[
           { label: 'My Profile', path: '/profile',    icon: '👤' },
+          ...(isMobile ? [{ label: 'Bookmarks', path: '/profile?tab=bookmarks', icon: '🔖' }] : []),
           { label: 'Start Here', path: '/start-here', icon: '🏁' },
         ].map((item) => (
           <button
