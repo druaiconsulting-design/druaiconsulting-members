@@ -541,6 +541,18 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
             <NotificationsPanel isOpen={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
           </div>
 
+          {/* Bookmarks */}
+          <button
+            className="icon-btn"
+            onClick={() => { navigate('/profile?tab=bookmarks'); setAvatarMenuOpen(false); setNotifOpen(false) }}
+            title="Bookmarks"
+            style={{ width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8AA4C8', transition: 'all 0.15s' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+            </svg>
+          </button>
+
           {/* Avatar */}
           <div style={{ position: 'relative' }}>
             <button
