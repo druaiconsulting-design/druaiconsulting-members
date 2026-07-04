@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
+import { navigate } from '../lib/router'
+import { AI_ARSENAL_CATEGORIES } from '../data/aiArsenalData'
 import type { NotificationPreferences } from './community/types'
 import { useCommunityLevels, getLevelInfo } from '../lib/communityLevels'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type SettingsTab = 'profile' | 'notifications' | 'privacy'
+type SettingsTab = 'profile' | 'bookmarks' | 'notifications' | 'privacy'
 
 interface ProfileData {
   id: string
@@ -338,6 +340,85 @@ function ProfileTab({ profile, onUpdate }: {
   )
 }
 
+// ─── Bookmarks tab ────────────────────────────────────────────────────────────
+
+function BookmarksTab({ userId }: { userId: string }) {
+  const [loading, setLoading] = useState(true)
+  const [categoryIds, setCategoryIds] = useState<string[]>([])
+
+  useEffect(() => {
+    let active = true
+    supabase
+      .from('resource_bookmarks')
+      .select('category_id')
+      .eq('member_id', userId)
+      .then(({ data }) => {
+        if (active) {
+          setCategoryIds((data || []).map(row => row.category_id))
+          setLoading(false)
+        }
+      })
+    return () => { active = false }
+  }, [userId])
+
+  const bookmarked = categoryIds
+    .map(id => AI_ARSENAL_CATEGORIES.find(c => c.id === id))
+    .filter((c): c is typeof AI_ARSENAL_CATEGORIES[number] => !!c)
+
+  if (loading) return <Loader />
+
+  return (
+    <div style={{ background: '#fff', border: '1px solid rgba(10,35,66,0.08)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid rgba(10,35,66,0.07)' }}>
+        <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 18, fontWeight: 700, color: '#0A2342', marginBottom: 2 }}>
+          Bookmarked Tools
+        </div>
+        <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'rgba(10,35,66,0.4)' }}>
+          Categories you've saved from the AI Arsenal
+        </div>
+      </div>
+
+      {bookmarked.length === 0 ? (
+        <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 28, marginBottom: 10 }}>🔖</div>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13.5, color: 'rgba(10,35,66,0.5)' }}>
+            No bookmarks yet. Open any category in the AI Arsenal and tap the bookmark icon to save it here.
+          </div>
+        </div>
+      ) : (
+        <div style={{ padding: 12 }}>
+          {bookmarked.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => navigate(`/resources/ai-arsenal?open=${cat.id}`)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                width: '100%', textAlign: 'left', padding: '14px 12px', borderRadius: 10,
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                borderBottom: '1px solid rgba(10,35,66,0.06)',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(10,35,66,0.03)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+            >
+              <div>
+                <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13.5, fontWeight: 700, color: '#0A2342', marginBottom: 3 }}>
+                  {cat.title}
+                </div>
+                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'rgba(10,35,66,0.45)' }}>
+                  {cat.description}
+                </div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(10,35,66,0.35)" strokeWidth="2" style={{ flexShrink: 0, marginLeft: 12 }}>
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Notifications tab ────────────────────────────────────────────────────────
 
 const DEFAULT_PREFS: NotificationPreferences = {
@@ -556,7 +637,7 @@ export default function Profile() {
   // Read initial tab from URL hash or query param
   const hash = window.location.hash.slice(1) as SettingsTab
   const searchParams = new URLSearchParams(window.location.search)
-  const initialTab = (['profile', 'notifications', 'privacy'].includes(hash) ? hash : null)
+  const initialTab = (['profile', 'bookmarks', 'notifications', 'privacy'].includes(hash) ? hash : null)
     ?? (searchParams.get('tab') as SettingsTab)
     ?? 'profile'
 
@@ -598,6 +679,7 @@ export default function Profile() {
 
   const tabs: { id: SettingsTab; label: string }[] = [
     { id: 'profile',       label: 'Profile' },
+    { id: 'bookmarks',     label: 'Bookmarks' },
     { id: 'notifications', label: 'Notifications' },
     { id: 'privacy',       label: 'Privacy' },
   ]
@@ -643,6 +725,7 @@ export default function Profile() {
 
         <div>
           {tab === 'profile'       && <ProfileTab       profile={profile} onUpdate={handleUpdate} />}
+          {tab === 'bookmarks'     && <BookmarksTab     userId={profile.id} />}
           {tab === 'notifications' && <NotificationsTab userId={profile.id} />}
           {tab === 'privacy'       && <PrivacyTab       profile={profile} onUpdate={handleUpdate} />}
         </div>
