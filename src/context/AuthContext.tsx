@@ -88,11 +88,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    let didFinish = false
+    const finishLoading = () => {
+      if (!didFinish) {
+        didFinish = true
+        setLoading(false)
+      }
+    }
+
+    // Safety net: Supabase's internal auth lock (navigator.locks) can get
+    // stuck if the tab is closed/backgrounded mid token-refresh. If that
+    // happens, getSession() never resolves and the splash screen spins
+    // forever. This timeout stops blocking the UI after 4s regardless —
+    // onAuthStateChange below will still pick up the real session the
+    // moment it actually settles.
+    const timeoutId = setTimeout(finishLoading, 4000)
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
-      setLoading(false)
+      finishLoading()
+    }).catch(() => {
+      finishLoading()
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -101,11 +119,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null)
         if (session?.user) await fetchProfile(session.user.id)
         else setProfile(null)
-        setLoading(false)
+        finishLoading()
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      clearTimeout(timeoutId)
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signInWithEmail = async (email: string, password: string) => {
