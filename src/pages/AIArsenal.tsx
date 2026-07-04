@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient'
 import { AI_ARSENAL_CATEGORIES } from '../data/aiArsenalData'
 import ToolCategoryModal from '../components/resources/ToolCategoryModal'
 import { NAVIGATOR_PAYMENT_LINK, ACCELERATOR_PAYMENT_LINK } from './community/types'
@@ -101,12 +102,49 @@ function CategoryCard({ title, description, imageFile, onClick }: { title: strin
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function AIArsenal() {
-  const { isPaid } = useAuth()
+  const { isPaid, user } = useAuth()
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set())
+  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false)
+
+  // ── Load this member's bookmarked category ids ──
+  useEffect(() => {
+    if (!user) return
+    let active = true
+    supabase
+      .from('resource_bookmarks')
+      .select('category_id')
+      .eq('member_id', user.id)
+      .then(({ data }) => {
+        if (active && data) setBookmarkedIds(new Set(data.map(row => row.category_id)))
+      })
+    return () => { active = false }
+  }, [user])
+
+  // ── Deep link: /resources/ai-arsenal?open=<categoryId> opens that category directly ──
+  useEffect(() => {
+    const openId = new URLSearchParams(window.location.search).get('open')
+    if (openId && AI_ARSENAL_CATEGORIES.some(c => c.id === openId)) {
+      setActiveCategory(openId)
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }, [])
+
+  function handleBookmarkChange(categoryId: string, bookmarked: boolean) {
+    setBookmarkedIds(prev => {
+      const next = new Set(prev)
+      if (bookmarked) next.add(categoryId)
+      else next.delete(categoryId)
+      return next
+    })
+  }
 
   if (!isPaid) return <UpgradeGate />
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const visibleCategories = showBookmarkedOnly
+    ? AI_ARSENAL_CATEGORIES.filter(c => bookmarkedIds.has(c.id))
+    : AI_ARSENAL_CATEGORIES
 
   return (
     <div style={{ padding: isMobile ? '20px 12px' : '36px 24px', maxWidth: 1140, margin: '0 auto' }}>
@@ -166,28 +204,64 @@ export default function AIArsenal() {
         </div>
       </div>
 
-      {/* Category grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-        gap: 16,
-      }}>
-        {AI_ARSENAL_CATEGORIES.map(cat => (
-          <CategoryCard
-            key={cat.id}
-            title={cat.title}
-            description={cat.description}
-            imageFile={cat.imageFile}
-            onClick={() => setActiveCategory(cat.id)}
-          />
-        ))}
+      {/* Category grid header + bookmark filter toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+        <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 700, color: 'rgba(10,35,66,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          {visibleCategories.length} {visibleCategories.length === 1 ? 'Category' : 'Categories'}
+        </div>
+        <button
+          onClick={() => setShowBookmarkedOnly(v => !v)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '8px 14px', borderRadius: 20, cursor: 'pointer',
+            background: showBookmarkedOnly ? 'rgba(212,175,55,0.12)' : '#fff',
+            border: showBookmarkedOnly ? '1px solid rgba(212,175,55,0.45)' : '1px solid rgba(10,35,66,0.12)',
+            color: showBookmarkedOnly ? '#B8941F' : 'rgba(10,35,66,0.6)',
+            fontFamily: 'Montserrat, sans-serif', fontSize: 12, fontWeight: 700,
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill={showBookmarkedOnly ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+          </svg>
+          {showBookmarkedOnly ? 'Bookmarked' : 'Show Bookmarked'}
+        </button>
       </div>
+
+      {/* Category grid */}
+      {visibleCategories.length === 0 ? (
+        <div style={{
+          background: '#fff', border: '1px solid rgba(10,35,66,0.08)', borderRadius: 12,
+          padding: '40px 24px', textAlign: 'center',
+        }}>
+          <div style={{ fontSize: 28, marginBottom: 10 }}>🔖</div>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13.5, color: 'rgba(10,35,66,0.5)' }}>
+            No bookmarked categories yet. Tap the bookmark icon inside any category to save it here.
+          </div>
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+          gap: 16,
+        }}>
+          {visibleCategories.map(cat => (
+            <CategoryCard
+              key={cat.id}
+              title={cat.title}
+              description={cat.description}
+              imageFile={cat.imageFile}
+              onClick={() => setActiveCategory(cat.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {activeCategory && (
         <ToolCategoryModal
           categoryId={activeCategory}
           onClose={() => setActiveCategory(null)}
           onNavigate={setActiveCategory}
+          onBookmarkChange={handleBookmarkChange}
         />
       )}
     </div>
