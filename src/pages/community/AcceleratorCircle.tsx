@@ -221,7 +221,7 @@ export default function AcceleratorCircle() {
                   </div>
                   {memberCount > 0 && (
                     <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 12, fontWeight: 600, color: 'rgba(10,35,66,0.55)' }}>
-                      {memberCount} {memberCount === 1 ? 'member' : 'members'}
+                      {memberCount}
                     </div>
                   )}
                 </div>
