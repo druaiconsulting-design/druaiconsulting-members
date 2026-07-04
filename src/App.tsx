@@ -19,6 +19,7 @@ import StartHere from './pages/StartHere'
 import MyResults from './pages/MyResults'
 import Frameworks from './pages/Frameworks'
 import AIArsenal from './pages/AIArsenal'
+import Terms from './pages/Terms'
 import AcceleratorWeeklyPDF from './pages/AcceleratorWeeklyPDF'
 import MemberLayout from './components/layout/MemberLayout'
 
@@ -103,7 +104,7 @@ export default function App() {
 
   useEffect(() => {
     if (loading) return
-    if (!session && path !== '/login') {
+    if (!session && path !== '/login' && path !== '/terms') {
       navigate('/login')
     } else if (session && path === '/login') {
       navigate('/')
@@ -111,6 +112,8 @@ export default function App() {
   }, [session, loading, path])
 
   if (loading) return <LoadingScreen />
+
+  if (path === '/terms') return <Terms />
 
   if (!session || path === '/login') return <Login />
 
