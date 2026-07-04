@@ -11,6 +11,7 @@ interface ToolCategoryModalProps {
   categoryId: string
   onClose: () => void
   onNavigate: (categoryId: string) => void
+  onBookmarkChange?: (categoryId: string, bookmarked: boolean) => void
 }
 
 // ─── Header icon button ──────────────────────────────────────────────────────
@@ -219,7 +220,7 @@ function SummaryOverlay({
 
 // ─── Main modal ───────────────────────────────────────────────────────────────
 
-export default function ToolCategoryModal({ categoryId, onClose, onNavigate }: ToolCategoryModalProps) {
+export default function ToolCategoryModal({ categoryId, onClose, onNavigate, onBookmarkChange }: ToolCategoryModalProps) {
   const { user } = useAuth()
   const [expanded, setExpanded] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -264,9 +265,11 @@ export default function ToolCategoryModal({ categoryId, onClose, onNavigate }: T
       if (bookmarked) {
         await supabase.from('resource_bookmarks').delete().eq('member_id', user.id).eq('category_id', category.id)
         setBookmarked(false)
+        onBookmarkChange?.(category.id, false)
       } else {
         await supabase.from('resource_bookmarks').insert({ member_id: user.id, category_id: category.id })
         setBookmarked(true)
+        onBookmarkChange?.(category.id, true)
       }
     } catch {
       // Bookmark is a nice-to-have — never block the read experience on failure
