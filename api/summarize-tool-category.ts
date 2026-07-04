@@ -1,7 +1,7 @@
 import { createHash } from 'crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
-import { AI_ARSENAL_CATEGORIES } from '../src/data/aiArsenalData'
+import { AI_ARSENAL_CATEGORIES } from '../src/data/aiArsenalData.js'
 
 export const config = { maxDuration: 30 }
 
