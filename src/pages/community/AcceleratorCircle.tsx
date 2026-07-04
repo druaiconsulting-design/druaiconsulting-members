@@ -38,6 +38,25 @@ export default function AcceleratorCircle() {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
   const [isAdmin,          setIsAdmin]          = useState(false)
 
+  // Agent (non-human) avatars — pulled live from Supabase `agents` table.
+  // Never hardcode a photo URL here: swap the file in agents-photos + update
+  // agents.photo_url in Supabase, and it updates everywhere automatically.
+  const [agentPhotoBySlug, setAgentPhotoBySlug] = useState<Record<string, string>>({})
+  const [agentPhotoByName, setAgentPhotoByName] = useState<Record<string, string>>({})
+
+  const loadAgentPhotos = useCallback(async () => {
+    const { data, error } = await supabase.from('agents').select('slug, name, photo_url')
+    if (error || !data) { console.error('[agent photos]', error); return }
+    const bySlug: Record<string, string> = {}
+    const byName: Record<string, string> = {}
+    data.forEach((a: any) => {
+      if (a.photo_url && a.slug) bySlug[a.slug] = a.photo_url
+      if (a.photo_url && a.name) byName[a.name] = a.photo_url
+    })
+    setAgentPhotoBySlug(bySlug)
+    setAgentPhotoByName(byName)
+  }, [])
+
   const loadCircle = useCallback(async () => {
     setLoading(true)
 
@@ -82,8 +101,8 @@ export default function AcceleratorCircle() {
   }, [])
 
   useEffect(() => {
-    if (isAccelerator) loadCircle()
-  }, [isAccelerator, loadCircle])
+    if (isAccelerator) { loadCircle(); loadAgentPhotos() }
+  }, [isAccelerator, loadCircle, loadAgentPhotos])
 
   // Real-time new posts
   useEffect(() => {
@@ -277,6 +296,8 @@ export default function AcceleratorCircle() {
                     isAdmin={isAdmin}
                     photoMap={photoMap}
                     levelMap={levelMap}
+                    agentPhotoBySlug={agentPhotoBySlug}
+                    agentPhotoByName={agentPhotoByName}
                     onMemberClick={setSelectedMemberId}
                     onPinChange={handlePinChange}
                   />
