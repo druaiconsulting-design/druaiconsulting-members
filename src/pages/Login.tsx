@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { navigate } from '../lib/router'
+import { loginWithPasskey } from '../lib/passkey'
 
 type LoadingState = 'google' | 'email' | 'passkey' | 'reset' | null
 
@@ -38,13 +39,13 @@ export default function Login() {
   const handlePasskey = async () => {
     setLoading('passkey')
     setError(null)
-    try {
-      const { error } = await (supabase.auth as any).signInWithPasskey()
-      if (error) { setError(error.message); setLoading(null) }
-    } catch {
-      setError('Passkey sign-in is not available on this device.')
+    const result = await loginWithPasskey()
+    if (!result.success) {
+      setError(result.error || 'Passkey sign-in failed.')
       setLoading(null)
+      return
     }
+    navigate('/')
   }
 
   const handlePasswordReset = async () => {
