@@ -42,7 +42,7 @@ function LoadingScreen() {
         color: '#D4AF37',
         letterSpacing: '0.2em',
       }}>
-        DRU AI CONSULTING™
+        DRU AI CONSULTING
       </div>
       <div style={{
         width: 36,
