@@ -9,7 +9,7 @@ const TERMS = [
 
 export default function TermsPage() {
   return (
-    <div style={{ minHeight: "100dvh", background: "#0A2342", display: "flex", flexDirection: "column" }}>
+    <div style={{ height: "100dvh", overflowY: "auto", background: "#0A2342", display: "flex", flexDirection: "column" }}>
       <main style={{ flex: 1, padding: "2.5rem 1.5rem", maxWidth: 620, margin: "0 auto", width: "100%" }}>
 
         {/* Brand logo */}
