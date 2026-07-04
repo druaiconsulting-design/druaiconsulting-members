@@ -26,42 +26,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: 'Unknown category' })
   }
 
-  // ── Verify Supabase session (same pattern as bunny-token.ts) ──
-  const authHeader = req.headers.authorization
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-  const accessToken = authHeader.slice(7)
+  try {
+    // ── Verify Supabase session (same pattern as bunny-token.ts) ──
+    const authHeader = req.headers.authorization
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+    const accessToken = authHeader.slice(7)
 
-  const supabase = createClient(
-    process.env.VITE_SUPABASE_URL as string,
-    process.env.VITE_SUPABASE_ANON_KEY as string
-  )
+    if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_ANON_KEY) {
+      console.error('[summarize-tool-category] Missing VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY env vars')
+      return res.status(500).json({ error: 'Server configuration error (Supabase env vars missing)' })
+    }
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken)
-  if (authError || !user) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
+    const supabase = createClient(
+      process.env.VITE_SUPABASE_URL as string,
+      process.env.VITE_SUPABASE_ANON_KEY as string
+    )
 
-  const currentHash = hashCategory(category)
+    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken)
+    if (authError || !user) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
 
-  // ── Check cache ──
-  const { data: cached } = await supabase
-    .from('resource_category_summaries')
-    .select('summary, content_hash')
-    .eq('category_id', categoryId)
-    .maybeSingle()
+    const currentHash = hashCategory(category)
 
-  if (cached && cached.content_hash === currentHash) {
-    return res.status(200).json({ summary: JSON.parse(cached.summary), cached: true })
-  }
+    // ── Check cache ──
+    const { data: cached } = await supabase
+      .from('resource_category_summaries')
+      .select('summary, content_hash')
+      .eq('category_id', categoryId)
+      .maybeSingle()
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' })
-  }
+    if (cached && cached.content_hash === currentHash) {
+      return res.status(200).json({ summary: JSON.parse(cached.summary), cached: true })
+    }
 
-  const systemPrompt = `You summarize an AI tool directory category for busy small-business owners. Respond ONLY with valid JSON, no markdown fences, no prose outside the JSON. Schema:
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' })
+    }
+
+    const systemPrompt = `You summarize an AI tool directory category for busy small-business owners. Respond ONLY with valid JSON, no markdown fences, no prose outside the JSON. Schema:
 {
   "bullets": [ { "name": string, "meta": string, "body": string } ],
   "quickStart": string,
@@ -69,16 +75,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 "meta" is exactly "Difficulty | Pricing" (e.g. "Beginner | Free + Paid"). "body" is one tight sentence combining what it's best for plus its 1-2 standout features, in plain language. "quickStart" and "levelUp" are single sentences combining the category's quick-start/level-up guidance, or omit the key if none provided.`
 
-  const userPrompt = `Category: ${category.title}
+    const userPrompt = `Category: ${category.title}
 Description: ${category.description}
 
 Tools:
-${category.tools.map(t => `- ${t.name} | ${t.difficulty} | ${t.pricingModel} | Best for: ${t.bestFor} | Features: ${t.features.join('; ')}`).join('\n')}
+${category.tools.map(t => `- ${t.name} | ${t.difficulty} | ${t.pricingModel} | Best for: ${t.bestFor} | Features: ${(t.features || []).join('; ')}`).join('\n')}
 
 Quick start tips: ${category.quickStart?.join('; ') || 'none'}
 Level up tips: ${category.levelUp?.join('; ') || 'none'}`
 
-  try {
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
