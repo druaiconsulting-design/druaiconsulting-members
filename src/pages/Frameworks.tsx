@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 const BYPASS_PAYMENT = false;
 
@@ -175,7 +176,7 @@ function TermsModal({ modal, onClose }: { modal: NonNullable<ModalConfig>; onClo
     else { setShowPayment(true); }
   };
 
-  return (
+  return createPortal(
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 2000, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
       <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 520, height: "100dvh", background: "#0A2342", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.875rem 1.25rem", background: "#061829", borderBottom: "1px solid rgba(212,175,55,0.25)", flexShrink: 0 }}>
@@ -214,7 +215,7 @@ function TermsModal({ modal, onClose }: { modal: NonNullable<ModalConfig>; onClo
                 {BYPASS_PAYMENT && thankYouRoute ? "Simulate Payment & Continue →" : "Continue to Payment →"}
               </button>
               <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.6rem", color: "rgba(230,230,230,0.3)", textAlign: "center", marginTop: 10 }}>
-                Full terms available at app.druaiconsulting.com/terms
+                Full terms available at members.druaiconsulting.com/terms
               </p>
             </div>
           </div>
@@ -222,7 +223,8 @@ function TermsModal({ modal, onClose }: { modal: NonNullable<ModalConfig>; onClo
           <iframe src={modal.url} title={modal.title} style={{ flex: 1, width: "100%", border: "none", background: "#0A2342" }} allow="payment" />
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
