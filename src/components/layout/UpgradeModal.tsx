@@ -59,7 +59,7 @@ export default function UpgradeModal({ isOpen, onClose, url, tierName, price }: 
               fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
               color: '#D4AF37', letterSpacing: '0.12em', textTransform: 'uppercase',
             }}>
-              DRU AI CONSULTING™
+              DRU AI CONSULTING
             </div>
             <div style={{
               fontFamily: 'Montserrat, sans-serif', fontSize: 15, fontWeight: 600,
