@@ -225,20 +225,8 @@ export default function CommunityFeed({
                 <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', marginTop: '5px', fontWeight: '600' }}>Soliciting and self-promotion are prohibited; violation will result in removal from the membership.</p>
               </div>
 
-              {/* ── Header actions: member stack + Leaderboard + Community Protocols ── */}
+              {/* ── Header actions: Community Protocols + Leaderboard + member stack ── */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {memberAvatars.map((m, i) => (
-                    <div key={m.id} style={{ marginLeft: i === 0 ? 0 : -10, zIndex: memberAvatars.length - i, borderRadius: '50%', border: '2px solid #FAFAF8' }}>
-                      <MemberAvatar firstName={m.first_name || '?'} photoUrl={m.photo_url ?? undefined} size={32} />
-                    </div>
-                  ))}
-                </div>
-                {memberCount > 0 && (
-                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.55)' }}>
-                    {memberCount}
-                  </div>
-                )}
                 <button
                   onClick={() => navigate('/support?view=protocols')}
                   style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '8px', padding: '8px 14px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.5)', cursor: 'pointer', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 3px rgba(10,35,66,0.06)', transition: 'all 0.15s ease' }}
@@ -253,6 +241,18 @@ export default function CommunityFeed({
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(10,35,66,0.5)'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8E4DF'; }}>
                   <span>🏆</span><span>Leaderboard</span>
                 </button>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {memberAvatars.map((m, i) => (
+                    <div key={m.id} style={{ marginLeft: i === 0 ? 0 : -10, zIndex: memberAvatars.length - i, borderRadius: '50%', border: '2px solid #FAFAF8' }}>
+                      <MemberAvatar firstName={m.first_name || '?'} photoUrl={m.photo_url ?? undefined} size={32} />
+                    </div>
+                  ))}
+                </div>
+                {memberCount > 0 && (
+                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.55)' }}>
+                    {memberCount}
+                  </div>
+                )}
               </div>
             </div>
 
