@@ -272,7 +272,7 @@ export default function CommentSection({
   // ── Render a single comment row ────────────────────────────────────────────
   const renderComment = (comment: CommunityComment, isReply = false) => (
     <div key={comment.id} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-      <MemberAvatar firstName={getDisplayName(comment)} photoUrl={getPhoto(comment)} size={isReply ? 24 : 28} />
+      <MemberAvatar firstName={getDisplayName(comment)} photoUrl={getPhoto(comment)} size={42} />
       <div style={{ flex: 1, background: comment.agent_name ? '#EEF3FA' : '#FAFAF8', border: `1px solid ${comment.agent_name ? '#C0D0E8' : '#F0EDE8'}`, borderRadius: '8px', padding: '10px 12px' }}>
 
         {/* Header */}
