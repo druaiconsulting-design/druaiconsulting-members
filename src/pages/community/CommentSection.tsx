@@ -19,11 +19,13 @@ function renderWithMentions(text: string): React.ReactNode[] {
 // =============================================================================
 export default function CommentSection({
   postId, userId, userName, open, onToggle, commentCount, setCommentCount,
+  agentPhotoByName = {},
 }: {
   postId: string; userId: string; userName: string;
   open: boolean; onToggle: () => void;
   commentCount: number | null;
   setCommentCount: (fn: (n: number | null) => number | null) => void;
+  agentPhotoByName?: Record<string, string>; // agent avatars, keyed by agents.name — pulled live from Supabase, never hardcoded
 }) {
   const [comments,        setComments]        = useState<CommunityComment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -260,7 +262,7 @@ export default function CommentSection({
   const getDisplayName = (c: CommunityComment) =>
     c.agent_name ? c.agent_name : c.member_id === userId ? 'You' : (c as any).profiles?.first_name ?? 'Member';
   const getPhoto = (c: CommunityComment) =>
-    c.agent_name ? null : (c as any).profiles?.photo_url;
+    c.agent_name ? agentPhotoByName[c.agent_name] : (c as any).profiles?.photo_url;
 
   const topLevel  = comments.filter(c => !(c as any).parent_comment_id);
   const repliesFor = (parentId: string) => comments.filter(c => (c as any).parent_comment_id === parentId);
