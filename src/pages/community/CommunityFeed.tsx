@@ -4,6 +4,7 @@ import type { CommunityPost, Tier } from './types';
 import { navigate } from '../../lib/router';
 import ComposeBox from './ComposeBox';
 import PostCard from './PostCard';
+import MemberAvatar from './MemberAvatar';
 import MemberProfile from '../community-engagement/MemberProfile';
 
 const APP_URL = 'https://app.druaiconsulting.com';
@@ -36,6 +37,17 @@ export default function CommunityFeed({
   // agents.photo_url in Supabase, and it updates everywhere automatically.
   const [agentPhotoBySlug, setAgentPhotoBySlug] = useState<Record<string, string>>({});
   const [agentPhotoByName, setAgentPhotoByName] = useState<Record<string, string>>({});
+
+  // Member count + avatar stack — mirrors the Accelerator Circle header
+  const [memberCount, setMemberCount]     = useState(0);
+  const [memberAvatars, setMemberAvatars] = useState<{ id: string; first_name: string | null; photo_url: string | null }[]>([]);
+
+  const loadMembers = useCallback(async () => {
+    const { data, error } = await supabase.from('profiles').select('id, first_name, photo_url');
+    if (error || !data) { console.error('[community members]', error); return; }
+    setMemberCount(data.length);
+    setMemberAvatars(data.slice(0, 5));
+  }, []);
 
   const loadAgentPhotos = useCallback(async () => {
     const { data, error } = await supabase.from('agents').select('slug, name, photo_url');
@@ -125,6 +137,7 @@ export default function CommunityFeed({
     loadPosts().then(loaded => { if (mounted) { setPosts(loaded); setLoading(false); } });
     loadPdfs();
     loadAgentPhotos();
+    loadMembers();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!mounted || !user) return;
       setUserId(user.id);
@@ -169,7 +182,7 @@ export default function CommunityFeed({
       })
       .subscribe();
     return () => { mounted = false; supabase.removeChannel(channel); };
-  }, [loadPosts, loadPdfs, loadAgentPhotos, requestPushPermission, registerPush, cacheMemberProfile]);
+  }, [loadPosts, loadPdfs, loadAgentPhotos, loadMembers, requestPushPermission, registerPush, cacheMemberProfile]);
 
   const handleMemberPost = useCallback((post: CommunityPost) => {
     setPosts(prev => [post, ...prev]);
@@ -212,8 +225,20 @@ export default function CommunityFeed({
                 <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', marginTop: '5px', fontWeight: '600' }}>Soliciting and self-promotion are prohibited; violation will result in removal from the membership.</p>
               </div>
 
-              {/* ── Header actions: Leaderboard + Community Protocols ── */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start' }}>
+              {/* ── Header actions: member stack + Leaderboard + Community Protocols ── */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {memberAvatars.map((m, i) => (
+                    <div key={m.id} style={{ marginLeft: i === 0 ? 0 : -10, zIndex: memberAvatars.length - i, borderRadius: '50%', border: '2px solid #FAFAF8' }}>
+                      <MemberAvatar firstName={m.first_name || '?'} photoUrl={m.photo_url ?? undefined} size={32} />
+                    </div>
+                  ))}
+                </div>
+                {memberCount > 0 && (
+                  <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.55)' }}>
+                    {memberCount}
+                  </div>
+                )}
                 <button
                   onClick={() => navigate('/support?view=protocols')}
                   style={{ background: '#FFFFFF', border: '1px solid #E8E4DF', borderRadius: '8px', padding: '8px 14px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', fontWeight: '600', color: 'rgba(10,35,66,0.5)', cursor: 'pointer', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 3px rgba(10,35,66,0.06)', transition: 'all 0.15s ease' }}
@@ -324,4 +349,3 @@ export default function CommunityFeed({
     </div>
   );
 }
-
