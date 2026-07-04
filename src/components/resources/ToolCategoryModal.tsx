@@ -305,9 +305,14 @@ export default function ToolCategoryModal({ categoryId, onClose, onNavigate }: T
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(10,35,66,0.55)', backdropFilter: 'blur(4px)' }} />
 
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 301,
-        width: expanded ? 'calc(100vw - 24px)' : 'min(720px, calc(100vw - 24px))',
-        height: expanded ? 'calc(100vh - 24px)' : 'min(820px, calc(100vh - 60px))',
+        position: 'fixed', zIndex: 301,
+        ...(expanded
+          ? { top: 12, left: 12, right: 12, bottom: 12 }
+          : { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
+        ),
+        width: expanded ? 'auto' : 'min(720px, calc(100vw - 24px))',
+        height: expanded ? 'auto' : 'min(820px, calc(100dvh - 60px))',
+        maxHeight: expanded ? 'calc(100dvh - 24px)' : undefined,
         background: '#fff', borderRadius: 16, boxShadow: '0 24px 80px rgba(0,0,0,0.35)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
