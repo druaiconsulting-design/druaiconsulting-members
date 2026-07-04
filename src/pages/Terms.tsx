@@ -1,5 +1,3 @@
-import NavBar from "../components/NavBar";
-
 const TERMS = [
   { title: "Services", body: "All diagnostic, framework, and ecosystem engagements are delivered virtually via Zoom unless otherwise agreed in writing. Session scheduling begins upon receipt of full or initial payment." },
   { title: "Payment", body: "Full payment is required before services commence, except for the Full Ecosystem engagement, which requires 50% at signing and 50% at completion. All prices are in USD." },
