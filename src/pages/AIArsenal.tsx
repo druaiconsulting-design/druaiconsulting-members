@@ -71,6 +71,7 @@ function CategoryCard({ title, description, imageFile, onClick }: { title: strin
         background: '#fff', border: '1px solid rgba(10,35,66,0.08)', borderRadius: 12,
         padding: 0, textAlign: 'left', cursor: 'pointer', overflow: 'hidden',
         transition: 'transform 0.12s, box-shadow 0.12s',
+        display: 'flex', flexDirection: 'column', height: '100%', width: '100%',
       }}
       onMouseEnter={e => {
         ;(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-3px)'
@@ -83,11 +84,13 @@ function CategoryCard({ title, description, imageFile, onClick }: { title: strin
     >
       <div style={{
         aspectRatio: '16/9',
+        flex: '1 1 auto',
+        minHeight: 0,
         background: status === 'ok'
           ? `#0A2342 url(/${imageFile}) center/cover no-repeat`
           : 'linear-gradient(135deg, #0A2342, #1B4D8E)',
       }} />
-      <div style={{ padding: '14px 16px 16px' }}>
+      <div style={{ padding: '14px 16px 16px', flexShrink: 0 }}>
         <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14.5, fontWeight: 700, color: '#0A2342', marginBottom: 4 }}>
           {title}
         </div>
@@ -243,7 +246,6 @@ export default function AIArsenal() {
           display: 'grid',
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
           gap: 16,
-          alignItems: 'start',
         }}>
           {visibleCategories.map(cat => (
             <CategoryCard
