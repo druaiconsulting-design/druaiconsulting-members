@@ -243,6 +243,7 @@ export default function AIArsenal() {
           display: 'grid',
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
           gap: 16,
+          alignItems: 'start',
         }}>
           {visibleCategories.map(cat => (
             <CategoryCard
