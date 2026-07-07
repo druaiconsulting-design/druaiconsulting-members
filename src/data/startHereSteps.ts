@@ -15,8 +15,8 @@ export interface StartHereStep {
 export const startHereSteps: StartHereStep[] = [
   {
     step_number: 1,
-    title: 'Watch your welcome video',
-    description: 'A 2-minute welcome from DeAnna to orient you before you dive in.',
+    title: 'Watch this Video for the Overview of the Platform',
+    description: 'A Deeper Dive',
   },
   {
     step_number: 2,
