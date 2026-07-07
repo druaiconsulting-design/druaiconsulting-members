@@ -119,8 +119,34 @@ export default function StartHere() {
     <div style={{ background: WARM_WHITE, minHeight: '100%', padding: isMobile ? '24px 16px 60px' : '40px 40px 80px' }}>
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
 
-        {/* Header */}
-        <div style={{ marginBottom: 28 }}>
+        {/* Welcome hero + video */}
+        <div style={{ marginBottom: 32 }}>
+          <h1 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: isMobile ? 28 : 36,
+            color: NAVY,
+            margin: '0 0 16px',
+          }}>
+            Welcome
+          </h1>
+
+          <div style={{
+            position: 'relative',
+            paddingTop: '56.25%',
+            borderRadius: 14,
+            overflow: 'hidden',
+            marginBottom: 20,
+            boxShadow: '0 8px 24px rgba(10,35,66,0.12)',
+          }}>
+            <iframe
+              src="https://player.mediadelivery.net/embed/677927/cb7b3b09-7e7f-4b8e-a103-95c8a927a04a?autoplay=true&loop=false&muted=true&preload=true&responsive=true"
+              loading="lazy"
+              style={{ border: 0, position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
+              allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen;"
+              allowFullScreen
+            />
+          </div>
+
           <div style={{
             fontFamily: "'Montserrat', sans-serif",
             fontSize: 12,
@@ -130,16 +156,8 @@ export default function StartHere() {
             textTransform: 'uppercase',
             marginBottom: 8,
           }}>
-            Welcome to DRU AI Consulting
-          </div>
-          <h1 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: isMobile ? 26 : 32,
-            color: NAVY,
-            margin: '0 0 8px',
-          }}>
             Start Here
-          </h1>
+          </div>
           <p style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: 14,
