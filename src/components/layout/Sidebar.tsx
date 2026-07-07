@@ -32,8 +32,8 @@ const SECTIONS: Section[] = [
   {
     heading: 'WELCOME',
     items: [
-      { icon: '👋', label: 'Welcome!',   path: '/' },
       { icon: '🏁', label: 'Start Here', path: '/start-here' },
+      { icon: '👋', label: 'Home',       path: '/' },
     ],
   },
   {
@@ -198,15 +198,17 @@ export default function Sidebar({
       <nav style={{ flex: 1, padding: '4px 8px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' as any }}>
 
         {/* WELCOME + COMMUNITY sections */}
-        {SECTIONS.map((section) => (
+        {SECTIONS.map((section) => {
+          const isWelcome = section.heading === 'WELCOME'
+          return (
           <div key={section.heading} style={{ marginBottom: 8 }}>
             {showText && (
               <div style={{
-                padding: '10px 12px 4px',
+                padding: isWelcome ? '10px 12px 6px' : '10px 12px 4px',
                 fontFamily: 'Montserrat, sans-serif',
-                fontSize: 10,
+                fontSize: isWelcome ? 14 : 10,
                 fontWeight: 700,
-                color: 'rgba(138,164,200,0.5)',
+                color: isWelcome ? '#EDE8DB' : 'rgba(138,164,200,0.5)',
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}>
@@ -216,7 +218,8 @@ export default function Sidebar({
             {!showText && <div style={{ height: 8 }} />}
             {section.items.map((item) => renderItem(item, section.acceleratorOnly))}
           </div>
-        ))}
+          )
+        })}
 
         {/* ── COURSES ── */}
         <div style={{ marginBottom: 8 }}>
