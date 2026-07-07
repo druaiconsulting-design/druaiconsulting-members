@@ -127,7 +127,7 @@ export default function StartHere() {
             color: NAVY,
             margin: '0 0 16px',
           }}>
-            Welcome
+            Welcome to Leadership with AI
           </h1>
 
           <div style={{
@@ -267,6 +267,25 @@ export default function StartHere() {
                   }}>
                     {step.description}
                   </div>
+
+                  {step.step_number === 1 && (
+                    <div style={{
+                      position: 'relative',
+                      paddingTop: '56.25%',
+                      borderRadius: 10,
+                      overflow: 'hidden',
+                      marginBottom: 10,
+                      boxShadow: '0 4px 16px rgba(10,35,66,0.10)',
+                    }}>
+                      <iframe
+                        src="https://player.mediadelivery.net/embed/677927/267e8270-bfdc-41c5-acd7-933b66779143?autoplay=true&loop=false&muted=true&preload=true&responsive=true"
+                        loading="lazy"
+                        style={{ border: 0, position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
+                        allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen;"
+                        allowFullScreen
+                      />
+                    </div>
+                  )}
 
                   {isLocked ? (
                     <a
