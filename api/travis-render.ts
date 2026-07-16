@@ -160,22 +160,25 @@ async function bankToBunny(title: string, sourceUrl: string): Promise<{ bunnyVid
 }
 
 // ── Preview card: the video comes back to DeAnna's Intelligence Hub ─────────
-async function createPreviewCard(row: any, playUrl: string): Promise<boolean> {
+// Returns the new approval card UUID so we can store it as preview_approval_id,
+// or null if the insert failed.
+async function createPreviewCard(row: any, heygenUrl: string): Promise<string | null> {
   const caption = row.linkedin_content || row.script_text || "";
   const inserted = await sbPost("approvals", {
     agent_name: row.agent_name || "Travis Wealthy",
-    category: "social",
+    category: "travis_video_production",
     platform: "LinkedIn",
     title: `🎬 VIDEO READY — ${row.title || "Untitled"}`,
     output: caption,
+    task_brief: row.treatment || `Script: ${(row.script_text || "").slice(0, 200)}`,
     linkedin_content: row.linkedin_content || caption,
     facebook_content: row.facebook_content || "",
     instagram_caption: row.instagram_caption || "",
-    video_url: playUrl,
+    video_url: heygenUrl,
     status: "pending",
     priority: "high",
   });
-  return Array.isArray(inserted) && inserted.length > 0;
+  return Array.isArray(inserted) && inserted.length > 0 ? inserted[0].id : null;
 }
 
 // ── Card parsing: captions + treatment + settings ride the script card ──────
@@ -199,31 +202,107 @@ function parseCreative(raw: string): { script: string; treatment: string | null;
 }
 
 // ── PHASE 1: complete in-flight renders ─────────────────────────────────────
-async function pollRendering(): Promise<{ banked: number; failed: number }> {
+// When HeyGen finishes: save the HeyGen URL, create a preview card in the Hub
+// for DeAnna to watch and approve. Do NOT touch Bunny yet — that happens in
+// Phase 3 after she approves.
+async function pollRendering(): Promise<{ rendered: number; failed: number }> {
   const rendering = await sbGet(`travis_video_production?status=eq.rendering&order=created_at.asc&limit=10`);
-  let banked = 0, failed = 0;
+  let rendered = 0, failed = 0;
   for (const row of rendering) {
     if (!row.heygen_video_id) continue;
     const st = await heygenStatus(row.heygen_video_id);
     if (st.status === "completed" && st.videoUrl) {
-      const bank = await bankToBunny(row.title || `DRU video ${row.id.slice(0, 8)}`, st.videoUrl);
-      if (bank.playUrl) {
-        await sbPatch(`travis_video_production?id=eq.${row.id}`, {
-          status: "banked", bunny_video_id: bank.bunnyVideoId, video_url: bank.playUrl, rendered_at: new Date().toISOString(), error_detail: null,
-        });
-        await createPreviewCard(row, bank.playUrl);
-        banked++;
-      } else {
-        await sbPatch(`travis_video_production?id=eq.${row.id}`, { status: "failed", error_detail: bank.error ?? "bank failed" });
-        failed++;
+      // Step 1: save the HeyGen URL and mark as rendered (not banked yet)
+      await sbPatch(`travis_video_production?id=eq.${row.id}`, {
+        status: "rendered",
+        heygen_video_url: st.videoUrl,
+        rendered_at: new Date().toISOString(),
+        error_detail: null,
+      });
+      // Step 2: create the preview card so DeAnna can watch it in the Hub
+      const previewId = await createPreviewCard(row, st.videoUrl);
+      // Step 3: link the preview card back to this row so Phase 3 can find it
+      if (previewId) {
+        await sbPatch(`travis_video_production?id=eq.${row.id}`, { preview_approval_id: previewId });
       }
+      rendered++;
     } else if (st.status === "failed") {
       await sbPatch(`travis_video_production?id=eq.${row.id}`, { status: "failed", error_detail: st.error ?? "render failed" });
       failed++;
     }
     // pending/processing → leave as rendering; next run checks again
   }
-  return { banked, failed };
+  return { rendered, failed };
+}
+
+// ── PHASE 3: bank approved videos to Bunny + fire Make.com ──────────────────
+// Runs after DeAnna approves a travis_video_production card in the Hub.
+// Finds rendered rows whose preview card has been approved, uploads to Bunny,
+// updates the approval card with the Bunny URL, then fires the social publisher.
+async function bankApproved(): Promise<{ banked: number; errors: string[] }> {
+  const errors: string[] = [];
+
+  // Find rows waiting for approval (status=rendered, preview card linked)
+  const pending = await sbGet(
+    `travis_video_production?status=eq.rendered&preview_approval_id=not.is.null&order=created_at.asc&limit=5&select=id,title,heygen_video_url,preview_approval_id,linkedin_content,facebook_content,instagram_caption`
+  );
+  if (!pending.length) return { banked: 0, errors };
+
+  let banked = 0;
+  for (const row of pending) {
+    if (!row.heygen_video_url || !row.preview_approval_id) continue;
+
+    // Check if DeAnna has approved the preview card
+    const cards = await sbGet(
+      `approvals?id=eq.${row.preview_approval_id}&status=eq.approved&select=id,platform,linkedin_content,facebook_content,instagram_caption`
+    );
+    if (!cards.length) continue; // Not approved yet — skip, check again next run
+    const card = cards[0];
+
+    // Upload to Bunny now that she's approved
+    const bank = await bankToBunny(row.title || `DRU video ${row.id.slice(0, 8)}`, row.heygen_video_url);
+    if (!bank.playUrl) {
+      await sbPatch(`travis_video_production?id=eq.${row.id}`, { error_detail: bank.error ?? "bank failed" });
+      errors.push(`Bunny upload failed for ${row.id}: ${bank.error}`);
+      continue;
+    }
+
+    // Update production row with final Bunny URL
+    await sbPatch(`travis_video_production?id=eq.${row.id}`, {
+      status: "banked",
+      bunny_video_id: bank.bunnyVideoId,
+      video_url: bank.playUrl,
+    });
+
+    // Update the approval card so it carries the Bunny URL (not the expired HeyGen URL)
+    await sbPatch(`approvals?id=eq.${row.preview_approval_id}`, {
+      video_url: bank.playUrl,
+    });
+
+    // Fire the social publisher — same endpoint the Hub uses
+    // Travis calls the admin app directly (server-to-server, no CORS restriction)
+    const content = card.linkedin_content || row.linkedin_content || "";
+    try {
+      const res = await fetch("https://app.druaiconsulting.com/api/social-publisher", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content,
+          platform: card.platform || "LinkedIn",
+          approval_id: card.id,
+          video_url: bank.playUrl,
+        }),
+      });
+      if (!res.ok) errors.push(`social-publisher ${res.status} for ${card.id}`);
+    } catch (e: any) {
+      errors.push(`social-publisher threw for ${card.id}: ${e?.message}`);
+    }
+
+    // Record the post timestamp
+    await sbPatch(`travis_video_production?id=eq.${row.id}`, { posted_at: new Date().toISOString() });
+    banked++;
+  }
+  return { banked, errors };
 }
 
 // ── PHASE 2: submit newly approved scripts ───────────────────────────────────
@@ -294,13 +373,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const phase1 = await pollRendering();
-    const phase2 = await submitApproved();
+    const phase1 = await pollRendering();   // HeyGen done → preview card in Hub
+    const phase3 = await bankApproved();    // Approved preview cards → Bunny → Make.com
+    const phase2 = await submitApproved();  // New approved scripts → HeyGen submit
     return res.status(200).json({
       ok: true,
-      banked: phase1.banked, render_failed: phase1.failed,
+      previews_created: phase1.rendered, render_failed: phase1.failed,
+      banked: phase3.banked,
       submitted: phase2.submitted, cap_reached: phase2.capped,
-      errors: phase2.errors.length ? phase2.errors : undefined,
+      errors: [...phase3.errors, ...phase2.errors].length ? [...phase3.errors, ...phase2.errors] : undefined,
     });
   } catch (e: any) {
     console.error("[travis-render]", e);
