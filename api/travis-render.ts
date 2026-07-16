@@ -14,9 +14,6 @@
 // carries per-video look/wardrobe/brand-kit background/orientation overrides.
 // The pipe routes on engine only — it never has an opinion about the creative.
 //
-// Helper: GET /api/travis-render?list=1  (browser, while logged in anywhere)
-//         → returns your HeyGen avatars + voices so you can grab IDs for env vars.
-//
 // ENV (members Vercel project):
 //   HEYGEN_API_KEY          — HeyGen API wallet key                     [set ✅]
 //   BUNNY_API_KEY           — library 677927 API key (upload AccessKey)
@@ -349,23 +346,6 @@ async function submitApproved(): Promise<{ submitted: number; capped: boolean; e
 
 // ── Handler ──────────────────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Helper mode: list avatars + voices so IDs can be grabbed for env vars
-  if (req.query.list === "1") {
-    try {
-      const [a, v] = await Promise.all([
-        fetch(`${HEYGEN_BASE}/v2/avatars`, { headers: heygenHeaders() }).then(r => r.json()),
-        fetch(`${HEYGEN_BASE}/v2/voices`, { headers: heygenHeaders() }).then(r => r.json()),
-      ]);
-      const avatars = (a?.data?.avatars ?? []).map((x: any) => ({ avatar_id: x.avatar_id, name: x.avatar_name }));
-      const photos = (a?.data?.talking_photos ?? []).map((x: any) => ({ talking_photo_id: x.talking_photo_id, name: x.talking_photo_name }));
-      const voices = (v?.data?.voices ?? []).filter((x: any) => x.language?.toLowerCase?.().includes("english") || true).slice(0, 60)
-        .map((x: any) => ({ voice_id: x.voice_id, name: x.name, language: x.language }));
-      return res.status(200).json({ video_avatars: avatars, photo_avatars: photos, voices });
-    } catch (e: any) {
-      return res.status(500).json({ error: e?.message ?? "list failed" });
-    }
-  }
-
   // Cron auth — house pattern (raymond.ts / cmd-command-layer.ts)
   const incomingSecret = (req.headers["x-cron-secret"] as string | undefined) ?? undefined;
   if (incomingSecret !== undefined && incomingSecret !== process.env.CRON_SECRET) {
