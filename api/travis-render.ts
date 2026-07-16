@@ -20,7 +20,7 @@
 // ENV (members Vercel project):
 //   HEYGEN_API_KEY          — HeyGen API wallet key                     [set ✅]
 //   BUNNY_API_KEY           — library 677927 API key (upload AccessKey)
-//   BUNNY_SOCIAL_PULLZONE   — 677927 CDN hostname, e.g. vz-xxxxxxxx-xxx.b-cdn.net
+//   BUNNY_SOCIAL_CDN_KEY           — 677927 CDN hostname, e.g. vz-xxxxxxxx-xxx.b-cdn.net
 //   HEYGEN_AVATAR_ID        — default avatar/look id (per-card override supported)
 //   HEYGEN_VOICE_ID         — default voice id       (per-card override supported)
 //   HEYGEN_AVATAR_TYPE      — 'avatar' (video avatar) or 'talking_photo' (photo
@@ -128,9 +128,9 @@ async function heygenStatus(videoId: string): Promise<{ status: string; videoUrl
 // ── Bunny: create video object in 677927, stream the MP4 in ─────────────────
 async function bankToBunny(title: string, sourceUrl: string): Promise<{ bunnyVideoId?: string; playUrl?: string; error?: string }> {
   const apiKey = process.env.BUNNY_API_KEY;
-  const pullzone = process.env.BUNNY_SOCIAL_PULLZONE;
+  const cdnKey = process.env.BUNNY_SOCIAL_CDN_KEY;
   if (!apiKey) return { error: "BUNNY_API_KEY not set" };
-  if (!pullzone) return { error: "BUNNY_SOCIAL_PULLZONE not set" };
+  if (!cdnKey) return { error: "BUNNY_SOCIAL_CDN_KEY not set" };
 
   const createRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_SOCIAL_LIBRARY_ID}/videos`, {
     method: "POST",
@@ -155,7 +155,7 @@ async function bankToBunny(title: string, sourceUrl: string): Promise<{ bunnyVid
   });
   if (!uploadRes.ok) return { error: `Bunny upload ${uploadRes.status}: ${(await uploadRes.text()).slice(0, 300)}` };
 
-  const host = pullzone.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const host = cdnKey.replace(/^https?:\/\//, "").replace(/\/$/, "");
   return { bunnyVideoId: guid, playUrl: `https://${host}/${guid}/play_720p.mp4` };
 }
 
