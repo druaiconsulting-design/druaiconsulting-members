@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useBrandCopy } from '../lib/brandCopy'
 import { useAuth } from '../context/AuthContext'
 import { navigate } from '../lib/router'
 import { startHereSteps } from '../data/startHereSteps'
@@ -33,6 +34,7 @@ function Loader() {
 }
 
 export default function StartHere() {
+  const positioning = useBrandCopy('positioning');
   const { user, isAccelerator } = useAuth()
   const [completions, setCompletions] = useState<Record<number, CompletionRow>>({})
   const [loading, setLoading] = useState(true)
@@ -127,7 +129,7 @@ export default function StartHere() {
             color: NAVY,
             margin: '0 0 16px',
           }}>
-            Welcome to Leadership with AI
+            Welcome to {positioning}
           </h1>
 
           <div style={{
