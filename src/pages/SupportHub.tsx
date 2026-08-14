@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
+import { useBrandCopy } from '../lib/brandCopy'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { NAVIGATOR_PAYMENT_LINK, ACCELERATOR_PAYMENT_LINK } from './community/types'
@@ -255,6 +256,7 @@ function UpdatePaymentForm({
 
 
 export default function SupportHub() {
+  const positioning = useBrandCopy('positioning');
   const { profile, session } = useAuth()
 
   const [isMobile,    setIsMobile]    = useState(window.innerWidth < 768)
@@ -1247,10 +1249,10 @@ export default function SupportHub() {
 
         <div style={pageContent}>
           <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: '#555', lineHeight: 1.7, margin: '0 0 6px' }}>Welcome to the DRU AI Consulting Community Connection.</p>
-          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: '#555', lineHeight: 1.7, margin: '0 0 24px' }}>We are excited you have chosen to join us. Leadership with AI is our edge and your advantage. These protocols are put in place to ensure your growth, connection, and collaboration.</p>
+          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: '#555', lineHeight: 1.7, margin: '0 0 24px' }}>We are excited you have chosen to join us. {positioning} is our edge and your advantage. These protocols are put in place to ensure your growth, connection, and collaboration.</p>
 
           {[
-            { title: 'Lead with Respect and Intention', body: "Each member is at a unique stage of the Leadership with AI journey. Some are new; others are deep in implementation. Meet everyone where they are. Ideas are always welcome. If a conversation intensifies, lead by example. We are all here to learn from one another." },
+            { title: 'Lead with Respect and Intention', body: `Each member is at a unique stage of the ${positioning} journey. Some are new; others are deep in implementation. Meet everyone where they are. Ideas are always welcome. If a conversation intensifies, lead by example. We are all here to learn from one another.` },
             { title: "What's Shared Here, Stays Here", body: "This is a private community. Conversations, frameworks, insights, course content, and member contributions stay here. Members trust each other to maintain confidentiality. Honor that trust as you expect others to honor yours." },
           ].map(({ title, body }, i) => (
             <div key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.08)', padding: '16px 0' }}>
