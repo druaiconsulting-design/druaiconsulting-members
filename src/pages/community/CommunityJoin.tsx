@@ -2,11 +2,12 @@
 import { useState } from 'react'
 import { NAVIGATOR_PAYMENT_LINK, ACCELERATOR_PAYMENT_LINK } from './types'
 import UpgradeModal from '../../components/layout/UpgradeModal'
+import { useBrandCopy } from '../../lib/brandCopy'
 
 // ── Feature lists ────────────────────────────────────────────────
 const NAVIGATOR_FEATURES = [
   'Access to DRU AI Consulting — Community Connection',
-  'Daily Leadership with AI Insights',
+  'Daily {POSITIONING} Insights',
   'Framework Micro-Lessons',
   'AI Arsenal — Your Curated Library of 100+ AI Tools',
   'Executive Founder Pricing — Locked In Forever',
@@ -30,6 +31,7 @@ const MODAL_CLOSED: UpgradeState = { isOpen: false, url: '', tierName: '', price
 // JOIN PAGE — shown to free-tier users
 // =============================================================================
 export default function CommunityJoin() {
+  const positioning = useBrandCopy('positioning');
   const [upgradeModal, setUpgradeModal] = useState<UpgradeState>(MODAL_CLOSED)
 
   const openUpgrade = (type: 'navigator' | 'accelerator') => {
@@ -158,7 +160,7 @@ export default function CommunityJoin() {
                       <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
                         <span style={{ color: '#D4AF37', fontSize: '0.7rem', marginTop: 3, flexShrink: 0 }}>✓</span>
                         <p style={{ fontFamily: "'Inter', sans-serif", color: '#333333', fontSize: '0.78rem', lineHeight: 1.5 }}>
-                          {f}
+                          {f.replace('{POSITIONING}', positioning)}
                         </p>
                       </div>
                     ))}
@@ -257,7 +259,7 @@ export default function CommunityJoin() {
                           fontSize: '0.78rem', lineHeight: 1.5,
                           fontStyle: i === 0 ? 'italic' : 'normal',
                         }}>
-                          {f}
+                          {f.replace('{POSITIONING}', positioning)}
                         </p>
                       </div>
                     ))}
