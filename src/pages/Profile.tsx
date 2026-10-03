@@ -280,7 +280,7 @@ function ProfileTab({ profile, onUpdate }: {
             </div>
             <div style={{ marginBottom: 18 }}>
               <label style={labelStyle}>Headline</label>
-              <input type="text" placeholder="e.g. AI Leadership Strategist & Executive Coach" value={headline} onChange={e => setHeadline(e.target.value)} maxLength={120} style={inputStyle} />
+              <input type="text" placeholder="e.g. AI Authority and Strategic Advisor" value={headline} onChange={e => setHeadline(e.target.value)} maxLength={120} style={inputStyle} />
               <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 9, color: 'rgba(10,35,66,0.3)', marginTop: 4, textAlign: 'right' }}>{headline.length}/120</div>
             </div>
             <div style={{ marginBottom: 20 }}>
