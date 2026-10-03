@@ -658,11 +658,10 @@ export default function Profile() {
     setLoading(true)
     try {
       const { data } = await supabase
-        .from('profiles')
-        .select('id, email, first_name, last_name, photo_url, tier, pathway_stage, clarity_points, community_level, assessment_score, assessment_tier, headline, bio, created_at, show_in_directory, prevent_messaging')
+        .rpc('get_my_profile')
         .eq('id', session!.user.id)
         .single()
-      if (data) setProfile(data)
+      if (data) setProfile(data as ProfileData)
     } catch (err) {
       console.error('[Profile] load error:', err)
     } finally {
