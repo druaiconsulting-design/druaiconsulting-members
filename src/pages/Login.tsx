@@ -88,7 +88,7 @@ export default function Login() {
       <div style={{
         position: 'absolute', top: 24, left: 32,
         fontFamily: "'Playfair Display', Georgia, serif",
-        fontSize: 'clamp(24px, 5vw, 42px)',
+        fontSize: 'clamp(24px, 5vw, 36px)',
         fontWeight: 700,
         color: '#D4AF37',
         letterSpacing: '0.02em',
