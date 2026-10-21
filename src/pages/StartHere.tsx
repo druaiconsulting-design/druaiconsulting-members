@@ -123,7 +123,7 @@ export default function StartHere() {
 
         {/* Welcome hero + video */}
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{
+          <h1 style={{ whiteSpace: 'pre-line',
             fontFamily: "'Playfair Display', serif",
             fontSize: isMobile ? 28 : 36,
             color: NAVY,

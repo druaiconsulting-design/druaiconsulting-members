@@ -1249,7 +1249,7 @@ export default function SupportHub() {
 
         <div style={pageContent}>
           <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: '#555', lineHeight: 1.7, margin: '0 0 6px' }}>Welcome to the DRU AI Consulting Community Connection.</p>
-          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: '#555', lineHeight: 1.7, margin: '0 0 24px' }}>We are excited you have chosen to join us. {positioning} is our edge and your advantage. These protocols are put in place to ensure your growth, connection, and collaboration.</p>
+          <p style={{ whiteSpace: 'pre-line', fontFamily: 'Montserrat, sans-serif', fontSize: 14, color: '#555', lineHeight: 1.7, margin: '0 0 24px' }}>We are excited you have chosen to join us. {positioning} is our edge and your advantage. These protocols are put in place to ensure your growth, connection, and collaboration.</p>
 
           {[
             { title: 'Lead with Respect and Intention', body: `Each member is at a unique stage of the ${positioning} journey. Some are new; others are deep in implementation. Meet everyone where they are. Ideas are always welcome. If a conversation intensifies, lead by example. We are all here to learn from one another.` },
@@ -1257,7 +1257,7 @@ export default function SupportHub() {
           ].map(({ title, body }, i) => (
             <div key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.08)', padding: '16px 0' }}>
               <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: 15, fontWeight: 700, color: NAVY, margin: '0 0 7px' }}>{title}</h3>
-              <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: '#555', margin: 0, lineHeight: 1.7 }}>{body}</p>
+              <p style={{ whiteSpace: 'pre-line', fontFamily: 'Montserrat, sans-serif', fontSize: 13, color: '#555', margin: 0, lineHeight: 1.7 }}>{body}</p>
             </div>
           ))}
 

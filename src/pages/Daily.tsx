@@ -209,7 +209,7 @@ export default function Daily() {
           <div style={{ background: "#FFFFFF", border: "1px solid #E8E4DF", borderLeft: "3px solid #D4AF37", borderRadius: 10, padding: "1.25rem 1.5rem", boxShadow: "0 1px 4px rgba(10,35,66,0.06)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.875rem" }}>
               <span style={{ fontSize: "1.1rem" }}>⚡</span>
-              <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#B8941F", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const }}>{positioning} Insight</p>
+              <p style={{ whiteSpace: 'pre-line', fontFamily: "'Montserrat', sans-serif", color: "#B8941F", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const }}>{positioning}</p>
             </div>
             <p style={{ color: "rgba(10,35,66,0.75)", fontFamily: "'Inter', sans-serif", fontSize: "0.85rem", lineHeight: 1.75 }}>{displayContent.insight}</p>
           </div>
