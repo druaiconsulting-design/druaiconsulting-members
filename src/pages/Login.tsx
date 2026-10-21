@@ -73,13 +73,30 @@ export default function Login() {
 
   // ── Render ───────────────────────────────────────────────────
   return (
-    <div style={{
+    <div className="dru-login-root" style={{
+      position: 'relative',
       minHeight: '100vh',
       background: 'radial-gradient(ellipse at 30% 20%, rgba(30,61,110,0.6) 0%, #0A2342 60%)',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '40px 16px',
     }}>
+      {/* Phones: extra room at the top so the company name never touches the heading */}
+      <style>{`@media (max-width: 600px) { .dru-login-root { padding-top: 84px !important; } }`}</style>
+
+      {/* Company name, top-left corner (stands in until the logo is ready) */}
+      <div style={{
+        position: 'absolute', top: 24, left: 32,
+        fontFamily: "'Playfair Display', Georgia, serif",
+        fontSize: 'clamp(24px, 5vw, 42px)',
+        fontWeight: 700,
+        color: '#D4AF37',
+        letterSpacing: '0.02em',
+        lineHeight: 1.1,
+        whiteSpace: 'nowrap',
+      }}>
+        DRU AI Consulting
+      </div>
 
       {/* Logo */}
       <div style={{ marginBottom: 28, textAlign: 'center' }}>
@@ -102,7 +119,7 @@ export default function Login() {
           margin: '0 0 14px',
           letterSpacing: '-0.01em',
         }}>
-          Welcome — Transformation<br />Continues Here
+          Welcome Transformation<br />Continues Here
         </h1>
 
         {/* Animated gold reading sweep — full width, left to right */}
