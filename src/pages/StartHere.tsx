@@ -119,7 +119,7 @@ export default function StartHere() {
 
   return (
     <div style={{ background: WARM_WHITE, minHeight: '100%', padding: isMobile ? '24px 16px 60px' : '40px 40px 80px' }}>
-      <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      <div style={{ margin: '0 auto' }}>
 
         {/* Welcome hero + video */}
         <div style={{ marginBottom: 32 }}>
