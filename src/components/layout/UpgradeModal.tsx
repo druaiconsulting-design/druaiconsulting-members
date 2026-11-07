@@ -65,7 +65,7 @@ export default function UpgradeModal({ isOpen, onClose, url, tierName, price }: 
               fontFamily: 'Montserrat, sans-serif', fontSize: 15, fontWeight: 600,
               color: '#EDE8DB', marginTop: 3,
             }}>
-              Upgrade to {tierName} — {price}/mo
+              Upgrade to {tierName}: {price}
             </div>
           </div>
 

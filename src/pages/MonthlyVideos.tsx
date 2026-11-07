@@ -120,8 +120,8 @@ function UpgradeGate() {
           {[
             "DeAnna's Leadership Lab™ monthly video",
             "Today's Action Challenge",
-            "DeAnna's Strategic Edge",
-            'Weekly Framework PDF download',
+            "Daily DeAnna's Strategic Edge",
+            'Bi-weekly Leadership Framework PDF Downloadable',
           ].map((f, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
               <span style={{ color: '#D4AF37', fontSize: 13, flexShrink: 0, marginTop: 1 }}>✓</span>
@@ -147,7 +147,7 @@ function UpgradeGate() {
             borderRadius: 8, textDecoration: 'none',
           }}
         >
-          Upgrade to Accelerator — $197/mo
+          Upgrade to Accelerator, $197/month or $1,970/year
         </a>
       </div>
     </div>

@@ -603,13 +603,13 @@ export default function SupportHub() {
                   padding: '13px 22px', background: NAVY, color: '#fff', borderRadius: 32,
                   fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 700, textDecoration: 'none',
                 }}>
-                  Navigator — $97/mo
+                  Navigator, $97/month or $970/year
                 </a>
                 <a href={ACCELERATOR_PAYMENT_LINK} target="_blank" rel="noopener noreferrer" style={{
                   padding: '13px 22px', background: MAGENTA, color: '#fff', borderRadius: 32,
                   fontFamily: 'Montserrat, sans-serif', fontSize: 13, fontWeight: 700, textDecoration: 'none',
                 }}>
-                  Accelerator — $197/mo
+                  Accelerator, $197/month or $1,970/year
                 </a>
               </div>
             </div>

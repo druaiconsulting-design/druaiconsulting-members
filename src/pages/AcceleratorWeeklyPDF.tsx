@@ -41,7 +41,7 @@ function UpgradeGate() {
           letterSpacing: '0.04em', textTransform: 'uppercase', textDecoration: 'none',
           display: 'inline-block',
         }}>
-          Upgrade to Accelerator — $197/mo
+          Upgrade to Accelerator, $197/month or $1,970/year
         </a>
       </div>
     </div>

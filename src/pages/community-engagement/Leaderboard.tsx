@@ -222,7 +222,7 @@ export default function Leaderboard() {
               </div>
               <a href={NAVIGATOR_PAYMENT_LINK} target="_blank" rel="noopener noreferrer"
                 style={{ display: 'block', background: 'linear-gradient(135deg, #D4AF37 0%, #B8941F 100%)', color: '#0A2342', fontFamily: "'Montserrat', sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: '0.05em', padding: '14px 32px', borderRadius: 10, textDecoration: 'none', marginBottom: 12, boxShadow: '0 4px 16px rgba(212,175,55,0.25)' }}>
-                Upgrade to Navigator — $97/mo
+                Upgrade to Navigator, $97/month or $970/year
               </a>
               <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 11, color: 'rgba(10,35,66,0.35)' }}>Cancel anytime · Instant access</div>
               <button

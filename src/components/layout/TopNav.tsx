@@ -132,8 +132,8 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
     setAvatarMenuOpen(false)
     setUpgradeModal(
       type === 'navigator'
-        ? { isOpen: true, url: NAVIGATOR_URL,   tierName: 'Navigator',   price: '$97'  }
-        : { isOpen: true, url: ACCELERATOR_URL, tierName: 'Accelerator', price: '$197' }
+        ? { isOpen: true, url: NAVIGATOR_URL,   tierName: 'Navigator',   price: '$97/month or $970/year'  }
+        : { isOpen: true, url: ACCELERATOR_URL, tierName: 'Accelerator', price: '$197/month or $1,970/year' }
     )
   }
 
@@ -227,7 +227,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 color: '#D4AF37', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
-                <span>Join Navigator</span><span style={{ fontSize: 11, opacity: 0.75 }}>$97/mo</span>
+                <span>Join Navigator</span><span style={{ fontSize: 11, opacity: 0.75 }}>$97/mo or $970/yr</span>
               </button>
               <button onClick={() => openUpgrade('accelerator')} style={{
                 width: '100%', padding: '8px 10px', borderRadius: 7,
@@ -236,7 +236,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 color: '#0A2342', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
-                <span>Join Accelerator</span><span style={{ fontSize: 11, opacity: 0.7 }}>$197/mo</span>
+                <span>Join Accelerator</span><span style={{ fontSize: 11, opacity: 0.7 }}>$197/mo or $1,970/yr</span>
               </button>
             </div>
           </>
@@ -253,7 +253,7 @@ export default function TopNav({ currentPath, sidebarCollapsed, onToggleSidebar 
                 color: '#0A2342', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
-                <span>Upgrade to Accelerator</span><span style={{ fontSize: 11, opacity: 0.7 }}>$197/mo</span>
+                <span>Upgrade to Accelerator</span><span style={{ fontSize: 11, opacity: 0.7 }}>$197/mo or $1,970/yr</span>
               </button>
             </div>
           </>

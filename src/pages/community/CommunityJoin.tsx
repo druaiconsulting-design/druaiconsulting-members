@@ -2,26 +2,25 @@
 import { useState } from 'react'
 import { NAVIGATOR_PAYMENT_LINK, ACCELERATOR_PAYMENT_LINK } from './types'
 import UpgradeModal from '../../components/layout/UpgradeModal'
-import { useBrandCopy } from '../../lib/brandCopy'
 
 // ── Feature lists ────────────────────────────────────────────────
 const NAVIGATOR_FEATURES = [
-  'Access to DRU AI Consulting — Community Connection',
-  'Daily {POSITIONING}',
-  'Framework Micro-Lessons',
-  'AI Arsenal — Your Curated Library of 100+ AI Tools',
-  'Executive Founder Pricing — Locked In Forever',
+  'Access to DRU AI Consulting Community Connection',
+  'Daily Leadership with AI Insights',
+  'Daily Framework Micro-Lessons',
+  'AI Arsenal: Your Curated Library of 100+ AI Tools',
+  'Executive Founder Pricing Locked In Forever',
 ]
 
-// First item renders as dash/italic intro line; rest as magenta checkmarks
+// First item renders as an italic intro line; rest as magenta checkmarks
 const ACCELERATOR_FEATURES = [
   'Everything in Navigator, plus:',
   'Today\'s Action Challenge',
-  'DeAnna\'s Strategic Edge',
-  'Accelerator Circle — Your Exclusive Community with Top-Tier Leaders',
-  'Weekly Leadership Deep-Dive — Delivered to You',
+  'Daily DeAnna\'s Strategic Edge',
+  'Accelerator Circle: Your Exclusive Community with Top-Tier Leaders',
+  'Bi-weekly Leadership Framework PDF Downloadable',
   'DeAnna\'s Monthly Leadership Training Lab! Video',
-  'Executive Founder Pricing — Locked In Forever',
+  'Executive Founder Pricing Locked In Forever',
 ]
 
 type UpgradeState = { isOpen: boolean; url: string; tierName: string; price: string }
@@ -31,14 +30,13 @@ const MODAL_CLOSED: UpgradeState = { isOpen: false, url: '', tierName: '', price
 // JOIN PAGE — shown to free-tier users
 // =============================================================================
 export default function CommunityJoin() {
-  const positioning = useBrandCopy('positioning');
   const [upgradeModal, setUpgradeModal] = useState<UpgradeState>(MODAL_CLOSED)
 
   const openUpgrade = (type: 'navigator' | 'accelerator') => {
     setUpgradeModal(
       type === 'navigator'
-        ? { isOpen: true, url: NAVIGATOR_PAYMENT_LINK,   tierName: 'Navigator',   price: '$97'  }
-        : { isOpen: true, url: ACCELERATOR_PAYMENT_LINK, tierName: 'Accelerator', price: '$197' }
+        ? { isOpen: true, url: NAVIGATOR_PAYMENT_LINK,   tierName: 'Navigator',   price: '$97/month or $970/year'  }
+        : { isOpen: true, url: ACCELERATOR_PAYMENT_LINK, tierName: 'Accelerator', price: '$197/month or $1,970/year' }
     )
   }
 
@@ -140,15 +138,17 @@ export default function CommunityJoin() {
                         fontFamily: "'Playfair Display', serif",
                         color: '#D4AF37', fontSize: '1.75rem', fontWeight: 700, lineHeight: 1,
                       }}>
-                        $97
+                        $970
                       </p>
-                      <p style={{ fontFamily: "'Inter', sans-serif", color: '#6B7A8D', fontSize: '0.68rem' }}>/month</p>
+                      <p style={{ fontFamily: "'Inter', sans-serif", color: '#6B7A8D', fontSize: '0.68rem' }}>/year</p>
+                      <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#D4AF37', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '0.25rem' }}>2 months free</p>
+                      <p style={{ fontFamily: "'Inter', sans-serif", color: '#333333', fontSize: '0.78rem', fontWeight: 600, marginTop: '0.5rem' }}>or $97/month</p>
                       <p style={{
                         fontFamily: "'Inter', sans-serif",
                         color: 'rgba(0,0,0,0.3)', fontSize: '0.63rem',
                         textDecoration: 'line-through', marginTop: '0.2rem',
                       }}>
-                        normally $167
+                        normally $147
                       </p>
                     </div>
                   </div>
@@ -160,7 +160,7 @@ export default function CommunityJoin() {
                       <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
                         <span style={{ color: '#D4AF37', fontSize: '0.7rem', marginTop: 3, flexShrink: 0 }}>✓</span>
                         <p style={{ whiteSpace: 'pre-line', fontFamily: "'Inter', sans-serif", color: '#333333', fontSize: '0.78rem', lineHeight: 1.5 }}>
-                          {f.replace('{POSITIONING}', positioning)}
+                          {f}
                         </p>
                       </div>
                     ))}
@@ -229,9 +229,11 @@ export default function CommunityJoin() {
                         fontFamily: "'Playfair Display', serif",
                         color: '#C2185B', fontSize: '1.75rem', fontWeight: 700, lineHeight: 1,
                       }}>
-                        $197
+                        $1,970
                       </p>
-                      <p style={{ fontFamily: "'Inter', sans-serif", color: '#6B7A8D', fontSize: '0.68rem' }}>/month</p>
+                      <p style={{ fontFamily: "'Inter', sans-serif", color: '#6B7A8D', fontSize: '0.68rem' }}>/year</p>
+                      <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#C2185B', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '0.25rem' }}>2 months free</p>
+                      <p style={{ fontFamily: "'Inter', sans-serif", color: '#333333', fontSize: '0.78rem', fontWeight: 600, marginTop: '0.5rem' }}>or $197/month</p>
                       <p style={{
                         fontFamily: "'Inter', sans-serif",
                         color: 'rgba(0,0,0,0.3)', fontSize: '0.63rem',
@@ -248,10 +250,11 @@ export default function CommunityJoin() {
                     {ACCELERATOR_FEATURES.map((f, i) => (
                       <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
                         <span style={{
-                          color: i === 0 ? 'rgba(0,0,0,0.25)' : '#C2185B',
+                          color: '#C2185B',
                           fontSize: '0.7rem', marginTop: 3, flexShrink: 0,
+                          display: 'inline-block', minWidth: '0.7rem',
                         }}>
-                          {i === 0 ? '—' : '✓'}
+                          {i === 0 ? '' : '✓'}
                         </span>
                         <p style={{ whiteSpace: 'pre-line',
                           fontFamily: "'Inter', sans-serif",
@@ -259,7 +262,7 @@ export default function CommunityJoin() {
                           fontSize: '0.78rem', lineHeight: 1.5,
                           fontStyle: i === 0 ? 'italic' : 'normal',
                         }}>
-                          {f.replace('{POSITIONING}', positioning)}
+                          {f}
                         </p>
                       </div>
                     ))}

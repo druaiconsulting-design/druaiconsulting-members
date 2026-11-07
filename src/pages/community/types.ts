@@ -9,20 +9,20 @@ export const NAVIGATOR_PAYMENT_LINK   = 'https://link.druaiconsulting.com/paymen
 export const ACCELERATOR_PAYMENT_LINK = 'https://link.druaiconsulting.com/payment-link/69ead3d37dd3512d920794b1';
 
 export const NAVIGATOR_FEATURES = [
-  'Access to DRU AI Consulting — Community Connection',
-  'Daily {POSITIONING}',
-  'Framework Micro-Lessons',
-  'AI Arsenal — Your Curated Library of 100+ AI Tools',
-  'Executive Founder Pricing — Locked In Forever',
+  'Access to DRU AI Consulting Community Connection',
+  'Daily Leadership with AI Insights',
+  'Daily Framework Micro-Lessons',
+  'AI Arsenal: Your Curated Library of 100+ AI Tools',
+  'Executive Founder Pricing Locked In Forever',
 ];
 
 export const ACCELERATOR_FEATURES = [
   'Everything in Navigator, plus:',
   "Today's Action Challenge",
-  "DeAnna's Strategic Edge",
-  'Weekly Leadership Deep-Dive — Delivered to You',
+  "Daily DeAnna's Strategic Edge",
+  'Bi-weekly Leadership Framework PDF Downloadable',
   "Monthly DeAnna's Leadership Lab! Video Access",
-  'Executive Founder Pricing — Locked In Forever',
+  'Executive Founder Pricing Locked In Forever',
 ];
 
 // ── Types ────────────────────────────────────────────────────────────────────
