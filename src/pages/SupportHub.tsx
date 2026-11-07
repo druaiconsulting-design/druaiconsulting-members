@@ -300,6 +300,7 @@ export default function SupportHub() {
   const isAcc     = tier === 'accelerator'
   const planLabel = isAcc ? 'Accelerator' : 'Navigator'
   const planPrice = isAcc ? '$197' : '$97'
+  const planYearly = isAcc ? '$1,970' : '$970'
 
   // ─── Fetch billing data when manage view opens ──────────────────────────
 
@@ -702,7 +703,10 @@ export default function SupportHub() {
                   {planLabel}
                 </div>
                 <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 22, fontWeight: 700, color: GOLD }}>
-                  {planPrice}<span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.6)' }}>/mo</span>
+                  {planPrice}<span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.6)' }}>/month</span>
+                </div>
+                <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+                  or {planYearly}/year (2 months free)
                 </div>
               </div>
               <div style={{
