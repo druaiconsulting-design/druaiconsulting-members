@@ -14,14 +14,24 @@
 // carries per-video look/wardrobe/brand-kit background/orientation overrides.
 // The pipe routes on engine only — it never has an opinion about the creative.
 //
+// HeyGen API: v3 (POST /v3/videos, GET /v3/videos/{id}). HeyGen's v1/v2 endpoints reached
+// end of support on Oct 31, 2026. render_settings keys read here:
+//   avatar_id, voice_id        — override the env defaults
+//   aspect_ratio               — '9:16' (default), '16:9', '1:1', '4:5', '5:4'
+//   resolution                 — '720p' (default) or '1080p'
+//   width, height              — older pixel overrides; mapped to the nearest aspect ratio + resolution
+//   voice_speed                — 0.5 to 1.5
+//   background                 — { type:'color', value:'#0A2342' } or { type:'image', url:'...' }
+//   title                      — shown in the HeyGen dashboard
+//
 // ENV (members Vercel project):
 //   HEYGEN_API_KEY          — HeyGen API wallet key                     [set ✅]
 //   BUNNY_SOCIAL_API_KEY           — library 677927 API key (upload AccessKey)
 //   BUNNY_SOCIAL_CDN_KEY           — 677927 CDN hostname, e.g. vz-xxxxxxxx-xxx.b-cdn.net
 //   HEYGEN_AVATAR_ID        — default avatar/look id (per-card override supported)
 //   HEYGEN_VOICE_ID         — default voice id       (per-card override supported)
-//   HEYGEN_AVATAR_TYPE      — 'avatar' (video avatar) or 'talking_photo' (photo
-//                             avatar — run-one testing vehicle). Default: 'avatar'
+//   HEYGEN_AVATAR_TYPE      — no longer needed. In v3 a photo avatar is an avatar_id too:
+//                             set HEYGEN_AVATAR_ID to the photo avatar's look ID.
 //   CRON_SECRET             — same value as app.cron_secret in Postgres
 //   SUPABASE_SERVICE_ROLE_KEY, VITE_SUPABASE_URL — already present
 
@@ -79,47 +89,60 @@ function heygenHeaders() {
   return { "Content-Type": "application/json", "X-Api-Key": key };
 }
 
+const ASPECT_RATIOS: Record<string, number> = { "9:16": 9 / 16, "16:9": 16 / 9, "1:1": 1, "4:5": 4 / 5, "5:4": 5 / 4 };
+
+// v3 sets size by aspect ratio + resolution. Older render_settings used pixel width/height;
+// those are mapped to the closest aspect ratio and a resolution tier.
+function sizeFromSettings(settings: Record<string, any>): { aspect_ratio: string; resolution: string } {
+  let aspect = typeof settings.aspect_ratio === "string" && ASPECT_RATIOS[settings.aspect_ratio] ? settings.aspect_ratio : "";
+  const w = Number(settings.width), h = Number(settings.height);
+  if (!aspect && w > 0 && h > 0) {
+    const r = w / h;
+    aspect = Object.keys(ASPECT_RATIOS).sort((a, b) => Math.abs(ASPECT_RATIOS[a] - r) - Math.abs(ASPECT_RATIOS[b] - r))[0];
+  }
+  if (!aspect) aspect = "9:16"; // default vertical (Reels/Shorts)
+  let resolution = settings.resolution === "1080p" || settings.resolution === "720p" ? settings.resolution : "";
+  if (!resolution && w > 0 && h > 0) resolution = Math.max(w, h) >= 1920 ? "1080p" : "720p";
+  return { aspect_ratio: aspect, resolution: resolution || "720p" };
+}
+
 async function heygenSubmit(script: string, settings: Record<string, any>): Promise<{ videoId?: string; error?: string }> {
   const avatarId = settings.avatar_id || process.env.HEYGEN_AVATAR_ID;
   const voiceId = settings.voice_id || process.env.HEYGEN_VOICE_ID;
-  const avatarType = settings.avatar_type || process.env.HEYGEN_AVATAR_TYPE || "avatar";
   if (!avatarId || !voiceId) return { error: "HEYGEN_AVATAR_ID / HEYGEN_VOICE_ID not set (env or render_settings)" };
 
-  // Orientation: default 9:16 vertical (Reels/Shorts); render_settings can override
-  const width = Number(settings.width) || 720;
-  const height = Number(settings.height) || 1280;
-
-  const character =
-    avatarType === "talking_photo"
-      ? { type: "talking_photo", talking_photo_id: avatarId }
-      : { type: "avatar", avatar_id: avatarId, avatar_style: settings.avatar_style || "normal" };
-
-  const videoInput: Record<string, any> = {
-    character,
-    voice: { type: "text", input_text: script, voice_id: voiceId, ...(settings.voice_speed ? { speed: Number(settings.voice_speed) } : {}) },
-  };
+  const { aspect_ratio, resolution } = sizeFromSettings(settings);
+  const body: Record<string, any> = { type: "avatar", avatar_id: avatarId, voice_id: voiceId, script, aspect_ratio, resolution };
+  if (settings.title) body.title = settings.title;
+  if (settings.voice_speed) body.voice_settings = { speed: Number(settings.voice_speed) };
   // Brand kit background: render_settings.background = { type:'color', value:'#0A2342' }
-  // or { type:'image', url:'...' } — whatever the card specifies rides straight through.
-  if (settings.background) videoInput.background = settings.background;
+  // or { type:'image', url:'...' } — v3 takes the same shape, so it rides straight through.
+  if (settings.background) body.background = settings.background;
 
-  const res = await fetch(`${HEYGEN_BASE}/v2/video/generate`, {
+  const res = await fetch(`${HEYGEN_BASE}/v3/videos`, {
     method: "POST",
     headers: heygenHeaders(),
-    body: JSON.stringify({ video_inputs: [videoInput], dimension: { width, height }, ...(settings.title ? { title: settings.title } : {}) }),
+    body: JSON.stringify(body),
   });
   const data: any = await res.json().catch(() => ({}));
-  if (!res.ok || !data?.data?.video_id) return { error: `HeyGen submit ${res.status}: ${JSON.stringify(data).slice(0, 400)}` };
+  if (!res.ok || !data?.data?.video_id) {
+    const msg = data?.error?.message ?? JSON.stringify(data).slice(0, 400);
+    return { error: `HeyGen submit ${res.status}: ${msg}` };
+  }
   return { videoId: data.data.video_id };
 }
 
 async function heygenStatus(videoId: string): Promise<{ status: string; videoUrl?: string; error?: string }> {
-  const res = await fetch(`${HEYGEN_BASE}/v1/video_status.get?video_id=${encodeURIComponent(videoId)}`, { headers: heygenHeaders() });
+  const res = await fetch(`${HEYGEN_BASE}/v3/videos/${encodeURIComponent(videoId)}`, { headers: heygenHeaders() });
   const data: any = await res.json().catch(() => ({}));
-  if (!res.ok) return { status: "error", error: `HeyGen status ${res.status}` };
+  if (!res.ok) return { status: "error", error: `HeyGen status ${res.status}: ${data?.error?.message ?? ""}`.trim() };
   const s = data?.data?.status ?? "unknown";
   if (s === "completed") return { status: "completed", videoUrl: data.data.video_url };
-  if (s === "failed") return { status: "failed", error: JSON.stringify(data?.data?.error ?? {}).slice(0, 400) };
-  return { status: s }; // pending / processing / waiting
+  if (s === "failed") {
+    const why = data?.data?.failure_message || data?.data?.failure_code || "render failed";
+    return { status: "failed", error: String(why).slice(0, 400) };
+  }
+  return { status: s }; // pending / processing
 }
 
 // ── Bunny: create video object in 677927, stream the MP4 in ─────────────────
