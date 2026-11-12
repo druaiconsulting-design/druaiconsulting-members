@@ -240,7 +240,7 @@ export default function Sidebar({
           <button
             className="sidebar-nav-item"
             onClick={() => { navigate('/courses'); if (isMobile) onMobileClose() }}
-            title={showText ? undefined : 'From Confusion to Confident with AI™'}
+            title={showText ? undefined : 'From Confusion to Confidence with AI™'}
             style={{
               width: '100%',
               display: 'flex',
@@ -277,7 +277,7 @@ export default function Sidebar({
                     whiteSpace: 'nowrap',
                     lineHeight: 1.3,
                   }}>
-                    From Confusion to Confident with AI™
+                    From Confusion to Confidence with AI™
                   </div>
                   <CourseProgressBar percent={0} />
                   <div style={{
