@@ -400,19 +400,23 @@ export default function SupportHub() {
           fileUrl = data.publicUrl
         }
       }
-      const { error } = await supabase.from('support_requests').insert({
-        member_id:    session?.user?.id,
-        member_name:  memberName || email,
-        member_email: email,
-        member_tier:  profile?.tier || 'free',
-        category,
-        question:     question.trim(),
-        file_url:     fileUrl,
+      // The request goes to the app, which uses the signed-in member's own name and email, saves the ticket,
+      // sends the instant reply from support@, and has Isaiah draft the full reply.
+      const token = session?.access_token
+      if (!token) throw Object.assign(new Error('Please sign in again and retry.'), { friendly: true })
+      const res = await fetch('https://app.druaiconsulting.com/api/support-hub-submit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    JSON.stringify({ category, question: question.trim(), file_url: fileUrl }),
       })
-      if (error) throw error
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.ok) {
+        const message = res.status === 429 || res.status === 400 || res.status === 401 ? String(data?.error ?? '') : ''
+        throw Object.assign(new Error(message), { friendly: Boolean(message) })
+      }
       setSubmitted(true)
-    } catch {
-      setSubmitError('Something went wrong. Please try again or email support@support.druaiconsulting.com.')
+    } catch (err: any) {
+      setSubmitError(err?.friendly && err?.message ? err.message : 'Something went wrong. Please try again or email support@support.druaiconsulting.com.')
     } finally {
       setSubmitting(false)
     }
