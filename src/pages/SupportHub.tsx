@@ -395,10 +395,10 @@ export default function SupportHub() {
         const ext  = file.name.split('.').pop()
         const path = `${session.user.id}/${Date.now()}.${ext}`
         const { error: upErr } = await supabase.storage.from('support-files').upload(path, file)
-        if (!upErr) {
-          const { data } = supabase.storage.from('support-files').getPublicUrl(path)
-          fileUrl = data.publicUrl
+        if (upErr) {
+          throw Object.assign(new Error('Your file could not be attached. Please use an image, PDF, Word or text file under 10 MB, or remove it and send your request without it.'), { friendly: true })
         }
+        fileUrl = path
       }
       // The request goes to the app, which uses the signed-in member's own name and email, saves the ticket,
       // sends the instant reply from support@, and has Isaiah draft the full reply.
