@@ -51,7 +51,7 @@ function HowPointsWorkModal({ onClose }: { onClose: () => void }) {
         {/* Earn points section */}
         <div style={{ marginBottom: '24px' }}>
           <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', fontWeight: '700', color: 'rgba(10,35,66,0.4)', letterSpacing: '0.5px', textTransform: 'uppercase' as const, marginBottom: '12px' }}>
-            Earn Clarity Points™
+            Earn Clarity Points
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[
@@ -78,7 +78,7 @@ function HowPointsWorkModal({ onClose }: { onClose: () => void }) {
             Community Levels
           </div>
           <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(10,35,66,0.55)', lineHeight: '1.6', marginBottom: '14px' }}>
-            As you earn Clarity Points™ you advance through community levels. Your level badge is displayed on every post and on the leaderboard.
+            As you earn Clarity Points you advance through community levels. Your level badge is displayed on every post and on the leaderboard.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             {levels.map((level, i) => {
@@ -185,7 +185,7 @@ export default function Leaderboard() {
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: '700', color: '#0A2342' }}>{pts?.toLocaleString() ?? '—'}</div>
           <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '10px', color: 'rgba(10,35,66,0.4)' }}>
-            {view === 'weekly' ? 'this week' : 'Clarity Points™'}
+            {view === 'weekly' ? 'this week' : 'Clarity Points'}
           </div>
         </div>
       </div>
@@ -202,15 +202,15 @@ export default function Leaderboard() {
             <div style={{ padding: '44px 36px 48px' }}>
               <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(212,175,55,0.08)', border: '2px solid rgba(212,175,55,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: 36 }}>🏆</div>
               <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '3px', color: '#B8941F', marginBottom: 10 }}>NAVIGATOR &amp; ACCELERATOR ONLY</div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(20px, 4vw, 26px)', fontWeight: 700, color: '#0A2342', lineHeight: 1.2, margin: '0 0 14px' }}>Clarity Points™ Leaderboard</h2>
+              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(20px, 4vw, 26px)', fontWeight: 700, color: '#0A2342', lineHeight: 1.2, margin: '0 0 14px' }}>Clarity Points Leaderboard</h2>
               <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 13, color: 'rgba(10,35,66,0.55)', lineHeight: 1.75, margin: '0 auto 28px', maxWidth: 400 }}>
-                Track your Clarity Points™, climb the community levels, and see where you rank — available to Navigator and Accelerator members.
+                Track your Clarity Points, climb the community levels, and see where you rank — available to Navigator and Accelerator members.
               </p>
               <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.25), transparent)', marginBottom: 28 }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 32 }}>
                 {[
                   'Weekly and all-time leaderboard rankings',
-                  'Clarity Points™ tracking and level progression',
+                  'Clarity Points tracking and level progression',
                   'Full community feed access',
                   'Monthly Strategic Edge insights',
                 ].map(item => (
@@ -256,7 +256,7 @@ export default function Leaderboard() {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h1 style={{ fontFamily: "'Cinzel', serif", color: '#0A2342', fontSize: 'clamp(22px, 4vw, 30px)', fontWeight: '700', letterSpacing: '0.5px', lineHeight: '1.2', margin: 0 }}>
-                Clarity Points™ Leaderboard
+                Clarity Points Leaderboard
               </h1>
               <p style={{ color: 'rgba(10,35,66,0.45)', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', marginTop: '8px', marginBottom: 0 }}>
                 Earn points by posting, commenting, and engaging with the community.
@@ -404,7 +404,7 @@ export default function Leaderboard() {
                 <div key={i} style={{ height: '72px', background: '#FFF', borderBottom: '1px solid #F0EDE8', animation: 'ccShimmer 1.5s ease infinite', animationDelay: `${i * 100}ms` }} />
               ))
             : rows.length === 0
-              ? <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(10,35,66,0.35)' }}>No members ranked yet — start posting to earn Clarity Points™</div>
+              ? <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(10,35,66,0.35)' }}>No members ranked yet — start posting to earn Clarity Points</div>
               : rows.map(row => renderRow(row, row.id === userId))
           }
 

@@ -152,7 +152,7 @@ function LeftCard({ profile }: { profile: ProfileData }) {
       </div>
       <div style={{ height: 1, background: 'rgba(10,35,66,0.08)', margin: '0 0 16px' }} />
       <div style={{ fontFamily: 'Montserrat, sans-serif', fontSize: 9, fontWeight: 700, color: 'rgba(10,35,66,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6 }}>
-        Clarity Points™
+        Clarity Points
       </div>
       <div style={{ fontFamily: 'Playfair Display, serif', fontSize: 30, fontWeight: 700, color: '#D4AF37', lineHeight: 1, marginBottom: 6 }}>
         {points.toLocaleString()}

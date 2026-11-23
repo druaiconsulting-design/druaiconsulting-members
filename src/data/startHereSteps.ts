@@ -63,7 +63,7 @@ export const startHereSteps: StartHereStep[] = [
   {
     step_number: 8,
     title: 'Check the Leaderboard',
-    description: 'See where you stand and learn how Clarity Points™ work.',
+    description: 'See where you stand and learn how Clarity Points work.',
     ctaLabel: 'View Leaderboard',
     ctaPath: '/leaderboard',
   },
